@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/login/actions'
 import CopyLinkButton from './CopyLinkButton'
+import ProveedoresTable from './ProveedoresTable'
 
 export default async function DashboardPage() {
     const supabase = await createClient()
@@ -79,73 +79,8 @@ export default async function DashboardPage() {
                     ))}
                 </div>
 
-                {/* Tabla de Proveedores */}
-                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b bg-gray-50">
-                        <h2 className="text-lg font-semibold text-[#254153]">Lista de Proveedores</h2>
-                    </div>
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Tipo</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Nombre/Razón Social</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Identificación</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Email</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Estado</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Fecha</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {proveedores?.map((p) => (
-                                <tr key={p.id} className="border-b hover:bg-gray-50">
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${p.tipo_contraparte === 'persona_natural'
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'bg-purple-100 text-purple-700'
-                                            }`}>
-                                            {p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 font-medium text-[#254153]">
-                                        {p.tipo_contraparte === 'persona_natural'
-                                            ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
-                                            : p.razon_social || '-'}
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-600">{p.numero_identificacion || '-'}</td>
-                                    <td className="px-4 py-3 text-gray-600">{p.email || p.correo_facturacion || '-'}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${p.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' :
-                                                p.estado === 'aprobado' ? 'bg-emerald-100 text-emerald-700' :
-                                                    'bg-red-100 text-red-700'
-                                            }`}>
-                                            {p.estado}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-500 text-sm">
-                                        {new Date(p.created_at).toLocaleDateString('es-ES')}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <Link
-                                            href={`/proveedores/${p.id}`}
-                                            className="px-3 py-1 bg-[#254153] text-white text-sm rounded-lg hover:bg-[#1a2e3a]"
-                                        >
-                                            Ver
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                            {(!proveedores || proveedores.length === 0) && (
-                                <tr>
-                                    <td colSpan={7} className="px-4 py-12 text-center text-gray-500">
-                                        <div className="text-4xl mb-2">📋</div>
-                                        No hay proveedores registrados aún
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                {/* Tabla con filtros */}
+                <ProveedoresTable proveedores={proveedores || []} />
             </main>
         </div>
     )
