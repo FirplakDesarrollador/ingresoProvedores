@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-type TipoContraparte = 'persona_natural' | 'persona_juridica' | ''
+type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | ''
 
 export default function RegistroPage() {
     const router = useRouter()
@@ -14,6 +14,29 @@ export default function RegistroPage() {
 
     const updateField = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }))
+    }
+
+    // Determinar el número total de pasos según el tipo
+    const getTotalSteps = () => {
+        if (tipoContraparte === 'empleado') return 3 // Tipo, Info General, Bancaria
+        return 5 // Tipo, Info General, PEP, Financiera, Documentos
+    }
+
+    // Obtener el siguiente paso según el tipo
+    const getNextStep = (currentStep: number) => {
+        if (tipoContraparte === 'empleado') {
+            // Empleado: 1 -> 2 -> 4 (bancaria) -> submit
+            if (currentStep === 2) return 4 // Saltar directo a bancaria
+        }
+        return currentStep + 1
+    }
+
+    // Obtener el paso anterior según el tipo
+    const getPrevStep = (currentStep: number) => {
+        if (tipoContraparte === 'empleado') {
+            if (currentStep === 4) return 2 // De bancaria volver a info general
+        }
+        return currentStep - 1
     }
 
     const handleSubmit = async () => {
@@ -33,6 +56,20 @@ export default function RegistroPage() {
         setLoading(false)
     }
 
+    // Calcular el progreso visual
+    const getProgressSteps = () => {
+        const total = getTotalSteps()
+        if (tipoContraparte === 'empleado') {
+            // Mapear los pasos reales a pasos visuales para empleado
+            if (step === 1) return { current: 1, total }
+            if (step === 2) return { current: 2, total }
+            if (step === 4) return { current: 3, total }
+        }
+        return { current: step, total }
+    }
+
+    const progress = getProgressSteps()
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -46,8 +83,8 @@ export default function RegistroPage() {
             <main className="max-w-4xl mx-auto px-4 py-8">
                 {/* Progress */}
                 <div className="flex gap-2 mb-8">
-                    {[1, 2, 3, 4, 5].map(s => (
-                        <div key={s} className={`h-2 flex-1 rounded ${step >= s ? 'bg-[#254153]' : 'bg-gray-200'}`} />
+                    {Array.from({ length: progress.total }, (_, i) => i + 1).map(s => (
+                        <div key={s} className={`h-2 flex-1 rounded ${progress.current >= s ? 'bg-[#254153]' : 'bg-gray-200'}`} />
                     ))}
                 </div>
 
@@ -55,13 +92,13 @@ export default function RegistroPage() {
                 {step === 1 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
                         <h2 className="text-xl font-semibold text-[#254153] mb-6">Tipo de Contraparte</h2>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <button
                                 type="button"
                                 onClick={() => setTipoContraparte('persona_natural')}
                                 className={`p-6 rounded-xl border-2 text-left transition ${tipoContraparte === 'persona_natural'
-                                        ? 'border-[#254153] bg-[#254153]/5'
-                                        : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-[#254153] bg-[#254153]/5'
+                                    : 'border-gray-200 hover:border-gray-300'
                                     }`}
                             >
                                 <span className="text-3xl mb-2 block">👤</span>
@@ -71,12 +108,23 @@ export default function RegistroPage() {
                                 type="button"
                                 onClick={() => setTipoContraparte('persona_juridica')}
                                 className={`p-6 rounded-xl border-2 text-left transition ${tipoContraparte === 'persona_juridica'
-                                        ? 'border-[#254153] bg-[#254153]/5'
-                                        : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-[#254153] bg-[#254153]/5'
+                                    : 'border-gray-200 hover:border-gray-300'
                                     }`}
                             >
                                 <span className="text-3xl mb-2 block">🏢</span>
                                 <span className="font-semibold text-[#254153]">Persona Jurídica</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setTipoContraparte('empleado')}
+                                className={`p-6 rounded-xl border-2 text-left transition ${tipoContraparte === 'empleado'
+                                    ? 'border-[#254153] bg-[#254153]/5'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                            >
+                                <span className="text-3xl mb-2 block">💼</span>
+                                <span className="font-semibold text-[#254153]">Empleado</span>
                             </button>
                         </div>
                         <button
@@ -93,10 +141,12 @@ export default function RegistroPage() {
                 {step === 2 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
                         <h2 className="text-xl font-semibold text-[#254153] mb-6">
-                            {tipoContraparte === 'persona_natural' ? 'Información Personal' : 'Información de la Empresa'}
+                            {tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado'
+                                ? 'Información Personal'
+                                : 'Información de la Empresa'}
                         </h2>
 
-                        {tipoContraparte === 'persona_natural' ? (
+                        {(tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado') ? (
                             <div className="grid grid-cols-2 gap-4">
                                 <Input label="Tipo Documento" name="tipo_documento" value={formData.tipo_documento} onChange={updateField} />
                                 <Input label="Número Identificación" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} />
@@ -125,7 +175,7 @@ export default function RegistroPage() {
 
                         <div className="flex gap-4 mt-6">
                             <button onClick={() => setStep(1)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
-                            <button onClick={() => setStep(3)} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
+                            <button onClick={() => setStep(getNextStep(2))} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
                         </div>
                     </div>
                 )}
@@ -148,22 +198,44 @@ export default function RegistroPage() {
                     </div>
                 )}
 
-                {/* Step 4: Financiera */}
+                {/* Step 4: Financiera / Bancaria */}
                 {step === 4 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
-                        <h2 className="text-xl font-semibold text-[#254153] mb-6">Información Financiera y Bancaria</h2>
+                        <h2 className="text-xl font-semibold text-[#254153] mb-6">
+                            {tipoContraparte === 'empleado' ? 'Información Bancaria' : 'Información Financiera y Bancaria'}
+                        </h2>
+
                         <div className="grid grid-cols-2 gap-4">
-                            <Input label="Total Activos" name="total_activos" type="number" value={formData.total_activos} onChange={updateField} />
-                            <Input label="Total Pasivos" name="total_pasivos" type="number" value={formData.total_pasivos} onChange={updateField} />
-                            <Input label="Ingresos Mensuales" name="ingresos_mensuales" type="number" value={formData.ingresos_mensuales} onChange={updateField} />
-                            <Input label="Egresos Mensuales" name="egresos_mensuales" type="number" value={formData.egresos_mensuales} onChange={updateField} />
+                            {/* Solo mostrar campos financieros si NO es empleado */}
+                            {tipoContraparte !== 'empleado' && (
+                                <>
+                                    <Input label="Total Activos" name="total_activos" type="number" value={formData.total_activos} onChange={updateField} />
+                                    <Input label="Total Pasivos" name="total_pasivos" type="number" value={formData.total_pasivos} onChange={updateField} />
+                                    <Input label="Ingresos Mensuales" name="ingresos_mensuales" type="number" value={formData.ingresos_mensuales} onChange={updateField} />
+                                    <Input label="Egresos Mensuales" name="egresos_mensuales" type="number" value={formData.egresos_mensuales} onChange={updateField} />
+                                </>
+                            )}
+
+                            {/* Campos bancarios para todos */}
                             <Select label="Tipo de Cuenta" name="tipo_cuenta" value={formData.tipo_cuenta} onChange={updateField} options={['Ahorros', 'Corriente']} />
                             <Input label="Entidad Bancaria" name="entidad_bancaria" value={formData.entidad_bancaria} onChange={updateField} />
                             <Input label="Número de Cuenta" name="numero_cuenta" value={formData.numero_cuenta} onChange={updateField} />
                         </div>
+
                         <div className="flex gap-4 mt-6">
-                            <button onClick={() => setStep(3)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
-                            <button onClick={() => setStep(5)} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
+                            <button onClick={() => setStep(getPrevStep(4))} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
+
+                            {tipoContraparte === 'empleado' ? (
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={loading}
+                                    className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
+                                >
+                                    {loading ? 'Enviando...' : 'Enviar Formulario'}
+                                </button>
+                            ) : (
+                                <button onClick={() => setStep(5)} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
+                            )}
                         </div>
                     </div>
                 )}
