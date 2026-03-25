@@ -58,6 +58,16 @@ export default async function ProveedorDetallePage({ params }: Props) {
                         }`}>
                         {proveedor.tipo_contraparte === 'persona_natural' ? '👤 Persona Natural' : '🏢 Persona Jurídica'}
                     </span>
+                    {proveedor.area_solicitante && (
+                        <span className="px-3 py-1 rounded text-sm bg-blue-100 text-blue-700 font-medium">
+                            🏢 Área: {proveedor.area_solicitante}
+                        </span>
+                    )}
+                    {proveedor.tipo_solicitud && (
+                        <span className="px-3 py-1 rounded text-sm bg-gray-100 text-gray-700">
+                            {proveedor.tipo_solicitud}
+                        </span>
+                    )}
                 </div>
 
                 {/* Approval Info */}
@@ -141,11 +151,28 @@ export default async function ProveedorDetallePage({ params }: Props) {
                             <div className="space-y-2">
                                 {documentos.map((doc) => (
                                     <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                        <div>
-                                            <p className="font-medium text-[#254153]">{doc.tipo_documento}</p>
-                                            <p className="text-sm text-gray-500">{doc.nombre_archivo}</p>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-red-500 shadow-sm">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-[#254153] leading-tight">{doc.tipo_documento}</p>
+                                                <p className="text-xs text-gray-500 mt-0.5">{doc.nombre_archivo}</p>
+                                            </div>
                                         </div>
-                                        <span className="text-gray-400 text-sm">PDF</span>
+                                        <a
+                                            href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${doc.file_path}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-4 py-2 bg-white text-[#254153] text-sm font-semibold rounded-lg border shadow-sm hover:bg-gray-50 transition flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Descargar
+                                        </a>
                                     </div>
                                 ))}
                             </div>

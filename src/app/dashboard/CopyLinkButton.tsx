@@ -4,13 +4,14 @@ import { useState } from 'react'
 
 interface CopyLinkButtonProps {
     baseUrl?: string
+    path?: string
 }
 
-export default function CopyLinkButton({ baseUrl }: CopyLinkButtonProps) {
+export default function CopyLinkButton({ baseUrl, path = '/registro' }: CopyLinkButtonProps) {
     const [copied, setCopied] = useState(false)
 
     const handleCopy = async () => {
-        const url = (baseUrl || window.location.origin) + '/registro'
+        const url = (baseUrl || window.location.origin) + path
         await navigator.clipboard.writeText(url)
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)

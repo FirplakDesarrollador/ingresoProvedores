@@ -6,6 +6,7 @@ export interface ProveedorFormData {
     // Tipo
     tipo_solicitud: string
     tipo_contraparte: 'persona_natural' | 'persona_juridica'
+    area_solicitante?: string
 
     // Persona Natural
     tipo_documento?: string
@@ -105,7 +106,7 @@ export async function uploadDocument(
 
     // Upload to storage
     const { error: uploadError } = await supabase.storage
-        .from('proveedor-documentos')
+        .from('proveedores')
         .upload(fileName, file)
 
     if (uploadError) {

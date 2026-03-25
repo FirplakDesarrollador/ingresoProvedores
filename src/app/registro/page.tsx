@@ -1,19 +1,41 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { submitProveedorForm, uploadDocument } from './actions'
 
 type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | ''
 
 export default function RegistroPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Cargando...</div>}>
+            <RegistroForm />
+        </Suspense>
+    )
+}
+
+function RegistroForm() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const [step, setStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [tipoContraparte, setTipoContraparte] = useState<TipoContraparte>('')
     const [formData, setFormData] = useState<Record<string, any>>({})
 
+    useEffect(() => {
+        const tipo = searchParams.get('tipo')
+        if (tipo === 'empleado') {
+            setTipoContraparte('empleado')
+            setStep(2)
+        }
+    }, [searchParams])
+
     const updateField = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }))
+    }
+
+    const isValidEmail = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     }
 
     // Determinar el número total de pasos según el tipo
@@ -42,16 +64,33 @@ export default function RegistroPage() {
     const handleSubmit = async () => {
         setLoading(true)
         try {
-            const res = await fetch('/api/registro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, tipo_contraparte: tipoContraparte })
+            // 1. Submit basic data
+            const result = await submitProveedorForm({
+                ...formData,
+                tipo_solicitud: 'Nuevo Registro',
+                tipo_contraparte: tipoContraparte as any
             })
-            if (res.ok) {
+
+            if (result.success && result.id) {
+                const proveedorId = result.id
+
+                // 2. Upload files
+                const fileFields = ['rut', 'documento_identidad', 'cert_bancaria', 'camara_comercio', 'estados_financieros']
+                for (const field of fileFields) {
+                    const file = formData[field]
+                    if (file instanceof File) {
+                        const label = field.replace(/_/g, ' ').toUpperCase()
+                        await uploadDocument(proveedorId, label, file)
+                    }
+                }
+
                 router.push('/registro/exito')
+            } else {
+                alert('Error al registrar: ' + (result as any).error)
             }
         } catch (e) {
             console.error(e)
+            alert('Error inesperado')
         }
         setLoading(false)
     }
@@ -88,11 +127,30 @@ export default function RegistroPage() {
                     ))}
                 </div>
 
-                {/* Step 1: Tipo */}
+                {/* Step 1: Área y Tipo */}
                 {step === 1 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
+                        <div className="mb-8">
+                            <h2 className="text-xl font-semibold text-[#254153] mb-4">Información de Origen</h2>
+                            <Select 
+                                label="¿Desde qué área de la empresa viene?" 
+                                name="area_solicitante" 
+                                value={formData.area_solicitante} 
+                                onChange={updateField} 
+                                options={[
+                                    'Logística', 
+                                    'Manufactura', 
+                                    'Compras y Negociación', 
+                                    'Talento Humano', 
+                                    'TI', 
+                                    'Almacén', 
+                                    'Otro'
+                                ]} 
+                            />
+                        </div>
+
                         <h2 className="text-xl font-semibold text-[#254153] mb-6">Tipo de Contraparte</h2>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 gap-4">
                             <button
                                 type="button"
                                 onClick={() => setTipoContraparte('persona_natural')}
@@ -115,21 +173,10 @@ export default function RegistroPage() {
                                 <span className="text-3xl mb-2 block">🏢</span>
                                 <span className="font-semibold text-[#254153]">Persona Jurídica</span>
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => setTipoContraparte('empleado')}
-                                className={`p-6 rounded-xl border-2 text-left transition ${tipoContraparte === 'empleado'
-                                    ? 'border-[#254153] bg-[#254153]/5'
-                                    : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                            >
-                                <span className="text-3xl mb-2 block">💼</span>
-                                <span className="font-semibold text-[#254153]">Empleado</span>
-                            </button>
                         </div>
                         <button
-                            onClick={() => tipoContraparte && setStep(2)}
-                            disabled={!tipoContraparte}
+                            onClick={() => tipoContraparte && formData.area_solicitante && setStep(2)}
+                            disabled={!tipoContraparte || !formData.area_solicitante}
                             className="mt-6 w-full py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                         >
                             Continuar
@@ -148,14 +195,27 @@ export default function RegistroPage() {
 
                         {(tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado') ? (
                             <div className="grid grid-cols-2 gap-4">
-                                <Input label="Tipo Documento" name="tipo_documento" value={formData.tipo_documento} onChange={updateField} />
-                                <Input label="Número Identificación" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} />
+                                <Select 
+                                    label="Tipo Documento" 
+                                    name="tipo_documento" 
+                                    value={formData.tipo_documento} 
+                                    onChange={updateField} 
+                                    options={[
+                                        'Cédula de Ciudadanía', 
+                                        'Cédula de Extranjería', 
+                                        'Pasaporte', 
+                                        'Tarjeta de Identidad', 
+                                        'NIT',
+                                        'Otro'
+                                    ]} 
+                                />
+                                <Input label="Número Identificación" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} type="number" />
                                 <Input label="Primer Nombre" name="primer_nombre" value={formData.primer_nombre} onChange={updateField} />
                                 <Input label="Segundo Nombre" name="segundo_nombre" value={formData.segundo_nombre} onChange={updateField} />
                                 <Input label="Primer Apellido" name="primer_apellido" value={formData.primer_apellido} onChange={updateField} />
                                 <Input label="Segundo Apellido" name="segundo_apellido" value={formData.segundo_apellido} onChange={updateField} />
                                 <Input label="Email" name="email" type="email" value={formData.email} onChange={updateField} />
-                                <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} />
+                                <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
                                 <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
                                 <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} />
                                 <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} />
@@ -175,7 +235,17 @@ export default function RegistroPage() {
 
                         <div className="flex gap-4 mt-6">
                             <button onClick={() => setStep(1)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
-                            <button onClick={() => setStep(getNextStep(2))} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
+                            <button 
+                                onClick={() => setStep(getNextStep(2))} 
+                                disabled={
+                                    tipoContraparte === 'persona_juridica' 
+                                    ? (!formData.razon_social || !formData.numero_identificacion || !formData.codigo_ciiu || !formData.tipo_sociedad || !formData.origen_capital || !formData.correo_facturacion || !isValidEmail(formData.correo_facturacion))
+                                    : (!formData.tipo_documento || !formData.numero_identificacion || !formData.primer_nombre || !formData.primer_apellido || !formData.email || !isValidEmail(formData.email) || !formData.celular || !formData.direccion || !formData.ciudad || !formData.departamento)
+                                }
+                                className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
+                            >
+                                Continuar
+                            </button>
                         </div>
                     </div>
                 )}
@@ -228,13 +298,19 @@ export default function RegistroPage() {
                             {tipoContraparte === 'empleado' ? (
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={loading}
+                                    disabled={loading || !formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta}
                                     className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                                 >
                                     {loading ? 'Enviando...' : 'Enviar Formulario'}
                                 </button>
                             ) : (
-                                <button onClick={() => setStep(5)} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
+                                <button 
+                                    onClick={() => setStep(5)} 
+                                    disabled={!formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.total_activos || !formData.total_pasivos || !formData.ingresos_mensuales || !formData.egresos_mensuales}
+                                    className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
+                                >
+                                    Continuar
+                                </button>
                             )}
                         </div>
                     </div>
@@ -269,13 +345,13 @@ export default function RegistroPage() {
                         </div>
 
                         <div className="space-y-4 mb-6">
-                            <FileInput label="RUT" name="rut" />
-                            <FileInput label="Documento de Identidad" name="documento_identidad" />
-                            <FileInput label="Certificación Bancaria" name="cert_bancaria" />
+                            <FileInput label="RUT" name="rut" onChange={updateField} />
+                            <FileInput label="Documento de Identidad" name="documento_identidad" onChange={updateField} />
+                            <FileInput label="Certificación Bancaria" name="cert_bancaria" onChange={updateField} />
                             {tipoContraparte === 'persona_juridica' && (
                                 <>
-                                    <FileInput label="Cámara de Comercio" name="camara_comercio" />
-                                    <FileInput label="Estados Financieros" name="estados_financieros" />
+                                    <FileInput label="Cámara de Comercio" name="camara_comercio" onChange={updateField} />
+                                    <FileInput label="Estados Financieros" name="estados_financieros" onChange={updateField} />
                                 </>
                             )}
                         </div>
@@ -291,7 +367,14 @@ export default function RegistroPage() {
                             <button onClick={() => setStep(4)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
                             <button
                                 onClick={handleSubmit}
-                                disabled={loading || !formData.acepta_terminos}
+                                disabled={
+                                    loading || 
+                                    !formData.acepta_terminos || 
+                                    !formData.rut || 
+                                    !formData.documento_identidad || 
+                                    !formData.cert_bancaria || 
+                                    (tipoContraparte === 'persona_juridica' && (!formData.camara_comercio || !formData.estados_financieros))
+                                }
                                 className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                             >
                                 {loading ? 'Enviando...' : 'Enviar Formulario'}
@@ -308,7 +391,9 @@ export default function RegistroPage() {
 function Input({ label, name, type = 'text', value, onChange, className = '' }: any) {
     return (
         <div className={className}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+                {label} <span className="text-red-500">*</span>
+            </label>
             <input
                 type={type}
                 value={value || ''}
@@ -322,7 +407,9 @@ function Input({ label, name, type = 'text', value, onChange, className = '' }: 
 function Select({ label, name, value, onChange, options }: any) {
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+                {label} <span className="text-red-500">*</span>
+            </label>
             <select
                 value={value || ''}
                 onChange={(e) => onChange(name, e.target.value)}
@@ -349,11 +436,22 @@ function Checkbox({ label, name, checked, onChange }: any) {
     )
 }
 
-function FileInput({ label, name }: any) {
+function FileInput({ label, name, onChange }: any) {
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-            <input type="file" accept=".pdf" name={name} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#254153] file:text-white file:font-medium" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+                {label} <span className="text-red-500">*</span>
+            </label>
+            <input
+                type="file"
+                accept=".pdf"
+                name={name}
+                onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) onChange(name, file)
+                }}
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#254153] file:text-white file:font-medium cursor-pointer"
+            />
         </div>
     )
 }

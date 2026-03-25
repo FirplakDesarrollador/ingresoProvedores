@@ -52,14 +52,27 @@ export default async function DashboardPage() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Copy Link Card */}
-                <div className="bg-[#254153] rounded-2xl p-6 mb-8 text-white">
-                    <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div>
-                            <h2 className="text-lg font-semibold mb-1">Enlace de Registro de Proveedores</h2>
-                            <p className="text-white/70 text-sm">Comparte este enlace con tus proveedores</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Registro de Proveedores */}
+                    <div className="bg-[#254153] rounded-2xl p-6 text-white">
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div>
+                                <h2 className="text-lg font-semibold mb-1">Enlace de Registro de Proveedores</h2>
+                                <p className="text-white/70 text-sm">Comparte este enlace con tus proveedores</p>
+                            </div>
+                            <CopyLinkButton />
                         </div>
-                        <CopyLinkButton />
+                    </div>
+
+                    {/* Registro de Empleados */}
+                    <div className="bg-[#254153] rounded-2xl p-6 text-white border-2 border-white/10">
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div>
+                                <h2 className="text-lg font-semibold mb-1">Enlace de Registro de Empleados</h2>
+                                <p className="text-white/70 text-sm">Comparte este enlace con tus empleados</p>
+                            </div>
+                            <CopyLinkButton path="/registro?tipo=empleado" />
+                        </div>
                     </div>
                 </div>
 
