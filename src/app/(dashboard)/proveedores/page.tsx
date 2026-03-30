@@ -22,12 +22,8 @@ export default async function ProveedoresPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <header className="bg-[#254153] text-white py-4">
-                <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-                    <h1 className="text-xl font-bold">Gestión de Proveedores</h1>
-                    <Link href="/dashboard" className="text-white/70 hover:text-white text-sm">← Volver al Dashboard</Link>
-                </div>
-            </header>
+            {/* Main Content */}
+
 
             <main className="max-w-7xl mx-auto px-4 py-8">
                 {/* Stats */}
