@@ -73,6 +73,7 @@ export interface ProveedorFormData {
 
     // Aceptación
     acepta_terminos?: boolean
+    detalle_origen_fondos?: string
 }
 
 export async function submitProveedorForm(data: ProveedorFormData) {
