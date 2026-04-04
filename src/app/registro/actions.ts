@@ -68,21 +68,46 @@ export interface ProveedorFormData {
     numero_cuenta?: string
 
     // Operaciones internacionales
-    realiza_operaciones_internacionales?: boolean
     tipo_transacciones?: string[]
 
     // Aceptación
     acepta_terminos?: boolean
     detalle_origen_fondos?: string
+
+    // Nuevos campos representate legal y cumplimiento
+    rep_legal_nombre_completo?: string
+    rep_legal_es_pep?: string
+    tiene_sanciones_lavado?: string
+
+    // Internacional y SST
+    realiza_operaciones_internacionales?: any // boolean or string "Sí"/"No"
+    tiene_evaluacion_sst?: any // boolean or string "Sí"/"No"
 }
 
 export async function submitProveedorForm(data: ProveedorFormData) {
     const supabase = await createClient()
 
+    // Convertir campos Sí/No a booleanos para la base de datos
+    const processedData = { ...data }
+    const siNoColumns = [
+        'realiza_operaciones_internacionales', 
+        'tiene_evaluacion_sst',
+        'rep_legal_es_pep',
+        'tiene_sanciones_lavado'
+    ]
+
+    siNoColumns.forEach(col => {
+        if (processedData[col as keyof ProveedorFormData] === 'Sí') {
+            (processedData as any)[col] = true
+        } else if (processedData[col as keyof ProveedorFormData] === 'No') {
+            (processedData as any)[col] = false
+        }
+    })
+
     const { data: proveedor, error } = await supabase
         .from('proveedores')
         .insert({
-            ...data,
+            ...processedData,
             estado: 'pendiente'
         })
         .select()

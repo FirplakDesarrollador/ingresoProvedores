@@ -89,7 +89,19 @@ function RegistroForm() {
                 const proveedorId = result.id
 
                 // 2. Upload files
-                const fileFields = ['rut', 'documento_identidad', 'cert_bancaria', 'camara_comercio', 'estados_financieros']
+                const fileFields = [
+                    'rut', 
+                    'documento_identidad', 
+                    'cert_bancaria', 
+                    'camara_comercio', 
+                    'estados_financieros',
+                    'doc_identidad_rep_legal',
+                    'composicion_accionaria',
+                    'referencias_comerciales',
+                    'certificado_arl_sst',
+                    'certificado_sagrilaft',
+                    'otros_documentos'
+                ]
                 for (const field of fileFields) {
                     const file = formData[field]
                     if (file instanceof File) {
@@ -99,17 +111,9 @@ function RegistroForm() {
                 }
 
                 // 3. Upload signature
-                if (formData.firma) {
-                    let signatureFile: File;
-                    if (typeof formData.firma === 'string' && formData.firma.startsWith('data:')) {
-                        // Convert base64 to File
-                        const response = await fetch(formData.firma);
-                        const blob = await response.blob();
-                        signatureFile = new File([blob], 'firma.png', { type: 'image/png' });
-                    } else {
-                        signatureFile = formData.firma;
-                    }
-                    await uploadDocument(proveedorId, 'FIRMA', signatureFile);
+                // 3. Upload signature
+                if (formData.firma instanceof File) {
+                    await uploadDocument(proveedorId, 'FIRMA', formData.firma);
                 }
 
                 router.push('/registro/exito')
@@ -166,13 +170,17 @@ function RegistroForm() {
                                 value={formData.area_solicitante} 
                                 onChange={updateField} 
                                 options={[
-                                    'Logística', 
-                                    'Manufactura', 
-                                    'Compras y Negociación', 
-                                    'Talento Humano', 
-                                    'TI', 
-                                    'Almacén', 
-                                    'Otro'
+                                    'Admón y Contabilidad',
+                                    'Legal',
+                                    'SST y Ambiental',
+                                    'Compras',
+                                    'Comer',
+                                    'Logística',
+                                    'TI',
+                                    'Talento Humano',
+                                    'Almacén',
+                                    'Mantenimiento',
+                                    'Otros'
                                 ]} 
                             />
                         </div>
@@ -257,6 +265,10 @@ function RegistroForm() {
                                     options={['Anónima', 'Limitada', 'S.A.S.', 'Sin Ánimo de Lucro', 'Otra']} />
                                 <Select label="Origen Capital" name="origen_capital" value={formData.origen_capital} onChange={updateField}
                                     options={['Privada', 'Pública', 'Mixta']} />
+                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} />
+                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} />
+                                <Input label="Nombre Representante Legal" name="rep_legal_nombre_completo" value={formData.rep_legal_nombre_completo} className="col-span-2" onChange={updateField} />
+                                <Input label="CC Representante Legal" name="rep_legal_numero_identificacion" value={formData.rep_legal_numero_identificacion} onChange={updateField} />
                                 <Input label="Correo Facturación" name="correo_facturacion" type="email" value={formData.correo_facturacion} className="col-span-2" onChange={updateField} />
                             </div>
                         )}
@@ -267,7 +279,7 @@ function RegistroForm() {
                                 onClick={() => setStep(getNextStep(2))} 
                                 disabled={
                                     tipoContraparte === 'persona_juridica' 
-                                    ? (!formData.razon_social || !formData.numero_identificacion || !formData.codigo_ciiu || !formData.tipo_sociedad || !formData.origen_capital || !formData.correo_facturacion || !isValidEmail(formData.correo_facturacion))
+                                    ? (!formData.razon_social || !formData.numero_identificacion || !formData.codigo_ciiu || !formData.tipo_sociedad || !formData.origen_capital || !formData.correo_facturacion || !isValidEmail(formData.correo_facturacion) || !formData.ciudad || !formData.departamento || !formData.rep_legal_nombre_completo || !formData.rep_legal_numero_identificacion)
                                     : (!formData.tipo_documento || !formData.numero_identificacion || !formData.primer_nombre || !formData.primer_apellido || !formData.email || !isValidEmail(formData.email) || !formData.celular || !formData.direccion || !formData.ciudad || !formData.departamento)
                                 }
                                 className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
@@ -288,10 +300,34 @@ function RegistroForm() {
                             <Checkbox label="¿Administra recursos públicos?" name="administra_recursos_publicos" checked={formData.administra_recursos_publicos} onChange={updateField} />
                             <Checkbox label="¿Tiene reconocimiento público?" name="tiene_reconocimiento_publico" checked={formData.tiene_reconocimiento_publico} onChange={updateField} />
                             <Checkbox label="¿Tiene grado de poder público?" name="tiene_grado_poder_publico" checked={formData.tiene_grado_poder_publico} onChange={updateField} />
+                            
+                            {/* Nuevas preguntas de cumplimiento */}
+                            <div className="pt-4 border-t border-gray-100 space-y-4">
+                                <Select 
+                                    label="¿El representante legal es PEP?" 
+                                    name="rep_legal_es_pep" 
+                                    value={formData.rep_legal_es_pep} 
+                                    onChange={updateField} 
+                                    options={['Sí', 'No']} 
+                                />
+                                <Select 
+                                    label="¿Alguno de sus accionistas, beneficiarios finales o representantes legales ha sido investigado, vinculado o sancionado por delitos relacionados con lavado de activos, corrupción o soborno?" 
+                                    name="tiene_sanciones_lavado" 
+                                    value={formData.tiene_sanciones_lavado} 
+                                    onChange={updateField} 
+                                    options={['Sí', 'No']} 
+                                />
+                            </div>
                         </div>
                         <div className="flex gap-4 mt-6">
                             <button onClick={() => setStep(2)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
-                            <button onClick={() => setStep(4)} className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold">Continuar</button>
+                            <button 
+                                onClick={() => setStep(4)} 
+                                disabled={!formData.rep_legal_es_pep || !formData.tiene_sanciones_lavado}
+                                className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
+                            >
+                                Continuar
+                            </button>
                         </div>
                     </div>
                 )}
@@ -318,6 +354,24 @@ function RegistroForm() {
                             <Select label="Tipo de Cuenta" name="tipo_cuenta" value={formData.tipo_cuenta} onChange={updateField} options={['Ahorros', 'Corriente']} />
                             <Input label="Entidad Bancaria" name="entidad_bancaria" value={formData.entidad_bancaria} onChange={updateField} />
                             <Input label="Número de Cuenta" name="numero_cuenta" value={formData.numero_cuenta} onChange={updateField} />
+                            
+                            {/* Nuevas preguntas financieras/cumplimiento */}
+                            <div className="col-span-2 pt-4 border-t border-gray-100 space-y-4">
+                                <Select 
+                                    label="¿Realiza negocios en moneda extranjera?" 
+                                    name="realiza_operaciones_internacionales" 
+                                    value={formData.realiza_operaciones_internacionales} 
+                                    onChange={updateField} 
+                                    options={['Sí', 'No']} 
+                                />
+                                <Select 
+                                    label="¿La empresa cuenta con la evaluación de autodiagnóstico SST (Resolución 0312; Artículo 27)?" 
+                                    name="tiene_evaluacion_sst" 
+                                    value={formData.tiene_evaluacion_sst} 
+                                    onChange={updateField} 
+                                    options={['Sí', 'No']} 
+                                />
+                            </div>
                         </div>
 
                         <div className="flex gap-4 mt-6">
@@ -326,7 +380,7 @@ function RegistroForm() {
                             {tipoContraparte === 'empleado' ? (
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={loading || !formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta}
+                                    disabled={loading || !formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.realiza_operaciones_internacionales || !formData.tiene_evaluacion_sst}
                                     className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                                 >
                                     {loading ? 'Enviando...' : 'Enviar Formulario'}
@@ -334,7 +388,7 @@ function RegistroForm() {
                             ) : (
                                 <button 
                                     onClick={() => setStep(5)} 
-                                    disabled={!formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.total_activos || !formData.total_pasivos || !formData.ingresos_mensuales || !formData.egresos_mensuales}
+                                    disabled={!formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.total_activos || !formData.total_pasivos || !formData.ingresos_mensuales || !formData.egresos_mensuales || !formData.realiza_operaciones_internacionales || !formData.tiene_evaluacion_sst}
                                     className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                                 >
                                     Continuar
@@ -365,8 +419,10 @@ function RegistroForm() {
                                         <li>• RUT</li>
                                         <li>• Documento del representante legal</li>
                                         <li>• Composición accionaria</li>
-                                        <li>• Balances (2 últimos años)</li>
+                                        <li>• Balances y Estados Financieros</li>
                                         <li>• Certificación bancaria</li>
+                                        <li>• Dos referencias comerciales</li>
+                                        <li>• Certificado ARL (Autodiagnóstico SST)</li>
                                     </>
                                 )}
                             </ul>
@@ -429,16 +485,24 @@ function RegistroForm() {
                             </div>
                         </div>
 
-                        <div className="space-y-4 mb-6">
+                        <div className="space-y-4 mb-8">
                             <FileInput label="RUT" name="rut" onChange={updateField} />
                             <FileInput label="Documento de Identidad" name="documento_identidad" onChange={updateField} />
                             <FileInput label="Certificación Bancaria" name="cert_bancaria" onChange={updateField} />
+                            
                             {tipoContraparte === 'persona_juridica' && (
                                 <>
                                     <FileInput label="Cámara de Comercio" name="camara_comercio" onChange={updateField} />
                                     <FileInput label="Estados Financieros" name="estados_financieros" onChange={updateField} />
+                                    <FileInput label="Documento Identidad Representante Legal" name="doc_identidad_rep_legal" onChange={updateField} />
+                                    <FileInput label="Composición Accionaria" name="composicion_accionaria" onChange={updateField} />
+                                    <FileInput label="Certificado ARL Autodiagnóstico SST" name="certificado_arl_sst" onChange={updateField} />
                                 </>
                             )}
+                            
+                            <FileInput label="Referencias Comerciales (PDF Único)" name="referencias_comerciales" onChange={updateField} />
+                            <FileInput label="Certificado SAGRILAFT / SARLAFT" name="certificado_sagrilaft" onChange={updateField} optional />
+                            <FileInput label="Otros Documentos" name="otros_documentos" onChange={updateField} optional />
                         </div>
 
                         <div className="mb-6 p-4 bg-[#254153]/5 border border-[#254153]/20 rounded-xl">
@@ -459,75 +523,41 @@ function RegistroForm() {
                                 (1.8) Firma y huella <span className="text-red-500">*</span>
                             </p>
                             
-                            <div className="flex gap-4 mb-4">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        updateField('metodo_firma', 'dibujar');
-                                        updateField('firma', null);
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 text-center">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    id="signature-upload"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) updateField('firma', file);
                                     }}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition ${!formData.metodo_firma || formData.metodo_firma === 'dibujar' 
-                                        ? 'bg-[#254153] text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                    Dibujar firma
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        updateField('metodo_firma', 'subir');
-                                        updateField('firma', null);
-                                    }}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition ${formData.metodo_firma === 'subir' 
-                                        ? 'bg-[#254153] text-white' 
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                    Subir imagen
-                                </button>
-                            </div>
-
-                            {(!formData.metodo_firma || formData.metodo_firma === 'dibujar') ? (
-                                <SignaturePad 
-                                    onSave={(signature: string) => updateField('firma', signature)} 
-                                    onClear={() => updateField('firma', null)}
                                 />
-                            ) : (
-                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 text-center">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        id="signature-upload"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) updateField('firma', file);
-                                        }}
-                                    />
-                                    <label 
-                                        htmlFor="signature-upload"
-                                        className="cursor-pointer"
-                                    >
-                                        <div className="text-4xl mb-2">📸</div>
-                                        {formData.firma instanceof File ? (
-                                            <p className="text-sm text-green-600 font-medium">✅ {formData.firma.name}</p>
-                                        ) : (
-                                            <>
-                                                <p className="text-sm text-gray-600">Haga clic para seleccionar una imagen de su firma</p>
-                                                <p className="text-xs text-gray-400 mt-1">Formatos sugeridos: PNG, JPG</p>
-                                            </>
-                                        )}
-                                    </label>
-                                    {formData.firma && (
-                                        <button 
-                                            type="button"
-                                            onClick={() => updateField('firma', null)}
-                                            className="mt-3 text-xs text-red-600 underline"
-                                        >
-                                            Eliminar archivo
-                                        </button>
+                                <label 
+                                    htmlFor="signature-upload"
+                                    className="cursor-pointer"
+                                >
+                                    <div className="text-4xl mb-2">📸</div>
+                                    {formData.firma instanceof File ? (
+                                        <p className="text-sm text-green-600 font-medium">✅ {formData.firma.name}</p>
+                                    ) : (
+                                        <>
+                                            <p className="text-sm text-gray-600">Haga clic para seleccionar una imagen de su firma</p>
+                                            <p className="text-xs text-gray-400 mt-1">Formatos sugeridos: PNG, JPG</p>
+                                        </>
                                     )}
-                                </div>
-                            )}
+                                </label>
+                                {formData.firma && (
+                                    <button 
+                                        type="button"
+                                        onClick={() => updateField('firma', null)}
+                                        className="mt-3 text-xs text-red-600 underline"
+                                    >
+                                        Eliminar archivo
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <Checkbox
@@ -586,7 +616,14 @@ function RegistroForm() {
                                     !formData.documento_identidad || 
                                     !formData.cert_bancaria || 
                                     !formData.firma ||
-                                    (tipoContraparte === 'persona_juridica' && (!formData.camara_comercio || !formData.estados_financieros))
+                                    !formData.referencias_comerciales ||
+                                    (tipoContraparte === 'persona_juridica' && (
+                                        !formData.camara_comercio || 
+                                        !formData.estados_financieros || 
+                                        !formData.doc_identidad_rep_legal || 
+                                        !formData.composicion_accionaria || 
+                                        !formData.certificado_arl_sst
+                                    ))
                                 }
                                 className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                             >
@@ -649,11 +686,12 @@ function Checkbox({ label, name, checked, onChange }: any) {
     )
 }
 
-function FileInput({ label, name, onChange }: any) {
+function FileInput({ label, name, onChange, optional = false }: any) {
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-                {label} <span className="text-red-500">*</span>
+                {label} {!optional && <span className="text-red-500">*</span>}
+                {optional && <span className="text-gray-400 font-normal"> (Opcional)</span>}
             </label>
             <input
                 type="file"
@@ -669,112 +707,3 @@ function FileInput({ label, name, onChange }: any) {
     )
 }
 
-function SignaturePad({ onSave, onClear }: { onSave: (sig: string) => void, onClear: () => void }) {
-    const canvasRef = useRef<HTMLCanvasElement>(null)
-    const [isDrawing, setIsDrawing] = useState(false)
-
-    useEffect(() => {
-        const canvas = canvasRef.current
-        if (!canvas) return
-
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-        ctx.lineJoin = 'round'
-        ctx.lineCap = 'round'
-        ctx.lineWidth = 2
-        ctx.strokeStyle = '#000'
-        
-        // Prevent scrolling when touching the canvas
-        const preventDefault = (e: TouchEvent) => {
-            if (e.target === canvas) e.preventDefault()
-        }
-        document.body.addEventListener('touchstart', preventDefault, { passive: false })
-        document.body.addEventListener('touchend', preventDefault, { passive: false })
-        document.body.addEventListener('touchmove', preventDefault, { passive: false })
-        
-        return () => {
-            document.body.removeEventListener('touchstart', preventDefault)
-            document.body.removeEventListener('touchend', preventDefault)
-            document.body.removeEventListener('touchmove', preventDefault)
-        }
-    }, [])
-
-    const getCoordinates = (e: any) => {
-        const canvas = canvasRef.current
-        if (!canvas) return { x: 0, y: 0 }
-        const rect = canvas.getBoundingClientRect()
-        const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0)
-        const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0)
-        return {
-            x: clientX - rect.left,
-            y: clientY - rect.top
-        }
-    }
-
-    const startDrawing = (e: any) => {
-        setIsDrawing(true)
-        const canvas = canvasRef.current
-        if (!canvas) return
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-        const { x, y } = getCoordinates(e)
-        ctx.beginPath()
-        ctx.moveTo(x, y)
-    }
-
-    const draw = (e: any) => {
-        if (!isDrawing) return
-        const canvas = canvasRef.current
-        if (!canvas) return
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-        const { x, y } = getCoordinates(e)
-        ctx.lineTo(x, y)
-        ctx.stroke()
-    }
-
-    const stopDrawing = () => {
-        if (isDrawing) {
-            setIsDrawing(false)
-            if (canvasRef.current) {
-                onSave(canvasRef.current.toDataURL())
-            }
-        }
-    }
-
-    const clear = () => {
-        const canvas = canvasRef.current
-        if (!canvas) return
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        onClear()
-    }
-
-    return (
-        <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
-            <canvas
-                ref={canvasRef}
-                width={700}
-                height={250}
-                className="w-full bg-white touch-none cursor-crosshair"
-                onMouseDown={startDrawing}
-                onMouseMove={draw}
-                onMouseUp={stopDrawing}
-                onMouseLeave={stopDrawing}
-                onTouchStart={startDrawing}
-                onTouchMove={draw}
-                onTouchEnd={stopDrawing}
-            />
-            <div className="bg-gray-50 border-t border-gray-300 p-2 flex justify-end">
-                <button 
-                    type="button" 
-                    onClick={clear}
-                    className="text-xs font-medium text-red-600 hover:text-red-800 px-3 py-1 bg-white border border-gray-200 rounded shadow-sm transition-colors"
-                >
-                    Limpiar firma
-                </button>
-            </div>
-        </div>
-    )
-}
