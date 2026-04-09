@@ -149,51 +149,65 @@ export async function uploadDocument(formData: FormData) {
     console.log(`Iniciando subida de ${tipoDocumento} para proveedor ${proveedorId}...`)
     
     if (!file || !proveedorId || !tipoDocumento) {
-        console.error('Faltan parámetros obligatorios en uploadDocument')
-        return { success: false, error: 'Faltan parámetros obligatorios' }
+        console.error('Faltan datos en uploadDocument:', { hasFile: !!file, proveedorId, tipoDocumento })
+        return { success: false, error: 'Faltan datos requeridos (archivo, ID o tipo)' }
     }
 
     try {
         const supabase = await createClient()
 
-        const fileExtension = file.name.split('.').pop()
-        const filePath = `${proveedorId}/${tipoDocumento}_${Date.now()}.${fileExtension}`
+        // Convertir File a ArrayBuffer para mayor compatibilidad en entornos Node.js
+        console.log(`Procesando archivo ${tipoDocumento} (${file.size} bytes)...`)
+        let fileBuffer: ArrayBuffer
+        try {
+            fileBuffer = await file.arrayBuffer()
+        } catch (err: any) {
+            console.error('Error convirtiendo archivo a ArrayBuffer:', err)
+            return { success: false, error: 'No se pudo procesar el archivo. Intente de nuevo.' }
+        }
 
-        // Upload to storage
+        const fileExtension = file.name?.split('.').pop() || 'pdf'
+        // Sanitizar el nombre del tipo de documento para la ruta
+        const safeTipoDocumento = tipoDocumento.replace(/\s+/g, '_').toUpperCase()
+        const filePath = `${proveedorId}/${safeTipoDocumento}_${Date.now()}.${fileExtension}`
+
+        console.log(`Subiendo a Storage: ${filePath}...`)
+
+        // Subir el archivo al bucket 'proveedores'
         const { data: uploadData, error: uploadError } = await supabase.storage
             .from('proveedores')
-            .upload(filePath, file, {
+            .upload(filePath, fileBuffer, {
                 contentType: file.type || 'application/pdf',
                 upsert: true
             })
 
-
         if (uploadError) {
-            console.error(`Error al subir ${tipoDocumento} a bucket 'proveedores':`, uploadError)
-            return { success: false, error: `Storage Error: ${uploadError.message}` }
+            console.error(`Error de Supabase Storage para ${tipoDocumento}:`, uploadError)
+            return { success: false, error: `Error de almacenamiento: ${uploadError.message}` }
         }
 
-        // Save reference in database
+        // Registrar en la base de datos
+        console.log(`Registrando en base de datos: ${tipoDocumento}`)
         const { error: dbError } = await supabase
             .from('proveedor_documentos')
             .insert({
                 proveedor_id: proveedorId,
                 tipo_documento: tipoDocumento,
-                nombre_archivo: file.name,
+                nombre_archivo: file.name || `${tipoDocumento}.${fileExtension}`,
                 file_path: filePath,
                 file_size: file.size,
-                mime_type: file.type
+                mime_type: file.type || 'application/pdf'
             })
 
         if (dbError) {
-            console.error('Error al guardar referencia en DB:', dbError)
-            return { success: false, error: dbError.message }
+            console.error(`Error en DB para ${tipoDocumento}:`, dbError)
+            return { success: false, error: `Error de base de datos: ${dbError.message}` }
         }
 
-        console.log(`Documento ${tipoDocumento} subido con éxito`)
+        console.log(`Documento ${tipoDocumento} subido y registrado con éxito`)
         return { success: true, path: filePath }
     } catch (e: any) {
-        console.error('Excepción en uploadDocument:', e)
-        return { success: false, error: e.message || 'Error desconocido al subir archivo' }
+        console.error(`Excepción crítica en uploadDocument (${tipoDocumento}):`, e)
+        return { success: false, error: e.message || 'Error inesperado al subir archivo' }
     }
 }

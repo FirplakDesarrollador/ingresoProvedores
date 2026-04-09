@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import AccionesProveedor from './AccionesProveedor'
+import DocumentosList from './DocumentosList'
 
 interface Props {
     params: Promise<{ id: string }>
@@ -100,7 +101,7 @@ export default async function ProveedorDetallePage({ params }: Props) {
                                 <Campo label="Celular" value={proveedor.celular} />
                                 <Campo label="Profesión" value={proveedor.profesion} />
                                 <Campo label="Dirección" value={proveedor.direccion} />
-                                <Campo label="Ciudad" value={proveedor.ciudad} />
+                                <Campo label="Ciudad / Depto" value={`${proveedor.ciudad || ''} - ${proveedor.departamento || ''}`} />
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-x-8">
@@ -110,32 +111,57 @@ export default async function ProveedorDetallePage({ params }: Props) {
                                 <Campo label="Origen Capital" value={proveedor.origen_capital} />
                                 <Campo label="CIIU" value={proveedor.codigo_ciiu} />
                                 <Campo label="Email Facturación" value={proveedor.correo_facturacion} />
+                                <Campo label="Ciudad / Depto" value={`${proveedor.ciudad || ''} - ${proveedor.departamento || ''}`} />
+                                <div className="col-span-2 mt-4 pt-4 border-t border-gray-50">
+                                    <h3 className="text-sm font-bold text-[#254153] mb-2 uppercase tracking-wider">Representante Legal</h3>
+                                    <div className="grid grid-cols-2 gap-x-8">
+                                        <Campo label="Nombre" value={proveedor.rep_legal_nombre_completo} />
+                                        <Campo label="Identificación" value={proveedor.rep_legal_numero_identificacion} />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </section>
-
-                    {/* PEP */}
+5. 
+                    {/* PEP y Cumplimiento */}
                     <section className="bg-white rounded-xl border p-6">
-                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Preguntas PEP</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            <Campo label="Es PEP" value={proveedor.es_pep ? 'Sí' : 'No'} />
-                            <Campo label="Vínculo con PEP" value={proveedor.tiene_vinculo_pep ? 'Sí' : 'No'} />
-                            <Campo label="Administra recursos públicos" value={proveedor.administra_recursos_publicos ? 'Sí' : 'No'} />
-                            <Campo label="Reconocimiento público" value={proveedor.tiene_reconocimiento_publico ? 'Sí' : 'No'} />
+                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Cumplimiento y PEP</h2>
+                        <div className="grid grid-cols-2 gap-x-8">
+                            <Campo label="¿Es PEP?" value={proveedor.es_pep ? 'Sí' : 'No'} />
+                            <Campo label="¿Vínculo con PEP?" value={proveedor.tiene_vinculo_pep ? 'Sí' : 'No'} />
+                            <Campo label="¿Administra recursos públicos?" value={proveedor.administra_recursos_publicos ? 'Sí' : 'No'} />
+                            <Campo label="¿Tiene reconocimiento público?" value={proveedor.tiene_reconocimiento_publico ? 'Sí' : 'No'} />
+                            <Campo label="¿Tiene grado de poder público?" value={proveedor.tiene_grado_poder_publico ? 'Sí' : 'No'} />
+                            <Campo label="¿Rep. Legal es PEP?" value={proveedor.rep_legal_es_pep ? 'Sí' : 'No'} />
+                            <div className="col-span-2">
+                                <Campo label="¿Sanciones o investigaciones (Lavado/Corrupción)?" value={proveedor.tiene_sanciones_lavado ? 'Sí' : 'No'} />
+                            </div>
                         </div>
                     </section>
-
+ 
                     {/* Financiera */}
                     <section className="bg-white rounded-xl border p-6">
                         <h2 className="text-lg font-semibold text-[#254153] mb-4">Información Financiera</h2>
                         <div className="grid grid-cols-2 gap-x-8">
                             <Campo label="Total Activos" value={proveedor.total_activos ? `$${Number(proveedor.total_activos).toLocaleString()}` : null} />
                             <Campo label="Total Pasivos" value={proveedor.total_pasivos ? `$${Number(proveedor.total_pasivos).toLocaleString()}` : null} />
+                            <Campo label="Total Patrimonio" value={proveedor.total_patrimonio ? `$${Number(proveedor.total_patrimonio).toLocaleString()}` : null} />
                             <Campo label="Ingresos Mensuales" value={proveedor.ingresos_mensuales ? `$${Number(proveedor.ingresos_mensuales).toLocaleString()}` : null} />
                             <Campo label="Egresos Mensuales" value={proveedor.egresos_mensuales ? `$${Number(proveedor.egresos_mensuales).toLocaleString()}` : null} />
+                            <Campo label="Otros Ingresos" value={proveedor.otros_ingresos_mensuales ? `$${Number(proveedor.otros_ingresos_mensuales).toLocaleString()}` : null} />
+                            <Campo label="Concepto Otros Ingresos" value={proveedor.concepto_otros_ingresos} />
+                            <Campo label="Fecha Corte Info" value={proveedor.fecha_corte_info_financiera ? new Date(proveedor.fecha_corte_info_financiera).toLocaleDateString('es-ES') : null} />
+                            <Campo label="¿Posee Activos Virtuales?" value={proveedor.posee_activos_virtuales ? 'Sí' : 'No'} />
+                            <Campo label="¿Op. Internacionales?" value={proveedor.realiza_operaciones_internacionales ? 'Sí' : 'No'} />
                         </div>
                     </section>
-
+ 
+                    {/* SST */}
+                    <section className="bg-white rounded-xl border p-6">
+                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Seguridad y Salud en el Trabajo</h2>
+                        <Campo label="¿Cuenta con evaluación de autodiagnóstico SST?" value={proveedor.tiene_evaluacion_sst ? 'Sí' : 'No'} />
+                    </section>
+ 
                     {/* Bancaria */}
                     <section className="bg-white rounded-xl border p-6">
                         <h2 className="text-lg font-semibold text-[#254153] mb-4">Información Bancaria</h2>
@@ -146,46 +172,46 @@ export default async function ProveedorDetallePage({ params }: Props) {
                         </div>
                     </section>
 
-                    {/* Documentos */}
+                    {/* Previsualización PDF Oficial */}
+                    <section className="bg-white rounded-xl border overflow-hidden">
+                        <div className="p-6 border-b bg-gray-50 flex justify-between items-center">
+                            <div>
+                                <h2 className="text-lg font-semibold text-[#254153]">Formulario Oficial Generado (PDF)</h2>
+                                <p className="text-sm text-gray-500">Documento de conocimiento de contraparte.</p>
+                            </div>
+                        </div>
+                        <div className="bg-gray-200 p-4 flex justify-center">
+                            <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden border">
+                                <iframe 
+                                    src={`/visor-pdf/${id}`} 
+                                    className="w-full h-[800px] border-none"
+                                    title="Previsualización PDF"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Documentos de Soporte del Bucket */}
                     <section className="bg-white rounded-xl border p-6">
-                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Documentos Adjuntos</h2>
+                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Documentos de Soporte Adjuntos (Bucket)</h2>
                         {documentos && documentos.length > 0 ? (
-                            <div className="space-y-2">
-                                {documentos.map((doc) => (
-                                    <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-red-500 shadow-sm">
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-[#254153] leading-tight">{doc.tipo_documento}</p>
-                                                <p className="text-xs text-gray-500 mt-0.5">{doc.nombre_archivo}</p>
-                                            </div>
-                                        </div>
-                                        <a
-                                            href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${doc.file_path}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-4 py-2 bg-white text-[#254153] text-sm font-semibold rounded-lg border shadow-sm hover:bg-gray-50 transition flex items-center gap-2"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                            </svg>
-                                            Descargar
-                                        </a>
-                                    </div>
-                                ))}
+                            <div className="space-y-6">
+                                <p className="text-sm text-gray-500 mb-4">Estos son los archivos originales cargados por el proveedor durante su registro:</p>
+                                <DocumentosList 
+                                    documentos={documentos as any} 
+                                    supabaseUrl={process.env.NEXT_PUBLIC_SUPABASE_URL!} 
+                                />
                             </div>
                         ) : (
-                            <p className="text-gray-500">No hay documentos adjuntos</p>
+                            <div className="text-center py-10 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                                <p className="text-gray-500">No hay documentos cargados en el bucket para este proveedor.</p>
+                            </div>
                         )}
                     </section>
 
                     {/* Acciones */}
                     <section className="bg-white rounded-xl border p-6">
-                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Acciones</h2>
+                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Acciones de Aprobación</h2>
                         <AccionesProveedor proveedorId={id} estadoActual={proveedor.estado} />
                     </section>
                 </div>

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import ProveedoresTable from './ProveedoresTable'
 
 export default async function ProveedoresPage() {
     const supabase = await createClient()
@@ -22,90 +22,35 @@ export default async function ProveedoresPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Main Content */}
-
-
+        <div className="min-h-screen bg-gray-50/50">
             <main className="max-w-7xl mx-auto px-4 py-8">
+                {/* Header Section */}
+                <div className="mb-8">
+                    <h1 className="text-2xl font-bold text-[#254153]">Gestión de Proveedores</h1>
+                    <p className="text-gray-500 text-sm">Administra y revisa las solicitudes de registro de proveedores.</p>
+                </div>
+
                 {/* Stats */}
-                <div className="grid grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     {[
-                        { label: 'Total', value: stats.total, color: 'bg-gray-500' },
-                        { label: 'Pendientes', value: stats.pendientes, color: 'bg-amber-500' },
-                        { label: 'Aprobados', value: stats.aprobados, color: 'bg-emerald-500' },
-                        { label: 'Rechazados', value: stats.rechazados, color: 'bg-red-500' },
+                        { label: 'Total Registros', value: stats.total, color: 'bg-gray-500', icon: '📊' },
+                        { label: 'Pendientes', value: stats.pendientes, color: 'bg-amber-500', icon: '⏳' },
+                        { label: 'Aprobados', value: stats.aprobados, color: 'bg-emerald-500', icon: '✅' },
+                        { label: 'Rechazados', value: stats.rechazados, color: 'bg-red-500', icon: '❌' },
                     ].map((s, i) => (
-                        <div key={i} className="bg-white rounded-xl p-4 border shadow-sm">
-                            <div className={`w-3 h-3 rounded-full ${s.color} mb-2`}></div>
-                            <p className="text-2xl font-bold text-[#254153]">{s.value}</p>
-                            <p className="text-gray-500 text-sm">{s.label}</p>
+                        <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className={`w-2 h-2 rounded-full ${s.color}`}></div>
+                                <span className="text-xl">{s.icon}</span>
+                            </div>
+                            <p className="text-3xl font-black text-[#254153] leading-none mb-1">{s.value}</p>
+                            <p className="text-gray-400 text-[11px] font-bold uppercase tracking-wider">{s.label}</p>
                         </div>
                     ))}
                 </div>
 
-                {/* Table */}
-                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Tipo</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Nombre/Razón Social</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Identificación</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Email</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Estado</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600">Fecha</th>
-                                <th className="text-left px-4 py-3 text-sm font-medium text-gray-600"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {proveedores?.map((p) => (
-                                <tr key={p.id} className="border-b hover:bg-gray-50">
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${p.tipo_contraparte === 'persona_natural'
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'bg-purple-100 text-purple-700'
-                                            }`}>
-                                            {p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 font-medium text-[#254153]">
-                                        {p.tipo_contraparte === 'persona_natural'
-                                            ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
-                                            : p.razon_social || '-'}
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-600">{p.numero_identificacion || '-'}</td>
-                                    <td className="px-4 py-3 text-gray-600">{p.email || p.correo_facturacion || '-'}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${p.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' :
-                                                p.estado === 'aprobado' ? 'bg-emerald-100 text-emerald-700' :
-                                                    'bg-red-100 text-red-700'
-                                            }`}>
-                                            {p.estado}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-500 text-sm">
-                                        {new Date(p.created_at).toLocaleDateString('es-ES')}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <Link
-                                            href={`/proveedores/${p.id}`}
-                                            className="px-3 py-1 bg-[#254153] text-white text-sm rounded-lg hover:bg-[#1a2e3a]"
-                                        >
-                                            Ver detalle
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                            {(!proveedores || proveedores.length === 0) && (
-                                <tr>
-                                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                                        No hay proveedores registrados
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                {/* Filterable Table */}
+                <ProveedoresTable initialData={proveedores} />
             </main>
         </div>
     )

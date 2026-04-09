@@ -389,7 +389,6 @@ export default function PdfClient({ proveedor }: Props) {
                         <div className="w-[300px] border-t-2 border-black mb-1"></div>
                         <div className="flex flex-col items-center">
                             <span className="text-[9px] font-black uppercase text-[#254153]">FIRMA REPRESENTANTE LEGAL / PROVEEDOR</span>
-                            <span className="text-[6px] text-gray-500 font-mono mt-0.5">HUELLA DIGITAL ID: {proveedor.id.substring(0,18)}</span>
                         </div>
                     </div>
                 </div>

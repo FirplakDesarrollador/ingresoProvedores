@@ -46,21 +46,18 @@ export default function AccionesProveedor({ proveedorId, estadoActual }: Props) 
 
     return (
         <div className="space-y-4">
-            {/* Botón de PDF siempre visible */}
-            <div className="mb-6">
+            {/* Enlace opcional a PDF en nueva pestaña */}
+            <div className="flex justify-end mb-4">
                 <Link
-                    href={`/proveedores/${proveedorId}/pdf`}
+                    href={`/visor-pdf/${proveedorId}`}
                     target="_blank"
-                    className="w-full py-4 bg-white text-[#254153] border-2 border-[#254153] font-bold rounded-xl hover:bg-gray-50 transition flex items-center justify-center gap-3 shadow-sm"
+                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium underline"
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                    Previsualizar / Descargar Formulario PDF
+                    Abrir PDF en pestaña nueva
                 </Link>
-                <p className="text-xs text-gray-400 mt-2 text-center italic">
-                    Este documento genera el formato oficial de conocimiento de contrapartes para impresión.
-                </p>
             </div>
 
             {estadoActual !== 'pendiente' ? (

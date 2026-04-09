@@ -119,33 +119,35 @@ function RegistroForm() {
                     'firma' // Incluimos la firma aquí también
                 ]
 
-                // 2. Subir archivos en PARALELO para mayor velocidad
-                const uploadPromises = fileFields.map(async (field) => {
+                // 2. Subir archivos SECUENCIALMENTE para mayor estabilidad
+                console.log('Iniciando subida secuencial de documentos...')
+                const errors: string[] = []
+                
+                for (const field of fileFields) {
                     const file = formData[field]
                     if (file instanceof File) {
                         const label = field === 'firma' ? 'FIRMA' : field.replace(/_/g, ' ').toUpperCase()
+                        console.log(`Subiendo ${label}...`)
+                        setLoadingText(`Subiendo ${label}...`)
                         
                         const uploadFormData = new FormData()
                         uploadFormData.append('file', file)
                         uploadFormData.append('proveedorId', proveedorId)
                         uploadFormData.append('tipoDocumento', label)
                         
-                        const uploadRes = await uploadDocument(uploadFormData)
-                        if (!uploadRes.success) {
-                            throw new Error(`${label}: ${uploadRes.error}`)
+                        try {
+                            const uploadRes = await uploadDocument(uploadFormData)
+                            if (!uploadRes.success) {
+                                errors.push(`${label}: ${uploadRes.error}`)
+                            }
+                        } catch (err: any) {
+                            errors.push(`${label}: ${err.message || 'Error desconocido'}`)
                         }
-                        return label
                     }
-                    return null
-                })
-
-                const results = await Promise.allSettled(uploadPromises)
-                const errors = results
-                    .filter(r => r.status === 'rejected')
-                    .map(r => (r as PromiseRejectedResult).reason.message)
+                }
 
                 if (errors.length > 0) {
-                    alert(`El registro se guardó, pero hubo problemas con algunos documentos:\n- ${errors.join('\n- ')}\n\nPuedes continuar, pero deberás enviar estos documentos después.`)
+                    alert(`El registro se guardó, pero hubo problemas con algunos documentos:\n- ${errors.join('\n- ')}\n\nContacte a soporte si el problema persiste.`)
                 }
 
                 router.push(`/registro/exito?id=${proveedorId}`)
@@ -245,6 +247,55 @@ function RegistroForm() {
                                 <span className="font-semibold text-[#254153]">Persona Jurídica</span>
                             </button>
                         </div>
+
+                        {/* Botón de prueba (Solo para desarrollo) */}
+                        <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
+                            <button
+                                onClick={() => {
+                                    const randomId = Math.floor(Math.random() * 900000) + 100000;
+                                    setTipoContraparte('persona_juridica');
+                                    setFormData({
+                                        area_solicitante: 'Compras',
+                                        razon_social: `EMPRESA DE PRUEBA ${randomId} SAS`,
+                                        numero_identificacion: `900${randomId}-7`,
+                                        codigo_ciiu: '4669',
+                                        tipo_sociedad: 'S.A.S.',
+                                        origen_capital: 'Privada',
+                                        ciudad: 'Medellín',
+                                        departamento: 'Antioquia',
+                                        rep_legal_nombre_completo: 'JUAN PEREZ TEST',
+                                        rep_legal_numero_identificacion: '123456789',
+                                        correo_facturacion: 'test@example.com',
+                                        es_pep: false,
+                                        tiene_vinculo_pep: false,
+                                        administra_recursos_publicos: false,
+                                        tiene_reconocimiento_publico: false,
+                                        tiene_grado_poder_publico: false,
+                                        rep_legal_es_pep: 'No',
+                                        tiene_sanciones_lavado: 'No',
+                                        total_activos: 100000000,
+                                        total_pasivos: 50000000,
+                                        total_patrimonio: 50000000,
+                                        ingresos_mensuales: 20000000,
+                                        egresos_mensuales: 15000000,
+                                        fecha_corte_info_financiera: '2023-12-31',
+                                        posee_activos_virtuales: false,
+                                        tipo_cuenta: 'Ahorros',
+                                        entidad_bancaria: 'BANCOLOMBIA',
+                                        numero_cuenta: '987654321',
+                                        realiza_operaciones_internacionales: 'No',
+                                        tiene_evaluacion_sst: 'Sí',
+                                        acepta_terminos: true,
+                                        detalle_origen_fondos: 'Actividad comercial de prueba'
+                                    });
+                                    setStep(5); // Saltamos directo a documentos
+                                }}
+                                className="w-full py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-amber-100 transition-colors"
+                            >
+                                🧪 Llenar con datos de prueba (Saltar al Paso 5)
+                            </button>
+                        </div>
+
                         <button
                             onClick={() => tipoContraparte && formData.area_solicitante && setStep(2)}
                             disabled={!tipoContraparte || !formData.area_solicitante}
@@ -380,12 +431,24 @@ function RegistroForm() {
                                 <>
                                     <Input label="Total Activos" name="total_activos" type="number" value={formData.total_activos} onChange={updateField} />
                                     <Input label="Total Pasivos" name="total_pasivos" type="number" value={formData.total_pasivos} onChange={updateField} />
+                                    <Input label="Total Patrimonio" name="total_patrimonio" type="number" value={formData.total_patrimonio} onChange={updateField} />
                                     <Input label="Ingresos Mensuales" name="ingresos_mensuales" type="number" value={formData.ingresos_mensuales} onChange={updateField} />
                                     <Input label="Egresos Mensuales" name="egresos_mensuales" type="number" value={formData.egresos_mensuales} onChange={updateField} />
+                                    <Input label="Otros Ingresos" name="otros_ingresos_mensuales" type="number" value={formData.otros_ingresos_mensuales} onChange={updateField} optional />
+                                    <Input label="Concepto Otros Ingresos" name="concepto_otros_ingresos" value={formData.concepto_otros_ingresos} onChange={updateField} optional />
+                                    <div className="col-span-2">
+                                        <Input label="Fecha de Corte Información Financiera" name="fecha_corte_info_financiera" type="date" value={formData.fecha_corte_info_financiera} onChange={updateField} />
+                                    </div>
+                                    <div className="col-span-2 mb-4">
+                                        <Checkbox label="¿Posee Activos Virtuales (Criptoactivos, etc)?" name="posee_activos_virtuales" checked={formData.posee_activos_virtuales} onChange={updateField} />
+                                    </div>
                                 </>
                             )}
 
                             {/* Campos bancarios para todos */}
+                            <div className="col-span-2 pt-4 border-t border-gray-100 mb-2">
+                                <h3 className="text-sm font-bold text-[#254153] uppercase tracking-wider">Información Bancaria</h3>
+                            </div>
                             <Select label="Tipo de Cuenta" name="tipo_cuenta" value={formData.tipo_cuenta} onChange={updateField} options={['Ahorros', 'Corriente']} />
                             <Input label="Entidad Bancaria" name="entidad_bancaria" value={formData.entidad_bancaria} onChange={updateField} />
                             <Input label="Número de Cuenta" name="numero_cuenta" value={formData.numero_cuenta} onChange={updateField} />
@@ -437,7 +500,7 @@ function RegistroForm() {
                             ) : (
                                 <button 
                                     onClick={() => setStep(5)} 
-                                    disabled={!formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.total_activos || !formData.total_pasivos || !formData.ingresos_mensuales || !formData.egresos_mensuales || !formData.realiza_operaciones_internacionales || !formData.tiene_evaluacion_sst}
+                                    disabled={!formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.total_activos || !formData.total_pasivos || !formData.total_patrimonio || !formData.ingresos_mensuales || !formData.egresos_mensuales || !formData.fecha_corte_info_financiera || !formData.realiza_operaciones_internacionales || !formData.tiene_evaluacion_sst}
                                     className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                                 >
                                     Continuar
@@ -799,7 +862,21 @@ function RegistroForm() {
                                 }
                                 className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                             >
-                                {loading ? 'Enviando...' : 'Enviar Formulario'}
+                                {loading ? (
+                                    <span className="flex items-center justify-center">
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            />
+                                        </svg>
+                                        {loadingText}
+                                    </span>
+                                ) : (
+                                    'Enviar Formulario'
+                                )}
                             </button>
                         </div>
                     </div>
