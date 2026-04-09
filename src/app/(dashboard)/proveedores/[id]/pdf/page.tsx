@@ -12,9 +12,25 @@ export default async function PDFProveedorPage({ params }: { params: Promise<{ i
         .eq('id', id)
         .single()
 
+    // Obtener la firma si existe
+    const { data: firmaDoc } = await supabase
+        .from('proveedor_documentos')
+        .select('file_path')
+        .eq('proveedor_id', id)
+        .eq('tipo_documento', 'FIRMA')
+        .maybeSingle()
+
+    let firma_url = null
+    if (firmaDoc) {
+        const { data: { publicUrl } } = supabase.storage
+            .from('proveedores')
+            .getPublicUrl(firmaDoc.file_path)
+        firma_url = publicUrl
+    }
+
     if (error || !proveedor) {
         return notFound()
     }
 
-    return <PdfClient proveedor={proveedor} />
+    return <PdfClient proveedor={{ ...proveedor, firma_url }} />
 }

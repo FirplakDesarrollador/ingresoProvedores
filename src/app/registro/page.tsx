@@ -19,11 +19,14 @@ function RegistroForm() {
     const searchParams = useSearchParams()
     const [step, setStep] = useState(1)
     const [loading, setLoading] = useState(false)
+    const [loadingText, setLoadingText] = useState('Procesando...')
     const [tipoContraparte, setTipoContraparte] = useState<TipoContraparte>('')
     const [formData, setFormData] = useState<Record<string, any>>({})
     const [showTermsModal, setShowTermsModal] = useState(false)
+    const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        setMounted(true)
         const tipo = searchParams.get('tipo')
         if (tipo === 'empleado') {
             setTipoContraparte('empleado')
@@ -65,30 +68,42 @@ function RegistroForm() {
     const handleSubmit = async () => {
         setLoading(true)
         try {
-            // 1. Submit basic data
-            // 1. Submit basic data (exclude files and signature from the metadata insert)
-            const { 
-                firma, 
-                metodo_firma, 
-                rut, 
-                documento_identidad, 
-                cert_bancaria, 
-                camara_comercio, 
-                estados_financieros,
-                ...cleanFormData 
-            } = formData
-            
+            // 1. Filtrar los datos para enviar solo lo que la base de datos espera
+            // y eliminar cualquier objeto File o dato no serializable
+            const allowedKeys = [
+                'tipo_solicitud', 'tipo_contraparte', 'area_solicitante', 'tipo_documento', 
+                'numero_identificacion', 'primer_apellido', 'segundo_apellido', 'primer_nombre', 
+                'segundo_nombre', 'fecha_expedicion', 'lugar_expedicion', 'fecha_nacimiento', 
+                'lugar_nacimiento', 'direccion', 'pais', 'departamento', 'ciudad', 
+                'telefono1_codigo', 'telefono1_numero', 'celular', 'email', 'profesion', 
+                'es_pep', 'tiene_vinculo_pep', 'administra_recursos_publicos', 'tiene_reconocimiento_publico', 
+                'tiene_grado_poder_publico', 'razon_social', 'tipo_sociedad', 'origen_capital', 
+                'codigo_ciiu', 'correo_facturacion', 'total_activos', 'total_pasivos', 
+                'total_patrimonio', 'ingresos_mensuales', 'egresos_mensuales', 'otros_ingresos_mensuales',
+                'concepto_otros_ingresos', 'posee_activos_virtuales', 'fecha_corte_info_financiera',
+                'tipo_cuenta', 'entidad_bancaria', 'numero_cuenta', 'acepta_terminos', 
+                'detalle_origen_fondos', 'rep_legal_nombre_completo', 'rep_legal_numero_identificacion',
+                'rep_legal_es_pep', 'tiene_sanciones_lavado', 'realiza_operaciones_internacionales', 
+                'tiene_evaluacion_sst'
+            ]
+
+            const cleanFormData: Record<string, any> = {}
+            allowedKeys.forEach(key => {
+                if (formData[key] !== undefined) {
+                    cleanFormData[key] = formData[key]
+                }
+            })
+
             const result = await submitProveedorForm({
-                ...cleanFormData,
+                ...cleanFormData as any,
                 tipo_solicitud: 'Nuevo Registro',
-                tipo_contraparte: tipoContraparte as any,
-                detalle_origen_fondos: formData.detalle_origen_fondos || null
+                tipo_contraparte: tipoContraparte as any
             })
 
             if (result.success && result.id) {
                 const proveedorId = result.id
 
-                // 2. Upload files
+                // 2. Upload files using FormData
                 const fileFields = [
                     'rut', 
                     'documento_identidad', 
@@ -100,31 +115,49 @@ function RegistroForm() {
                     'referencias_comerciales',
                     'certificado_arl_sst',
                     'certificado_sagrilaft',
-                    'otros_documentos'
+                    'otros_documentos',
+                    'firma' // Incluimos la firma aquí también
                 ]
-                for (const field of fileFields) {
+
+                // 2. Subir archivos en PARALELO para mayor velocidad
+                const uploadPromises = fileFields.map(async (field) => {
                     const file = formData[field]
                     if (file instanceof File) {
-                        const label = field.replace(/_/g, ' ').toUpperCase()
-                        await uploadDocument(proveedorId, label, file)
+                        const label = field === 'firma' ? 'FIRMA' : field.replace(/_/g, ' ').toUpperCase()
+                        
+                        const uploadFormData = new FormData()
+                        uploadFormData.append('file', file)
+                        uploadFormData.append('proveedorId', proveedorId)
+                        uploadFormData.append('tipoDocumento', label)
+                        
+                        const uploadRes = await uploadDocument(uploadFormData)
+                        if (!uploadRes.success) {
+                            throw new Error(`${label}: ${uploadRes.error}`)
+                        }
+                        return label
                     }
+                    return null
+                })
+
+                const results = await Promise.allSettled(uploadPromises)
+                const errors = results
+                    .filter(r => r.status === 'rejected')
+                    .map(r => (r as PromiseRejectedResult).reason.message)
+
+                if (errors.length > 0) {
+                    alert(`El registro se guardó, pero hubo problemas con algunos documentos:\n- ${errors.join('\n- ')}\n\nPuedes continuar, pero deberás enviar estos documentos después.`)
                 }
 
-                // 3. Upload signature
-                // 3. Upload signature
-                if (formData.firma instanceof File) {
-                    await uploadDocument(proveedorId, 'FIRMA', formData.firma);
-                }
-
-                router.push('/registro/exito')
+                router.push(`/registro/exito?id=${proveedorId}`)
             } else {
                 alert('Error al registrar: ' + (result as any).error)
+                setLoading(false)
             }
-        } catch (e) {
-            console.error(e)
-            alert('Error inesperado')
+        } catch (e: any) {
+            console.error('Error en handleSubmit:', e)
+            alert('Error inesperado: ' + e.message)
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     // Calcular el progreso visual
@@ -140,6 +173,8 @@ function RegistroForm() {
     }
 
     const progress = getProgressSteps()
+
+    if (!mounted) return null
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -383,7 +418,21 @@ function RegistroForm() {
                                     disabled={loading || !formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.realiza_operaciones_internacionales || !formData.tiene_evaluacion_sst}
                                     className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                                 >
-                                    {loading ? 'Enviando...' : 'Enviar Formulario'}
+                                    {loading ? (
+                                        <span className="flex items-center justify-center">
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                />
+                                            </svg>
+                                            {loadingText}
+                                        </span>
+                                    ) : (
+                                        'Enviar Formulario'
+                                    )}
                                 </button>
                             ) : (
                                 <button 
@@ -562,9 +611,9 @@ function RegistroForm() {
 
                         <Checkbox
                             label={
-                                <>
-                                    Acepto los <button type="button" onClick={() => setShowTermsModal(true)} className="text-[#254153] font-semibold underline hover:text-[#3a5d75]">términos y condiciones</button>, autorizo el tratamiento de datos personales
-                                </>
+                                <span className="text-sm">
+                                    Confirmo que la información es veraz, autorizo el tratamiento de mis datos personales y acepto los <button type="button" onClick={() => setShowTermsModal(true)} className="text-[#254153] font-semibold underline hover:text-[#3a5d75]">Términos y Condiciones</button>, incluyendo la firma electrónica.
+                                </span>
                             }
                             name="acepta_terminos"
                             checked={formData.acepta_terminos}
@@ -577,9 +626,9 @@ function RegistroForm() {
                                     className="absolute inset-0 bg-[#254153]/40 backdrop-blur-sm transition-opacity"
                                     onClick={() => setShowTermsModal(false)}
                                 />
-                                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                                     <div className="bg-[#254153] p-4 text-white flex justify-between items-center">
-                                        <h3 className="font-semibold text-lg">Términos y Condiciones</h3>
+                                        <h3 className="font-semibold text-lg">Formulario de Vinculación de Proveedores – FIRPLAK</h3>
                                         <button 
                                             onClick={() => setShowTermsModal(false)}
                                             className="p-1 hover:bg-white/10 rounded-full transition"
@@ -587,18 +636,141 @@ function RegistroForm() {
                                             ✕
                                         </button>
                                     </div>
-                                    <div className="p-8">
-                                        <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-200 text-center">
-                                            <p className="text-gray-500 font-medium italic">Pendiente</p>
-                                        </div>
-                                        <div className="mt-8 text-gray-600 text-sm leading-relaxed">
-                                            <p>Este contenido se actualizará próximamente con los términos legales vigentes de Firplak SA.</p>
+                                    <div className="p-6">
+                                        <div className="overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar text-gray-700 text-sm leading-relaxed space-y-4">
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">1. Aceptación expresa e informada</h4>
+                                                <p>El diligenciamiento del presente formulario implica la aceptación libre, previa, expresa e informada de los presentes Términos y Condiciones por parte del proveedor, ya sea persona natural o jurídica.</p>
+                                                <p className="mt-2">De conformidad con lo establecido en el artículo 1602 del Código Civil Colombiano, todo contrato legalmente celebrado es ley para las partes. En ese sentido, la aceptación de estos términos genera efectos jurídicos vinculantes entre las partes.</p>
+                                                <p className="mt-2">La manifestación de aceptación se entenderá realizada mediante la marcación del checkbox dispuesto para tal fin dentro del formulario, lo cual constituye prueba suficiente del consentimiento.</p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">2. Declaración de veracidad de la información</h4>
+                                                <p>El proveedor declara bajo la gravedad de juramento, en los términos del artículo 442 del Código Penal Colombiano (falsedad en documento privado), que:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>La información suministrada es veraz, completa, exacta y actualizada.</li>
+                                                    <li>Los documentos adjuntos son auténticos y corresponden a la realidad jurídica, financiera y operativa del proveedor.</li>
+                                                </ul>
+                                                <p className="mt-2">Así mismo, se compromete a actualizar oportunamente cualquier modificación relevante en la información suministrada.</p>
+                                                <p className="mt-2">FIRPLAK podrá verificar dicha información a través de consultas en bases de datos públicas y privadas, conforme a lo permitido por la ley.</p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">3. Principio de buena fe</h4>
+                                                <p>Las partes declaran actuar conforme al principio de buena fe, consagrado en el artículo 83 de la Constitución Política de Colombia, el cual presume que todas las actuaciones de los particulares se realizan de manera honesta, leal y transparente.</p>
+                                                <p className="mt-2">En virtud de este principio, el proveedor se obliga a:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>No omitir información relevante</li>
+                                                    <li>No suministrar información falsa o engañosa</li>
+                                                    <li>Colaborar con los procesos de verificación y debida diligencia</li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">4. Finalidad del tratamiento de la información</h4>
+                                                <p>La información recolectada a través del presente formulario será utilizada para las siguientes finalidades:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Realizar procesos de conocimiento de contrapartes (KYC/KYS)</li>
+                                                    <li>Ejecutar procedimientos de debida diligencia</li>
+                                                    <li>Cumplir con obligaciones regulatorias en materia de:
+                                                        <ul className="list-circle ml-5 mt-1">
+                                                            <li>Sistema de Autocontrol y Gestión del Riesgo Integral LA/FT/FPADM (SAGRILAFT), conforme a la Circular Externa 100-000016 de 2020 de la Superintendencia de Sociedades</li>
+                                                            <li>Programa de Transparencia y Ética Empresarial (PTEE), conforme a la Circular Externa 100-000011 de 2021</li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>Validación en listas restrictivas y fuentes públicas</li>
+                                                    <li>Gestión contractual, contable, administrativa y comercial</li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">5. Autorización para el tratamiento de datos personales</h4>
+                                                <p>De conformidad con lo dispuesto en la Ley 1581 de 2012, el Decreto 1377 de 2013 y demás normas concordantes, el proveedor autoriza de manera previa, expresa e informada a FIRPLAK para:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Recolectar, almacenar, usar, circular, procesar y suprimir sus datos personales</li>
+                                                    <li>Consultar y reportar información en bases de datos públicas o privadas</li>
+                                                    <li>Verificar antecedentes judiciales, disciplinarios, fiscales y reputacionales</li>
+                                                </ul>
+                                                <p className="mt-2">El titular de los datos podrá ejercer en cualquier momento sus derechos de:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Conocer, actualizar y rectificar sus datos</li>
+                                                    <li>Solicitar prueba de la autorización</li>
+                                                    <li>Revocar la autorización y/o solicitar la supresión del dato</li>
+                                                </ul>
+                                                <p className="mt-2">A través de los canales dispuestos por FIRPLAK, en cumplimiento del artículo 8 de la Ley 1581 de 2012.</p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">6. Validación, verificación y control de riesgo</h4>
+                                                <p>FIRPLAK, en cumplimiento de sus obligaciones en materia de prevención de riesgos LA/FT/FP y corrupción, se reserva el derecho de:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Verificar la información suministrada</li>
+                                                    <li>Solicitar documentación adicional</li>
+                                                    <li>Realizar análisis de riesgo del proveedor</li>
+                                                </ul>
+                                                <p className="mt-2">Así mismo, podrá rechazar, suspender o terminar el proceso de vinculación cuando:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Existan inconsistencias en la información</li>
+                                                    <li>Se identifiquen riesgos reputacionales, legales o de cumplimiento</li>
+                                                    <li>Se detecten coincidencias en listas restrictivas o señales de alerta</li>
+                                                </ul>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">7. Declaraciones en materia de prevención de LA/FT/FP y corrupción</h4>
+                                                <p>El proveedor declara que:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>No ha sido ni se encuentra vinculado a investigaciones o condenas relacionadas con lavado de activos, financiación del terrorismo, corrupción, soborno o delitos fuente</li>
+                                                    <li>No figura en listas restrictivas nacionales o internacionales vinculantes</li>
+                                                    <li>Sus recursos provienen de actividades lícitas</li>
+                                                </ul>
+                                                <p className="mt-2">Lo anterior en concordancia con las obligaciones establecidas en el régimen de cumplimiento empresarial y estándares internacionales como las recomendaciones del GAFI.</p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">8. Conservación de la información</h4>
+                                                <p>La información será conservada por el tiempo necesario para cumplir con:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Las finalidades del tratamiento</li>
+                                                    <li>Obligaciones legales, contractuales y regulatorias</li>
+                                                </ul>
+                                                <p className="mt-2">En concordancia con el principio de temporalidad establecido en la Ley 1581 de 2012 y demás normas aplicables.</p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">9. Firma electrónica y validez jurídica</h4>
+                                                <p>Las partes acuerdan que el presente formulario podrá ser suscrito mediante firma electrónica, conforme a lo dispuesto en:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>La Ley 527 de 1999</li>
+                                                    <li>El Decreto 2364 de 2012</li>
+                                                </ul>
+                                                <p className="mt-2">En este sentido:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>La firma electrónica tendrá los mismos efectos jurídicos y probatorios que la firma manuscrita</li>
+                                                    <li>Se considerará auténtica, íntegra y vinculante</li>
+                                                    <li>El documento electrónico tendrá plena validez y fuerza probatoria</li>
+                                                </ul>
+                                                <p className="mt-2">El proveedor acepta expresamente que la carga de su firma (imagen digital o mecanismo electrónico) constituye una manifestación válida de su consentimiento.</p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-[#254153] mb-2 uppercase">10. Manifestación final de aceptación</h4>
+                                                <p>Mediante la aceptación de estos Términos y Condiciones y el envío del formulario, el proveedor:</p>
+                                                <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                    <li>Declara la veracidad de la información suministrada</li>
+                                                    <li>Autoriza el tratamiento de sus datos personales</li>
+                                                    <li>Acepta la validación y verificación de la información</li>
+                                                    <li>Reconoce la validez de la firma electrónica</li>
+                                                    <li>Acepta quedar vinculado jurídicamente a lo aquí establecido</li>
+                                                </ul>
+                                            </section>
                                         </div>
                                         <button
                                             onClick={() => setShowTermsModal(false)}
-                                            className="mt-8 w-full py-3 bg-[#254153] text-white rounded-xl font-semibold shadow-lg shadow-[#254153]/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
+                                            className="mt-6 w-full py-3 bg-[#254153] text-white rounded-xl font-semibold shadow-lg shadow-[#254153]/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
                                         >
-                                            Entendido
+                                            Cerrar y volver al formulario
                                         </button>
                                     </div>
                                 </div>

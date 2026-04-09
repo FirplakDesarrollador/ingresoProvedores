@@ -85,77 +85,115 @@ export interface ProveedorFormData {
 }
 
 export async function submitProveedorForm(data: ProveedorFormData) {
-    const supabase = await createClient()
+    console.log('Iniciando submitProveedorForm con:', JSON.stringify(data).substring(0, 100) + '...')
+    try {
+        const supabase = await createClient()
 
-    // Convertir campos Sí/No a booleanos para la base de datos
-    const processedData = { ...data }
-    const siNoColumns = [
-        'realiza_operaciones_internacionales', 
-        'tiene_evaluacion_sst',
-        'rep_legal_es_pep',
-        'tiene_sanciones_lavado'
-    ]
+        // Convertir campos Sí/No a booleanos para la base de datos
+        const processedData = { ...data }
+        const siNoColumns = [
+            'realiza_operaciones_internacionales', 
+            'tiene_evaluacion_sst',
+            'rep_legal_es_pep',
+            'tiene_sanciones_lavado'
+        ]
 
-    siNoColumns.forEach(col => {
-        if (processedData[col as keyof ProveedorFormData] === 'Sí') {
-            (processedData as any)[col] = true
-        } else if (processedData[col as keyof ProveedorFormData] === 'No') {
-            (processedData as any)[col] = false
-        }
-    })
-
-    const { data: proveedor, error } = await supabase
-        .from('proveedores')
-        .insert({
-            ...processedData,
-            estado: 'pendiente'
+        siNoColumns.forEach(col => {
+            if (processedData[col as keyof ProveedorFormData] === 'Sí') {
+                (processedData as any)[col] = true
+            } else if (processedData[col as keyof ProveedorFormData] === 'No') {
+                (processedData as any)[col] = false
+            } else if (processedData[col as keyof ProveedorFormData] === undefined) {
+                 (processedData as any)[col] = false
+            }
         })
-        .select()
-        .single()
 
-    if (error) {
-        console.error('Error al guardar proveedor:', error)
-        return { success: false, error: error.message }
+        // Asegurar que campos numéricos vacíos sean null
+        const numericFields = ['total_activos', 'total_pasivos', 'total_patrimonio', 'ingresos_mensuales', 'egresos_mensuales', 'otros_ingresos_mensuales']
+        numericFields.forEach(field => {
+            if ((processedData as any)[field] === '' || (processedData as any)[field] === undefined) {
+                (processedData as any)[field] = null
+            } else {
+                // Forzar conversión a número
+                const val = Number((processedData as any)[field])
+                if (!isNaN(val)) {
+                    (processedData as any)[field] = val
+                }
+            }
+        })
+
+        const { data: proveedor, error } = await supabase
+            .from('proveedores')
+            .insert(processedData)
+            .select()
+            .single()
+
+        if (error) {
+            console.error('Error al insertar proveedor:', error)
+            return { success: false, error: `DB Error: ${error.message} (${error.code})` }
+        }
+
+        console.log('Proveedor registrado con éxito:', proveedor.id)
+        return { success: true, id: proveedor.id }
+    } catch (e: any) {
+        console.error('Excepción en submitProveedorForm:', e)
+        return { success: false, error: e.message || 'Error desconocido en el servidor' }
     }
-
-    return { success: true, id: proveedor.id }
 }
 
-export async function uploadDocument(
-    proveedorId: string,
-    tipoDocumento: string,
-    file: File
-) {
-    const supabase = await createClient()
+export async function uploadDocument(formData: FormData) {
+    const proveedorId = formData.get('proveedorId') as string
+    const tipoDocumento = formData.get('tipoDocumento') as string
+    const file = formData.get('file') as File
 
-    const fileName = `${proveedorId}/${tipoDocumento}_${Date.now()}.pdf`
-
-    // Upload to storage
-    const { error: uploadError } = await supabase.storage
-        .from('proveedores')
-        .upload(fileName, file)
-
-    if (uploadError) {
-        console.error('Error al subir documento:', uploadError)
-        return { success: false, error: uploadError.message }
+    console.log(`Iniciando subida de ${tipoDocumento} para proveedor ${proveedorId}...`)
+    
+    if (!file || !proveedorId || !tipoDocumento) {
+        console.error('Faltan parámetros obligatorios en uploadDocument')
+        return { success: false, error: 'Faltan parámetros obligatorios' }
     }
 
-    // Save reference in database
-    const { error: dbError } = await supabase
-        .from('proveedor_documentos')
-        .insert({
-            proveedor_id: proveedorId,
-            tipo_documento: tipoDocumento,
-            nombre_archivo: file.name,
-            file_path: fileName,
-            file_size: file.size,
-            mime_type: file.type
-        })
+    try {
+        const supabase = await createClient()
 
-    if (dbError) {
-        console.error('Error al guardar referencia:', dbError)
-        return { success: false, error: dbError.message }
+        const fileExtension = file.name.split('.').pop()
+        const filePath = `${proveedorId}/${tipoDocumento}_${Date.now()}.${fileExtension}`
+
+        // Upload to storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('proveedores')
+            .upload(filePath, file, {
+                contentType: file.type || 'application/pdf',
+                upsert: true
+            })
+
+
+        if (uploadError) {
+            console.error(`Error al subir ${tipoDocumento} a bucket 'proveedores':`, uploadError)
+            return { success: false, error: `Storage Error: ${uploadError.message}` }
+        }
+
+        // Save reference in database
+        const { error: dbError } = await supabase
+            .from('proveedor_documentos')
+            .insert({
+                proveedor_id: proveedorId,
+                tipo_documento: tipoDocumento,
+                nombre_archivo: file.name,
+                file_path: filePath,
+                file_size: file.size,
+                mime_type: file.type
+            })
+
+        if (dbError) {
+            console.error('Error al guardar referencia en DB:', dbError)
+            return { success: false, error: dbError.message }
+        }
+
+        console.log(`Documento ${tipoDocumento} subido con éxito`)
+        return { success: true, path: filePath }
+    } catch (e: any) {
+        console.error('Excepción en uploadDocument:', e)
+        return { success: false, error: e.message || 'Error desconocido al subir archivo' }
     }
-
-    return { success: true, path: fileName }
 }

@@ -11,6 +11,7 @@ export default async function ProveedoresPage() {
     const { data: proveedores } = await supabase
         .from('proveedores')
         .select('*')
+        .in('estado', ['pendiente', 'aprobado', 'rechazado'])
         .order('created_at', { ascending: false })
 
     const stats = {

@@ -20,7 +20,9 @@ export default async function ProveedorDetallePage({ params }: Props) {
         .eq('id', id)
         .single()
 
-    if (!proveedor) notFound()
+    if (!proveedor || !['pendiente', 'aprobado', 'rechazado'].includes(proveedor.estado)) {
+        notFound()
+    }
 
     const { data: documentos } = await supabase
         .from('proveedor_documentos')
