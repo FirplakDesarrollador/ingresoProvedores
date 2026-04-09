@@ -248,54 +248,6 @@ function RegistroForm() {
                             </button>
                         </div>
 
-                        {/* Botón de prueba (Solo para desarrollo) */}
-                        <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
-                            <button
-                                onClick={() => {
-                                    const randomId = Math.floor(Math.random() * 900000) + 100000;
-                                    setTipoContraparte('persona_juridica');
-                                    setFormData({
-                                        area_solicitante: 'Compras',
-                                        razon_social: `EMPRESA DE PRUEBA ${randomId} SAS`,
-                                        numero_identificacion: `900${randomId}-7`,
-                                        codigo_ciiu: '4669',
-                                        tipo_sociedad: 'S.A.S.',
-                                        origen_capital: 'Privada',
-                                        ciudad: 'Medellín',
-                                        departamento: 'Antioquia',
-                                        rep_legal_nombre_completo: 'JUAN PEREZ TEST',
-                                        rep_legal_numero_identificacion: '123456789',
-                                        correo_facturacion: 'test@example.com',
-                                        es_pep: false,
-                                        tiene_vinculo_pep: false,
-                                        administra_recursos_publicos: false,
-                                        tiene_reconocimiento_publico: false,
-                                        tiene_grado_poder_publico: false,
-                                        rep_legal_es_pep: 'No',
-                                        tiene_sanciones_lavado: 'No',
-                                        total_activos: 100000000,
-                                        total_pasivos: 50000000,
-                                        total_patrimonio: 50000000,
-                                        ingresos_mensuales: 20000000,
-                                        egresos_mensuales: 15000000,
-                                        fecha_corte_info_financiera: '2023-12-31',
-                                        posee_activos_virtuales: false,
-                                        tipo_cuenta: 'Ahorros',
-                                        entidad_bancaria: 'BANCOLOMBIA',
-                                        numero_cuenta: '987654321',
-                                        realiza_operaciones_internacionales: 'No',
-                                        tiene_evaluacion_sst: 'Sí',
-                                        acepta_terminos: true,
-                                        detalle_origen_fondos: 'Actividad comercial de prueba'
-                                    });
-                                    setStep(5); // Saltamos directo a documentos
-                                }}
-                                className="w-full py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-amber-100 transition-colors"
-                            >
-                                🧪 Llenar con datos de prueba (Saltar al Paso 5)
-                            </button>
-                        </div>
-
                         <button
                             onClick={() => tipoContraparte && formData.area_solicitante && setStep(2)}
                             disabled={!tipoContraparte || !formData.area_solicitante}
