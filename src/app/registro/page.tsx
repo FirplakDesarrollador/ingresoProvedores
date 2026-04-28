@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { submitProveedorForm, uploadDocument } from './actions'
+import DocumentPreview from '@/components/DocumentPreview'
 
 type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | ''
 
@@ -23,6 +24,8 @@ function RegistroForm() {
     const [tipoContraparte, setTipoContraparte] = useState<TipoContraparte>('')
     const [formData, setFormData] = useState<Record<string, any>>({})
     const [showTermsModal, setShowTermsModal] = useState(false)
+    const [showPreview, setShowPreview] = useState(false)
+    const [signatureUrl, setSignatureUrl] = useState<string | null>(null)
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -465,7 +468,29 @@ function RegistroForm() {
                 {/* Step 5: Documentos y Envío */}
                 {step === 5 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
-                        <h2 className="text-xl font-semibold text-[#254153] mb-6">Documentos y Aceptación</h2>
+                        {/* Huge Alert for Preview */}
+                        <div className="bg-blue-50 p-8 rounded-2xl border-2 border-blue-200 mb-8 flex flex-col items-center text-center gap-4">
+                            <div className="bg-blue-100 p-4 rounded-full">
+                                <svg className="w-8 h-8 text-[#254153]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-[#254153] mb-2">¡IMPORTANTE: REVISE SU DOCUMENTO!</h3>
+                                <p className="text-[#254153]/70 max-w-md">Antes de adjuntar su firma y enviar, es obligatorio revisar que toda la información en el PDF sea correcta.</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowPreview(true)}
+                                className="px-10 py-4 bg-[#254153] text-white rounded-2xl font-black text-lg hover:scale-105 transition-all shadow-2xl flex items-center gap-3"
+                            >
+                                📄 VER DOCUMENTO PARA FIRMAR
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                            <h2 className="text-xl font-semibold text-[#254153]">Documentos y Aceptación</h2>
+                        </div>
 
                         <div className="bg-gray-50 rounded-lg p-4 mb-6">
                             <h3 className="font-medium text-[#254153] mb-3">Documentos requeridos:</h3>
@@ -595,7 +620,10 @@ function RegistroForm() {
                                     id="signature-upload"
                                     onChange={(e) => {
                                         const file = e.target.files?.[0];
-                                        if (file) updateField('firma', file);
+                                        if (file) {
+                                            updateField('firma', file);
+                                            setSignatureUrl(URL.createObjectURL(file));
+                                        }
                                     }}
                                 />
                                 <label 
@@ -615,13 +643,29 @@ function RegistroForm() {
                                 {formData.firma && (
                                     <button 
                                         type="button"
-                                        onClick={() => updateField('firma', null)}
+                                        onClick={() => {
+                                            updateField('firma', null);
+                                            setSignatureUrl(null);
+                                        }}
                                         className="mt-3 text-xs text-red-600 underline"
                                     >
                                         Eliminar archivo
                                     </button>
                                 )}
                             </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <button
+                                type="button"
+                                onClick={() => setShowPreview(true)}
+                                className="w-full py-4 bg-[#254153]/5 border-2 border-dashed border-[#254153]/30 text-[#254153] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#254153]/10 transition-colors"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Revisar PDF antes de firmar
+                            </button>
                         </div>
 
                         <Checkbox
@@ -786,6 +830,56 @@ function RegistroForm() {
                                             className="mt-6 w-full py-3 bg-[#254153] text-white rounded-xl font-semibold shadow-lg shadow-[#254153]/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
                                         >
                                             Cerrar y volver al formulario
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showPreview && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                <div 
+                                    className="absolute inset-0 bg-[#254153]/60 backdrop-blur-md transition-opacity"
+                                    onClick={() => setShowPreview(false)}
+                                />
+                                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+                                    <div className="bg-[#254153] p-4 text-white flex justify-between items-center shrink-0">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-white/10 p-2 rounded-lg">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-lg leading-tight">Vista Previa del Documento</h3>
+                                                <p className="text-xs text-white/60">Revise la información antes de firmar</p>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => setShowPreview(false)}
+                                            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                        >
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto p-8 bg-gray-100 custom-scrollbar">
+                                        <DocumentPreview 
+                                            proveedor={{
+                                                ...formData,
+                                                tipo_contraparte: tipoContraparte,
+                                                firma_url: signatureUrl,
+                                                documentos_subidos: Object.keys(formData).filter(key => formData[key] instanceof File)
+                                            }} 
+                                        />
+                                    </div>
+                                    <div className="p-4 bg-white border-t flex justify-center gap-4 shrink-0">
+                                        <button
+                                            onClick={() => setShowPreview(false)}
+                                            className="px-8 py-2.5 bg-[#254153] text-white rounded-xl font-semibold shadow-lg hover:bg-[#1a2e3b] transition-all"
+                                        >
+                                            Entendido, cerrar vista previa
                                         </button>
                                     </div>
                                 </div>
