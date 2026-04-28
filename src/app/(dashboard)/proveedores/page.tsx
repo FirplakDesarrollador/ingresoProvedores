@@ -8,18 +8,35 @@ export default async function ProveedoresPage() {
 
     if (!user) redirect('/login')
 
-    const { data: proveedores } = await supabase
-        .from('proveedores')
-        .select('*')
-        .in('estado', ['pendiente', 'aprobado', 'rechazado'])
-        .order('created_at', { ascending: false })
+    // Separate COUNT queries to get real totals (Supabase caps rows at 1000)
+    const [
+        { count: total },
+        { count: pendientes },
+        { count: aprobados },
+        { count: rechazados },
+        { data: proveedores }
+    ] = await Promise.all([
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .in('estado', ['pendiente', 'aprobado', 'rechazado']),
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .eq('estado', 'pendiente'),
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .eq('estado', 'aprobado'),
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .eq('estado', 'rechazado'),
+        supabase.from('proveedores').select('*')
+            .in('estado', ['pendiente', 'aprobado', 'rechazado'])
+            .order('created_at', { ascending: false })
+            .limit(500),
+    ])
 
     const stats = {
-        total: proveedores?.length || 0,
-        pendientes: proveedores?.filter(p => p.estado === 'pendiente').length || 0,
-        aprobados: proveedores?.filter(p => p.estado === 'aprobado').length || 0,
-        rechazados: proveedores?.filter(p => p.estado === 'rechazado').length || 0,
+        total:      total      || 0,
+        pendientes: pendientes || 0,
+        aprobados:  aprobados  || 0,
+        rechazados: rechazados || 0,
     }
+
 
     return (
         <div className="min-h-screen bg-gray-50/50">

@@ -12,18 +12,33 @@ export default async function DashboardPage() {
         redirect('/login')
     }
 
-    // Obtener proveedores
-    const { data: proveedores } = await supabase
-        .from('proveedores')
-        .select('*')
-        .in('estado', ['pendiente', 'aprobado', 'rechazado'])
-        .order('created_at', { ascending: false })
+    // Obtener contadores reales y los últimos proveedores para la lista
+    const [
+        { count: total },
+        { count: pendientes },
+        { count: aprobados },
+        { count: rechazados },
+        { data: proveedores }
+    ] = await Promise.all([
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .in('estado', ['pendiente', 'aprobado', 'rechazado']),
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .eq('estado', 'pendiente'),
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .eq('estado', 'aprobado'),
+        supabase.from('proveedores').select('*', { count: 'exact', head: true })
+            .eq('estado', 'rechazado'),
+        supabase.from('proveedores').select('*')
+            .in('estado', ['pendiente', 'aprobado', 'rechazado'])
+            .order('created_at', { ascending: false })
+            .limit(10), // Limitamos la lista reciente para optimizar
+    ])
 
     const stats = {
-        total: proveedores?.length || 0,
-        pendientes: proveedores?.filter(p => p.estado === 'pendiente').length || 0,
-        aprobados: proveedores?.filter(p => p.estado === 'aprobado').length || 0,
-        rechazados: proveedores?.filter(p => p.estado === 'rechazado').length || 0,
+        total:      total      || 0,
+        pendientes: pendientes || 0,
+        aprobados:  aprobados  || 0,
+        rechazados: rechazados || 0,
     }
 
     return (
