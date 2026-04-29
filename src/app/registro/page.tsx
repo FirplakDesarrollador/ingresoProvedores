@@ -160,7 +160,15 @@ function RegistroForm() {
             }
         } catch (e: any) {
             console.error('Error en handleSubmit:', e)
-            alert('Error inesperado: ' + e.message)
+            
+            // Si el error es específicamente por una Server Action no encontrada (despliegue en medio)
+            if (e.message?.includes('Server Action') || e.message?.includes('was not found on the server')) {
+                if (confirm('La aplicación se ha actualizado. Para completar el registro es necesario recargar la página.\n\n¿Desea recargar ahora? (Sus datos actuales se perderán)')) {
+                    window.location.reload()
+                }
+            } else {
+                alert('Error inesperado: ' + (e.message || 'Error desconocido'))
+            }
             setLoading(false)
         }
     }
