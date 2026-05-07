@@ -134,6 +134,16 @@ export async function submitProveedorForm(data: ProveedorFormData) {
         }
 
         console.log('Proveedor registrado con éxito:', proveedor.id)
+
+        // Trigger notification email
+        try {
+            const nombreProveedor = processedData.razon_social || `${processedData.primer_nombre} ${processedData.primer_apellido}`.trim()
+            await sendNotificationEmail(nombreProveedor)
+        } catch (emailError) {
+            console.error('Error al enviar email de notificación:', emailError)
+            // No retornamos error aquí para no bloquear el registro si el email falla
+        }
+
         return { success: true, id: proveedor.id }
     } catch (e: any) {
         console.error('Excepción en submitProveedorForm:', e)
@@ -209,5 +219,39 @@ export async function uploadDocument(formData: FormData) {
     } catch (e: any) {
         console.error(`Excepción crítica en uploadDocument (${tipoDocumento}):`, e)
         return { success: false, error: e.message || 'Error inesperado al subir archivo' }
+    }
+}
+
+async function sendNotificationEmail(nombreProveedor: string) {
+    const flowUrl = process.env.FLOW_URL
+    
+    if (!flowUrl || flowUrl.includes('prod-XX.region.logic.azure.com')) {
+        console.warn('FLOW_URL no configurado o es el valor por defecto. Saltando envío de email.')
+        return
+    }
+
+    const payload = {
+        titulo: `Se ha creado un nuevo proveedor (${nombreProveedor})`,
+        contenido: "Ingresa a la plataforma (https://ingreso-provedores.vercel.app/login) y aprueba tus proveedores pendientes."
+    }
+
+    try {
+        const response = await fetch(flowUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(`Error en el flow (${response.status}): ${errorText}`)
+        }
+
+        console.log('Email de notificación enviado con éxito')
+    } catch (error) {
+        console.error('Error al llamar al flow de notificación:', error)
+        throw error
     }
 }
