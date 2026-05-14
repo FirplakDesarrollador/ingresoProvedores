@@ -154,6 +154,7 @@ export async function submitProveedorForm(data: ProveedorFormData) {
 export async function uploadDocument(formData: FormData) {
     const proveedorId = formData.get('proveedorId') as string
     const tipoDocumento = formData.get('tipoDocumento') as string
+    const nombreProveedor = formData.get('nombreProveedor') as string
     const file = formData.get('file') as File
 
     console.log(`Iniciando subida de ${tipoDocumento} para proveedor ${proveedorId}...`)
@@ -214,6 +215,18 @@ export async function uploadDocument(formData: FormData) {
             return { success: false, error: `Error de base de datos: ${dbError.message}` }
         }
 
+        // Trigger bank certificate flow if applicable
+        if (safeTipoDocumento === 'CERT_BANCARIA') {
+            try {
+                console.log(`Iniciando flujo de Power Automate para Certificado Bancario de ${nombreProveedor}...`)
+                const base64 = Buffer.from(fileBuffer).toString('base64')
+                await sendBankCertificateFlow(nombreProveedor || 'Proveedor Desconocido', file.name, base64)
+            } catch (flowError) {
+                console.error('Error en el flujo de certificado bancario:', flowError)
+                // No retornamos error para no bloquear el proceso de registro
+            }
+        }
+
         console.log(`Documento ${tipoDocumento} subido y registrado con éxito`)
         return { success: true, path: filePath }
     } catch (e: any) {
@@ -252,6 +265,43 @@ async function sendNotificationEmail(nombreProveedor: string) {
         console.log('Email de notificación enviado con éxito')
     } catch (error) {
         console.error('Error al llamar al flow de notificación:', error)
+        throw error
+    }
+}
+
+async function sendBankCertificateFlow(nombreProveedor: string, fileName: string, fileBase64: string) {
+    const flowUrl = process.env.FLOW_CERTIFICADO_BANCARIO_URL
+    
+    if (!flowUrl) {
+        console.warn('FLOW_CERTIFICADO_BANCARIO_URL no configurado. Saltando envío de certificado.')
+        return
+    }
+
+    const payload = {
+        titulo: nombreProveedor,
+        pdf: {
+            nombre: fileName,
+            contenido: fileBase64
+        }
+    }
+
+    try {
+        const response = await fetch(flowUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(`Error en el flow de certificado (${response.status}): ${errorText}`)
+        }
+
+        console.log('Flujo de certificado bancario enviado con éxito')
+    } catch (error) {
+        console.error('Error al llamar al flow de certificado:', error)
         throw error
     }
 }

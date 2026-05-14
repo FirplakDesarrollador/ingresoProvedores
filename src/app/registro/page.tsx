@@ -105,6 +105,7 @@ function RegistroForm() {
 
             if (result.success && result.id) {
                 const proveedorId = result.id
+                const nombreProveedor = formData.razon_social || `${formData.primer_nombre || ''} ${formData.primer_apellido || ''}`.trim()
 
                 // 2. Upload files using FormData
                 const fileFields = [
@@ -137,6 +138,7 @@ function RegistroForm() {
                         uploadFormData.append('file', file)
                         uploadFormData.append('proveedorId', proveedorId)
                         uploadFormData.append('tipoDocumento', label)
+                        uploadFormData.append('nombreProveedor', nombreProveedor)
                         
                         try {
                             const uploadRes = await uploadDocument(uploadFormData)
