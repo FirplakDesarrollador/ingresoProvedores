@@ -511,6 +511,7 @@ function RegistroForm() {
                                         <li>• Documento de identidad (150%)</li>
                                         <li>• Dos referencias comerciales</li>
                                         <li>• Certificación bancaria (máx. 30 días)</li>
+                                        <li>• Certificado SAGRILAFT / SARLAFT</li>
                                     </>
                                 ) : (
                                     <>
@@ -522,6 +523,7 @@ function RegistroForm() {
                                         <li>• Certificación bancaria</li>
                                         <li>• Dos referencias comerciales</li>
                                         <li>• Certificado ARL (Autodiagnóstico SST)</li>
+                                        <li>• Certificado SAGRILAFT / SARLAFT</li>
                                     </>
                                 )}
                             </ul>
@@ -586,7 +588,9 @@ function RegistroForm() {
 
                         <div className="space-y-4 mb-8">
                             <FileInput label="RUT" name="rut" onChange={updateField} />
-                            <FileInput label="Documento de Identidad" name="documento_identidad" onChange={updateField} />
+                            {tipoContraparte !== 'persona_juridica' && (
+                                <FileInput label="Documento de Identidad" name="documento_identidad" onChange={updateField} />
+                            )}
                             <FileInput label="Certificación Bancaria" name="cert_bancaria" onChange={updateField} />
                             
                             {tipoContraparte === 'persona_juridica' && (

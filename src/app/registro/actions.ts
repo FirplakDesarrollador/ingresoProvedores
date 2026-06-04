@@ -135,14 +135,7 @@ export async function submitProveedorForm(data: ProveedorFormData) {
 
         console.log('Proveedor registrado con éxito:', proveedor.id)
 
-        // Trigger notification email
-        try {
-            const nombreProveedor = processedData.razon_social || `${processedData.primer_nombre} ${processedData.primer_apellido}`.trim()
-            await sendNotificationEmail(nombreProveedor)
-        } catch (emailError) {
-            console.error('Error al enviar email de notificación:', emailError)
-            // No retornamos error aquí para no bloquear el registro si el email falla
-        }
+
 
         return { success: true, id: proveedor.id }
     } catch (e: any) {
