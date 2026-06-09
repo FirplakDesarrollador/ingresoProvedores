@@ -344,16 +344,10 @@ function RegistroForm() {
                 {/* Step 3: PEP */}
                 {step === 3 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
-                        <h2 className="text-xl font-semibold text-[#254153] mb-6">Preguntas PEP</h2>
+                        <h2 className="text-xl font-semibold text-[#254153] mb-6">Preguntas de Cumplimiento</h2>
                         <div className="space-y-4">
-                            <Checkbox label="¿Es Persona Expuesta Políticamente (PEP)?" name="es_pep" checked={formData.es_pep} onChange={updateField} />
-                            <Checkbox label="¿Tiene vínculo con una persona considerada PEP?" name="tiene_vinculo_pep" checked={formData.tiene_vinculo_pep} onChange={updateField} />
-                            <Checkbox label="¿Administra recursos públicos?" name="administra_recursos_publicos" checked={formData.administra_recursos_publicos} onChange={updateField} />
-                            <Checkbox label="¿Tiene reconocimiento público?" name="tiene_reconocimiento_publico" checked={formData.tiene_reconocimiento_publico} onChange={updateField} />
-                            <Checkbox label="¿Tiene grado de poder público?" name="tiene_grado_poder_publico" checked={formData.tiene_grado_poder_publico} onChange={updateField} />
-                            
-                            {/* Nuevas preguntas de cumplimiento */}
-                            <div className="pt-4 border-t border-gray-100 space-y-4">
+                            {/* Preguntas de cumplimiento */}
+                            <div className="space-y-4">
                                 <Select 
                                     label="¿El representante legal es PEP?" 
                                     name="rep_legal_es_pep" 
@@ -908,10 +902,10 @@ function RegistroForm() {
                                     loading || 
                                     !formData.acepta_terminos || 
                                     !formData.rut || 
-                                    !formData.documento_identidad || 
                                     !formData.cert_bancaria || 
                                     !formData.firma ||
                                     !formData.referencias_comerciales ||
+                                    (tipoContraparte !== 'persona_juridica' && !formData.documento_identidad) ||
                                     (tipoContraparte === 'persona_juridica' && (
                                         !formData.camara_comercio || 
                                         !formData.estados_financieros || 
