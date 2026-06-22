@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { aprobarProveedor, rechazarProveedor } from '../actions'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 
 interface Props {
     proveedorId: string
@@ -21,7 +23,44 @@ export default function AccionesProveedor({ proveedorId, estadoActual }: Props) 
     const handleAprobar = async () => {
         if (!fechaVigencia) return alert('Selecciona una fecha de vigencia')
         setLoading(true)
-        const result = await aprobarProveedor(proveedorId, fechaVigencia)
+
+        let pdfBase64 = undefined;
+        try {
+            const iframe = document.getElementById('pdf-iframe') as HTMLIFrameElement;
+            if (iframe && iframe.contentDocument) {
+                const iframeBody = iframe.contentDocument.body;
+                
+                // Esconder elementos de impresion como el boton de imprimir
+                const printBtn = iframeBody.querySelector('.print\\:hidden');
+                if (printBtn) (printBtn as HTMLElement).style.display = 'none';
+
+                const canvas = await html2canvas(iframeBody, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                });
+
+                if (printBtn) (printBtn as HTMLElement).style.display = '';
+
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdfBase64 = pdf.output('datauristring');
+            }
+        } catch (error) {
+            console.error('Error generando PDF:', error);
+            // Continuar con la aprobación aunque el PDF falle
+        }
+
+        const result = await aprobarProveedor(proveedorId, fechaVigencia, pdfBase64)
         setLoading(false)
         if (result.success) {
             setShowAprobar(false)

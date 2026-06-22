@@ -2,8 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { sendBankCertificateFlow } from '@/app/registro/actions'
 
-export async function aprobarProveedor(id: string, fechaVigencia: string) {
+export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBase64?: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -31,9 +32,30 @@ export async function aprobarProveedor(id: string, fechaVigencia: string) {
     if (prov) {
         try {
             const nombreProveedor = prov.razon_social || `${prov.primer_nombre || ''} ${prov.primer_apellido || ''}`.trim()
-            await sendApprovalNotification(nombreProveedor)
+            await sendApprovalNotification(nombreProveedor, pdfBase64)
+            
+            // Send Bank Certificate via Flow
+            const { data: certDocs } = await supabase
+                .from('proveedor_documentos')
+                .select('file_path, nombre_archivo')
+                .eq('proveedor_id', id)
+                .ilike('tipo_documento', '%CERT%BANCARI%')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (certDocs && certDocs.length > 0 && certDocs[0].file_path) {
+                const { data: fileData } = await supabase.storage.from('proveedores').download(certDocs[0].file_path);
+                if (fileData) {
+                    const arrayBuffer = await fileData.arrayBuffer();
+                    const base64 = Buffer.from(arrayBuffer).toString('base64');
+                    const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf';
+                    const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
+                    const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`;
+                    await sendBankCertificateFlow(nombreProveedor, finalFileName, base64);
+                }
+            }
         } catch (emailError) {
-            console.error('Error al enviar notificación de aprobación:', emailError)
+            console.error('Error al enviar notificaciones de aprobación:', emailError)
         }
     }
 
@@ -65,7 +87,7 @@ export async function rechazarProveedor(id: string, motivo: string) {
     return { success: true }
 }
 
-async function sendApprovalNotification(nombreProveedor: string) {
+async function sendApprovalNotification(nombreProveedor: string, pdfBase64?: string) {
     const flowUrl = process.env.FLOW_URL
     
     if (!flowUrl || flowUrl.includes('prod-XX.region.logic.azure.com')) {
@@ -73,9 +95,19 @@ async function sendApprovalNotification(nombreProveedor: string) {
         return
     }
 
-    const payload = {
+    // Clean base64 prefix if exists
+    let cleanPdfBase64 = pdfBase64;
+    if (cleanPdfBase64 && cleanPdfBase64.includes('base64,')) {
+        cleanPdfBase64 = cleanPdfBase64.split('base64,')[1];
+    }
+
+    const payload: any = {
         titulo: `Se ha aprobado el proveedor (${nombreProveedor})`,
         contenido: "El proveedor ha sido aprobado y la notificación ha sido procesada."
+    }
+
+    if (cleanPdfBase64) {
+        payload.pdf = cleanPdfBase64;
     }
 
     try {

@@ -208,22 +208,7 @@ export async function uploadDocument(formData: FormData) {
             return { success: false, error: `Error de base de datos: ${dbError.message}` }
         }
 
-        // Trigger bank certificate flow if applicable
-        if (safeTipoDocumento === 'CERT_BANCARIA') {
-            try {
-                console.log(`Iniciando flujo de Power Automate para Certificado Bancario de ${nombreProveedor}...`)
-                const base64 = Buffer.from(fileBuffer).toString('base64')
-                
-                const originalName = file.name || '';
-                const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
-                const finalFileName = `Certificado_Bancario_${(nombreProveedor || 'Proveedor').replace(/\s+/g, '_')}.${ext}`;
-                
-                await sendBankCertificateFlow(nombreProveedor || 'Proveedor Desconocido', finalFileName, base64)
-            } catch (flowError) {
-                console.error('Error en el flujo de certificado bancario:', flowError)
-                // No retornamos error para no bloquear el proceso de registro
-            }
-        }
+        // Nota: El envío del certificado bancario ahora se hace en aprobarProveedor
 
         console.log(`Documento ${tipoDocumento} subido y registrado con éxito`)
         return { success: true, path: filePath }
@@ -267,7 +252,7 @@ async function sendNotificationEmail(nombreProveedor: string) {
     }
 }
 
-async function sendBankCertificateFlow(nombreProveedor: string, fileName: string, fileBase64: string) {
+export async function sendBankCertificateFlow(nombreProveedor: string, fileName: string, fileBase64: string) {
     const flowUrl = process.env.FLOW_CERTIFICADO_BANCARIO_URL
     
     if (!flowUrl) {

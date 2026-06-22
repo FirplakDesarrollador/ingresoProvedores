@@ -183,6 +183,7 @@ export default async function ProveedorDetallePage({ params }: Props) {
                         <div className="bg-gray-200 p-4 flex justify-center">
                             <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden border">
                                 <iframe 
+                                    id="pdf-iframe"
                                     src={`/visor-pdf/${id}`} 
                                     className="w-full h-[800px] border-none"
                                     title="Previsualización PDF"

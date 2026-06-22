@@ -236,7 +236,7 @@ export default function PdfClient({ proveedor }: Props) {
                         
                         {/* Aquí se cargaría la imagen de la firma si existiera el publicURL */}
                         {proveedor.firma_url ? (
-                            <img src={proveedor.firma_url} alt="Firma" className="max-h-24 max-w-full object-contain mb-2" />
+                            <img src={proveedor.firma_url} alt="Firma" crossOrigin="anonymous" className="max-h-24 max-w-full object-contain mb-2" />
                         ) : (
                             <div className="h-24 w-full flex items-center justify-center border-b border-gray-100 italic text-gray-300 text-[10px]">
                                 [ IMAGEN DE FIRMA ]
