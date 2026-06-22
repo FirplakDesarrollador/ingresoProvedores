@@ -277,10 +277,8 @@ async function sendBankCertificateFlow(nombreProveedor: string, fileName: string
 
     const payload = {
         titulo: nombreProveedor,
-        pdf: {
-            nombre: fileName,
-            contenido: fileBase64
-        }
+        contenido: fileName,
+        pdf: fileBase64
     }
 
     try {
