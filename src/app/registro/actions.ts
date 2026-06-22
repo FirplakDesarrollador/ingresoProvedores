@@ -170,7 +170,7 @@ export async function uploadDocument(formData: FormData) {
             return { success: false, error: 'No se pudo procesar el archivo. Intente de nuevo.' }
         }
 
-        const fileExtension = file.name?.split('.').pop() || 'pdf'
+        const fileExtension = file.name?.includes('.') ? file.name.split('.').pop() : 'pdf'
         // Sanitizar el nombre del tipo de documento para la ruta
         const safeTipoDocumento = tipoDocumento.replace(/\s+/g, '_').toUpperCase()
         const filePath = `${proveedorId}/${safeTipoDocumento}_${Date.now()}.${fileExtension}`
@@ -213,7 +213,12 @@ export async function uploadDocument(formData: FormData) {
             try {
                 console.log(`Iniciando flujo de Power Automate para Certificado Bancario de ${nombreProveedor}...`)
                 const base64 = Buffer.from(fileBuffer).toString('base64')
-                await sendBankCertificateFlow(nombreProveedor || 'Proveedor Desconocido', file.name, base64)
+                
+                const originalName = file.name || '';
+                const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
+                const finalFileName = `Certificado_Bancario_${(nombreProveedor || 'Proveedor').replace(/\s+/g, '_')}.${ext}`;
+                
+                await sendBankCertificateFlow(nombreProveedor || 'Proveedor Desconocido', finalFileName, base64)
             } catch (flowError) {
                 console.error('Error en el flujo de certificado bancario:', flowError)
                 // No retornamos error para no bloquear el proceso de registro
