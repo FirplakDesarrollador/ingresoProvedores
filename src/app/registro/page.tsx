@@ -74,7 +74,7 @@ function RegistroForm() {
             // 1. Filtrar los datos para enviar solo lo que la base de datos espera
             // y eliminar cualquier objeto File o dato no serializable
             const allowedKeys = [
-                'tipo_solicitud', 'tipo_contraparte', 'area_solicitante', 'tipo_documento', 
+                'tipo_solicitud', 'tipo_contraparte', 'area_solicitante', 'dias_credito', 'tipo_provision', 'detalle_servicio', 'tipo_documento', 
                 'numero_identificacion', 'primer_apellido', 'segundo_apellido', 'primer_nombre', 
                 'segundo_nombre', 'fecha_expedicion', 'lugar_expedicion', 'fecha_nacimiento', 
                 'lugar_nacimiento', 'direccion', 'pais', 'departamento', 'ciudad', 
@@ -213,26 +213,54 @@ function RegistroForm() {
                 {step === 1 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
                         <div className="mb-8">
-                            <h2 className="text-xl font-semibold text-[#254153] mb-4">Información de Origen</h2>
-                            <Select 
-                                label="¿Desde qué área de la empresa viene?" 
-                                name="area_solicitante" 
-                                value={formData.area_solicitante} 
-                                onChange={updateField} 
-                                options={[
-                                    'Admón y Contabilidad',
-                                    'Legal',
-                                    'SST y Ambiental',
-                                    'Compras',
-                                    'Comer',
-                                    'Logística',
-                                    'TI',
-                                    'Talento Humano',
-                                    'Almacén',
-                                    'Mantenimiento',
-                                    'Otros'
-                                ]} 
-                            />
+                            <h2 className="text-xl font-semibold text-[#254153] mb-4">Información de Origen y Relación Comercial</h2>
+                            <div className="space-y-4">
+                                <Select 
+                                    label="¿Desde qué área de la empresa viene?" 
+                                    name="area_solicitante" 
+                                    value={formData.area_solicitante} 
+                                    onChange={updateField} 
+                                    options={[
+                                        'Admón y Contabilidad',
+                                        'Legal',
+                                        'SST y Ambiental',
+                                        'Compras',
+                                        'Comer',
+                                        'Logística',
+                                        'TI',
+                                        'Talento Humano',
+                                        'Almacén',
+                                        'Mantenimiento',
+                                        'Otros'
+                                    ]} 
+                                />
+                                <Select 
+                                    label="Días de crédito otorgados a Firplak" 
+                                    name="dias_credito" 
+                                    value={formData.dias_credito} 
+                                    onChange={updateField} 
+                                    options={['30', '60', '90']} 
+                                />
+                                <Select 
+                                    label="¿Cuál es la naturaleza de su relación comercial con Firplak?" 
+                                    name="tipo_provision" 
+                                    value={formData.tipo_provision} 
+                                    onChange={updateField} 
+                                    options={[
+                                        'Prestación de Servicios (Ej: Trabajos, mantenimientos o actividades dentro/fuera de la empresa)',
+                                        'Venta de Productos (Ej: Compra de insumos, equipos, materiales)',
+                                        'Ambos (Servicios y Productos)'
+                                    ]} 
+                                />
+                                {formData.tipo_provision?.includes('Servicios') && (
+                                    <Input 
+                                        label="Especifique el tipo de servicio que prestará" 
+                                        name="detalle_servicio" 
+                                        value={formData.detalle_servicio} 
+                                        onChange={updateField} 
+                                    />
+                                )}
+                            </div>
                         </div>
 
                         <h2 className="text-xl font-semibold text-[#254153] mb-6">Tipo de Contraparte</h2>
@@ -262,8 +290,13 @@ function RegistroForm() {
                         </div>
 
                         <button
-                            onClick={() => tipoContraparte && formData.area_solicitante && setStep(2)}
-                            disabled={!tipoContraparte || !formData.area_solicitante}
+                            onClick={() => {
+                                const isServicio = formData.tipo_provision?.includes('Servicios');
+                                if (tipoContraparte && formData.area_solicitante && formData.dias_credito && formData.tipo_provision && (!isServicio || formData.detalle_servicio)) {
+                                    setStep(2);
+                                }
+                            }}
+                            disabled={!tipoContraparte || !formData.area_solicitante || !formData.dias_credito || !formData.tipo_provision || (formData.tipo_provision?.includes('Servicios') && !formData.detalle_servicio)}
                             className="mt-6 w-full py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                         >
                             Continuar
