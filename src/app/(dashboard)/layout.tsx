@@ -14,9 +14,20 @@ export default async function DashboardLayout({
         redirect('/login')
     }
 
+    let userRole = null;
+    if (user.email) {
+        const { data: userData } = await supabase
+            .from('usuarios')
+            .select('rol')
+            .eq('correo', user.email)
+            .single()
+        
+        userRole = userData?.rol
+    }
+
     return (
         <div className="flex min-h-screen bg-gray-50">
-            <Sidebar userEmail={user.email} />
+            <Sidebar userEmail={user.email} userRole={userRole} />
             <main className="flex-1 ml-64 p-8">
                 {children}
             </main>

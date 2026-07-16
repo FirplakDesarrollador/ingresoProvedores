@@ -6,6 +6,7 @@ import { logout } from '@/app/login/actions'
 
 interface SidebarProps {
     userEmail?: string
+    userRole?: string | null
 }
 
 const navItems = [
@@ -37,9 +38,19 @@ const navItems = [
             </svg>
         ),
     },
+    {
+        name: 'Ferias',
+        href: '/ferias',
+        adminOnly: true,
+        icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+        ),
+    },
 ]
 
-export default function Sidebar({ userEmail }: SidebarProps) {
+export default function Sidebar({ userEmail, userRole }: SidebarProps) {
     const pathname = usePathname()
 
     return (
@@ -59,6 +70,8 @@ export default function Sidebar({ userEmail }: SidebarProps) {
             {/* Navigation */}
             <nav className="flex-1 p-4 space-y-1">
                 {navItems.map((item) => {
+                    if (item.adminOnly && userRole !== 'admin') return null;
+                    
                     const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
                     return (
                         <Link
