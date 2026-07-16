@@ -89,6 +89,23 @@ export default async function ProveedorDetallePage({ params }: Props) {
 
                 {/* Info Sections */}
                 <div className="space-y-6">
+                    {/* Origen y Relación */}
+                    <section className="bg-white rounded-xl border p-6">
+                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Información de Origen y Relación Comercial</h2>
+                        <div className="grid grid-cols-2 gap-x-8">
+                            <Campo label="Área de la empresa" value={proveedor.area_solicitante} />
+                            <Campo label="Días de crédito otorgados" value={proveedor.dias_credito} />
+                            <div className="col-span-2">
+                                <Campo label="Naturaleza de relación comercial" value={proveedor.tipo_provision} />
+                            </div>
+                            {proveedor.tipo_provision?.includes('Servicios') && (
+                                <div className="col-span-2">
+                                    <Campo label="Tipo de servicio a prestar" value={proveedor.detalle_servicio} />
+                                </div>
+                            )}
+                        </div>
+                    </section>
+
                     {/* General */}
                     <section className="bg-white rounded-xl border p-6">
                         <h2 className="text-lg font-semibold text-[#254153] mb-4">Información General</h2>
