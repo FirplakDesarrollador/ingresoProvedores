@@ -4,15 +4,27 @@ import { useState, useEffect, Suspense, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { submitProveedorForm, uploadDocument } from './actions'
 import DocumentPreview from '@/components/DocumentPreview'
+import ExtranjeroForm from './ExtranjeroForm'
 
-type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | ''
+type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero' | ''
 
 export default function RegistroPage() {
     return (
         <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Cargando...</div>}>
-            <RegistroForm />
+            <RegistroFormWrapper />
         </Suspense>
     )
+}
+
+function RegistroFormWrapper() {
+    const searchParams = useSearchParams()
+    const tipo = searchParams.get('tipo')
+
+    if (tipo === 'extranjero') {
+        return <ExtranjeroForm />
+    }
+
+    return <RegistroForm />
 }
 
 function RegistroForm() {

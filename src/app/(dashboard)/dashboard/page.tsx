@@ -70,7 +70,10 @@ export default async function DashboardPage() {
                         </div>
                         <h2 className="text-xl font-bold mb-2">Enlace de Registro de Proveedores</h2>
                         <p className="text-white/70 text-sm mb-6 max-w-xs">Usa este enlace para que tus proveedores externos completen su registro inicial en el sistema.</p>
-                        <CopyLinkButton />
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <CopyLinkButton text="Nacionales" />
+                            <CopyLinkButton path="/registro?tipo=extranjero" text="Extranjeros" />
+                        </div>
                     </div>
                 </div>
 

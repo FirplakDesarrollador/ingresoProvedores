@@ -82,6 +82,15 @@ export interface ProveedorFormData {
     // Internacional y SST
     realiza_operaciones_internacionales?: any // boolean or string "Sí"/"No"
     tiene_evaluacion_sst?: any // boolean or string "Sí"/"No"
+
+    // Nuevos campos para extranjeros
+    pagina_web?: string
+    rep_legal_lugar_expedicion?: string
+    rep_legal_telefono?: string
+    rep_legal_email?: string
+    swift_code?: string
+    aba_code?: string
+    persona_contacto?: string
 }
 
 export async function submitProveedorForm(data: ProveedorFormData) {
@@ -285,5 +294,24 @@ export async function sendBankCertificateFlow(nombreProveedor: string, fileName:
     } catch (error) {
         console.error('Error al llamar al flow de certificado:', error)
         throw error
+    }
+}
+
+export async function getPaises() {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('paises')
+            .select('codigo, pais')
+            .order('pais')
+        
+        if (error) {
+            console.error('Error fetching paises:', error)
+            return []
+        }
+        return data as { codigo: string; pais: string }[]
+    } catch (e) {
+        console.error('Error in getPaises:', e)
+        return []
     }
 }
