@@ -236,13 +236,15 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         // Address
         if (data.direccion || data.ciudad) {
             const addressString = (data.direccion || 'Direccion Principal').substring(0, 50);
+            const stateCode = data.departamento ? data.departamento.replace(/^0+/, '') : ''; // SAP usa '5' en lugar de '05'
+            
             bpPayload.BPAddresses = [
                 {
                     AddressName: addressString,
                     AddressName3: addressString, // Nombre de dirección 3
                     Street: addressString,
                     City: data.ciudad || '',
-                    State: data.departamento || '', // Departamento (SAP Code)
+                    State: stateCode, // Departamento (SAP Code)
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_BillTo',
                     U_HBT_MunMed: data.ciudad || '', // Municipio
@@ -253,7 +255,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                     AddressName3: addressString,
                     Street: addressString,
                     City: data.ciudad || '',
-                    State: data.departamento || '',
+                    State: stateCode,
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_ShipTo',
                     U_HBT_MunMed: data.ciudad || '',
