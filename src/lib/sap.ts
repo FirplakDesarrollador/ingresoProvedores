@@ -235,22 +235,29 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
 
         // Address
         if (data.direccion || data.ciudad) {
+            const addressString = (data.direccion || 'Direccion Principal').substring(0, 50);
             bpPayload.BPAddresses = [
                 {
-                    AddressName: 'FISCAL',
-                    Street: data.direccion || '',
+                    AddressName: addressString,
+                    AddressName3: addressString, // Nombre de dirección 3
+                    Street: addressString,
                     City: data.ciudad || '',
-                    County: data.departamento || '',
+                    State: data.departamento || '', // Departamento (SAP Code)
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_BillTo',
+                    U_HBT_MunMed: data.ciudad || '', // Municipio
+                    U_HBT_DirMM: 'Y' // Es dirección MM (Sí)
                 },
                 {
-                    AddressName: 'ENVIO',
-                    Street: data.direccion || '',
+                    AddressName: addressString + ' - E', // Para diferenciar ENVIO
+                    AddressName3: addressString,
+                    Street: addressString,
                     City: data.ciudad || '',
-                    County: data.departamento || '',
+                    State: data.departamento || '',
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_ShipTo',
+                    U_HBT_MunMed: data.ciudad || '',
+                    U_HBT_DirMM: 'Y'
                 }
             ];
         }
