@@ -183,6 +183,10 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             return { success: true, cardCode, error: 'BP already exists in SAP' };
         }
 
+        // Determinar tipo de entidad (Natural o Jurídica)
+        const isJuridica = ['NIT'].includes(data.tipo_documento || '');
+        const tipoEntidad = isJuridica ? '2' : '1'; // 1 = Natural, 2 = Jurídica
+
         // 3. Build Business Partner payload
         const bpPayload: any = {
             CardCode: cardCode,
