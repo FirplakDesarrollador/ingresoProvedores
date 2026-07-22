@@ -79,6 +79,82 @@ const tipoDocMap: Record<string, string> = {
     'IC': '13',         // Identity Card → CC
 }
 
+// --- Mapeo de Departamentos a SAP State Codes ---
+const departamentosMap: Record<string, string> = {
+    'ANTIOQUIA': '5',
+    'ATLANTICO': '8',
+    'BOGOTA': '11',
+    'BOGOTA D.C.': '11',
+    'BOLIVAR': '13',
+    'BOYACA': '15',
+    'CALDAS': '17',
+    'CAQUETA': '18',
+    'CAUCA': '19',
+    'CESAR': '20',
+    'CORDOBA': '23',
+    'CUNDINAMARCA': '25',
+    'CHOCO': '27',
+    'HUILA': '41',
+    'LA GUAJIRA': '44',
+    'GUAJIRA': '44',
+    'MAGDALENA': '47',
+    'META': '50',
+    'NARIÑO': '52',
+    'NORTE DE SANTANDER': '54',
+    'QUINDIO': '63',
+    'RISARALDA': '66',
+    'SANTANDER': '68',
+    'SUCRE': '70',
+    'TOLIMA': '73',
+    'VALLE DEL CAUCA': '76',
+    'VALLE': '76',
+    'ARAUCA': '81',
+    'CASANARE': '85',
+    'PUTUMAYO': '86',
+    'SAN ANDRES': '88',
+    'AMAZONAS': '91',
+    'GUAINIA': '94',
+    'GUAVIARE': '95',
+    'VAUPES': '97',
+    'VICHADA': '99',
+}
+
+// --- Normalización de ciudades con tilde en mayúsculas ---
+const ciudadesMap: Record<string, string> = {
+    'MEDELLIN': 'MEDELLÍN',
+    'BOGOTA': 'BOGOTÁ',
+    'CALI': 'CALI',
+    'BARRANQUILLA': 'BARRANQUILLA',
+    'BUCARAMANGA': 'BUCARAMANGA',
+    'PEREIRA': 'PEREIRA',
+    'MANIZALES': 'MANIZALES',
+    'CARTAGENA': 'CARTAGENA',
+    'CUCUTA': 'CÚCUTA',
+    'IBAGUE': 'IBAGUÉ',
+    'MONTERIA': 'MONTERÍA',
+    'VILLAVICENCIO': 'VILLAVICENCIO',
+    'PASTO': 'PASTO',
+    'NEIVA': 'NEIVA',
+    'ARMENIA': 'ARMENIA',
+    'SANTA MARTA': 'SANTA MARTA',
+    'POPAYAN': 'POPAYÁN',
+    'VALLEDUPAR': 'VALLEDUPAR',
+    'SINCELEJO': 'SINCELEJO',
+    'TUNJA': 'TUNJA',
+    'FLORENCIA': 'FLORENCIA',
+    'MOCOA': 'MOCOA',
+    'YOPAL': 'YOPAL',
+    'QUIBDO': 'QUIBDÓ',
+    'RIOHACHA': 'RIOHACHA',
+    'SAN ANDRES': 'SAN ANDRÉS',
+    'LETICIA': 'LETICIA',
+    'PUERTO INIRIDA': 'PUERTO INÍRIDA',
+    'SAN JOSE DEL GUAVIARE': 'SAN JOSÉ DEL GUAVIARE',
+    'MITU': 'MITÚ',
+    'PUERTO CARRENO': 'PUERTO CARREÑO',
+    'ARAUCA': 'ARAUCA',
+}
+
 export interface SapProveedorData {
     // Core
     numero_identificacion: string
@@ -132,9 +208,13 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         ? (data.razon_social || 'SIN NOMBRE')
         : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE';
 
-    // Determine CardCode — Use NIT with prefix P
+    // Determine CardCode — prefix AC + NIT + suffix -01 (max 15 chars for SAP)
     const cleanNit = (data.numero_identificacion || '').replace(/[^0-9]/g, '');
-    const cardCode = `AC${cleanNit}-01`;
+    const prefix = 'AC';
+    const suffix = '-01';
+    const maxNitLen = 15 - prefix.length - suffix.length; // = 10
+    const truncatedNit = cleanNit.substring(0, maxNitLen);
+    const cardCode = `${prefix}${truncatedNit}${suffix}`;
 
     // Determine if foreign
     const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
@@ -194,8 +274,8 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             CardType: 'cSupplier',
             GroupCode: groupCode,
             FederalTaxID: data.numero_identificacion || '',
-            Phone1: data.telefono1_numero || '',
-            Cellular: data.celular || '',
+            Phone1: (data.telefono1_numero || '').trim(),
+            Cellular: (data.celular || '').trim(),
             EmailAddress: data.email || data.correo_facturacion || '',
             Website: data.pagina_web || '',
             Currency: isExtranjero ? 'USD' : '$',
@@ -221,12 +301,12 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             ],
             
             // UDFs
-            U_HBT_TipDoc: tipoDocMap[data.tipo_documento || ''] || '',
-            U_OK1_AC_ECO: data.codigo_ciiu || '',
+            U_HBT_TipDoc: (tipoDocMap[data.tipo_documento || ''] || '').substring(0, 2),
+            U_OK1_AC_ECO: (data.codigo_ciiu || '').substring(0, 4),  // max 4 chars (CIIU code)
             U_HBT_TipEnt: tipoEntidad,
-            U_HBT_Nombres: isJuridica ? (data.razon_social || '') : (data.primer_nombre || ''),
+            U_HBT_Nombres: isJuridica ? (data.razon_social || '').substring(0, 50) : (data.primer_nombre || '').substring(0, 50),
             U_HBT_Residente: isExtranjero ? 'NO' : 'SI',
-            U_HBT_MailRecep_FE: data.correo_facturacion || data.email || '',
+            U_HBT_MailRecep_FE: (data.correo_facturacion || data.email || '').substring(0, 100),
             U_HBT_ResFis1: '49',  // No aplica - Otros default
             U_HBT_InfoTrib: 'ZZ', // No Aplica default
         };
@@ -239,30 +319,45 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
 
         // Address
         if (data.direccion || data.ciudad) {
-            const addressString = (data.direccion || 'Direccion Principal').substring(0, 50);
-            const stateCode = data.departamento ? data.departamento.replace(/^0+/, '') : ''; // SAP usa '5' en lugar de '05'
+            const addressString = (data.direccion || '').toUpperCase().substring(0, 50);
             
+            // Map the department to SAP State Code
+            let stateCode = '';
+            if (data.departamento) {
+                const depUpper = data.departamento.toUpperCase().trim();
+                if (departamentosMap[depUpper]) {
+                    stateCode = departamentosMap[depUpper];
+                } else if (/^\d+$/.test(depUpper)) {
+                    stateCode = depUpper.replace(/^0+/, ''); // Remove leading zeros
+                } else {
+                    // Fallback to max 3 chars for State field if no exact map
+                    stateCode = depUpper.substring(0, 3);
+                }
+            }
+            
+            const cityRaw = (data.ciudad || '').toUpperCase().trim();
+            const cityUpper = ciudadesMap[cityRaw] || cityRaw;
             bpPayload.BPAddresses = [
                 {
-                    AddressName: addressString,
-                    AddressName3: addressString, // Nombre de dirección 3
+                    AddressName: addressString || cityUpper,
+                    AddressName3: addressString || cityUpper,
                     Street: addressString,
-                    City: data.ciudad || '',
+                    City: cityUpper,
                     State: stateCode, // Departamento (SAP Code)
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_BillTo',
-                    U_HBT_MunMed: data.ciudad || '', // Municipio
+                    U_HBT_MunMed: cityUpper, // Municipio en mayúsculas
                     U_HBT_DirMM: 'Y' // Es dirección MM (Sí)
                 },
                 {
-                    AddressName: addressString + ' - E', // Para diferenciar ENVIO
-                    AddressName3: addressString,
+                    AddressName: (addressString || cityUpper) + ' - E', // Para diferenciar ENVIO
+                    AddressName3: addressString || cityUpper,
                     Street: addressString,
-                    City: data.ciudad || '',
+                    City: cityUpper,
                     State: stateCode,
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_ShipTo',
-                    U_HBT_MunMed: data.ciudad || '',
+                    U_HBT_MunMed: cityUpper,
                     U_HBT_DirMM: 'Y'
                 }
             ];

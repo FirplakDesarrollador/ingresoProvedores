@@ -361,12 +361,16 @@ function RegistroForm() {
                                     options={['Anónima', 'Limitada', 'S.A.S.', 'Sin Ánimo de Lucro', 'Otra']} />
                                 <Select label="Origen Capital" name="origen_capital" value={formData.origen_capital} onChange={updateField}
                                     options={['Privada', 'Pública', 'Mixta']} />
+                                <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
+                                <Input label="Teléfono" name="telefono1_numero" value={formData.telefono1_numero} onChange={updateField} type="number" />
+                                <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
                                 <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} />
                                 <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} />
                                 <Input label="Nombre Representante Legal" name="rep_legal_nombre_completo" value={formData.rep_legal_nombre_completo} className="col-span-2" onChange={updateField} />
                                 <Input label="CC Representante Legal" name="rep_legal_numero_identificacion" value={formData.rep_legal_numero_identificacion} onChange={updateField} />
                                 <Input label="Correo Facturación" name="correo_facturacion" type="email" value={formData.correo_facturacion} className="col-span-2" onChange={updateField} />
                             </div>
+
                         )}
 
                         <div className="flex gap-4 mt-6">
