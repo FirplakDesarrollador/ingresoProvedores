@@ -9,7 +9,49 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    const { error } = await supabase
+    // Obtener información del proveedor para la notificación y SAP
+    const { data: prov, error: fetchError } = await supabase
+        .from('proveedores')
+        .select('*')
+        .eq('id', id)
+        .single()
+        
+    if (fetchError || !prov) {
+        return { success: false, error: 'Proveedor no encontrado' }
+    }
+
+    let sapStatus = { success: false, cardCode: undefined as string | undefined, error: undefined as string | undefined }
+
+    // --- 1. Crear Socio de Negocios en SAP ---
+    try {
+        console.log(`Intentando crear BP en SAP para el proveedor ${id}...`)
+        const sapResult = await createBusinessPartner(prov as SapProveedorData)
+        sapStatus = { success: sapResult.success, cardCode: sapResult.cardCode, error: sapResult.error }
+        
+        if (!sapResult.success) {
+            console.error('El proveedor falló su creación en SAP, por lo que NO será aprobado en la base de datos:', sapResult.error)
+            return { 
+                success: false, 
+                sapSuccess: false, 
+                sapError: sapResult.error,
+                error: `Error al crear en SAP: ${sapResult.error}` 
+            }
+        } else {
+            console.log(`SAP BP Creado/Actualizado exitosamente. CardCode: ${sapResult.cardCode}`)
+        }
+    } catch (sapError: any) {
+        sapStatus = { success: false, cardCode: undefined, error: String(sapError.message || sapError) }
+        console.error('Error no controlado al integrar con SAP:', sapError)
+        return { 
+            success: false, 
+            sapSuccess: false, 
+            sapError: sapStatus.error,
+            error: `Error interno de conexión con SAP: ${sapStatus.error}` 
+        }
+    }
+
+    // --- 2. Si SAP fue exitoso, entonces SÍ aprobamos en base de datos ---
+    const { error: updateError } = await supabase
         .from('proveedores')
         .update({
             estado: 'aprobado',
@@ -21,36 +63,12 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
         })
         .eq('id', id)
 
-    if (error) return { success: false, error: error.message }
-    
-    // Obtener información del proveedor para la notificación y SAP
-    const { data: prov } = await supabase
-        .from('proveedores')
-        .select('*')
-        .eq('id', id)
-        .single()
-        
-    let sapStatus = { success: false, cardCode: undefined as string | undefined, error: undefined as string | undefined }
+    if (updateError) {
+        // En un caso real podríamos requerir reversar en SAP, pero por ahora mostramos error
+        return { success: false, error: `Se creó en SAP pero falló la actualización en la BD: ${updateError.message}` }
+    }
 
-    if (prov) {
-        // --- 1. Crear Socio de Negocios en SAP ---
-        try {
-            console.log(`Intentando crear BP en SAP para el proveedor ${id}...`)
-            const sapResult = await createBusinessPartner(prov as SapProveedorData)
-            sapStatus = { success: sapResult.success, cardCode: sapResult.cardCode, error: sapResult.error }
-            
-            if (!sapResult.success) {
-                console.error('Advertencia: El proveedor se aprobó en Supabase pero falló su creación en SAP:', sapResult.error)
-            } else {
-                console.log(`SAP BP Creado/Actualizado exitosamente. CardCode: ${sapResult.cardCode}`)
-                // Opcionalmente se podría guardar el CardCode en la base de datos aquí si se agregara el campo
-            }
-        } catch (sapError: any) {
-            sapStatus = { success: false, cardCode: undefined, error: String(sapError.message || sapError) }
-            console.error('Error no controlado al integrar con SAP:', sapError)
-        }
-
-        // --- 2. Flujos de Notificación y Certificados ---
+    // --- 3. Flujos de Notificación y Certificados ---
         try {
             const nombreProveedor = prov.razon_social || `${prov.primer_nombre || ''} ${prov.primer_apellido || ''}`.trim()
             await sendApprovalNotification(nombreProveedor, pdfBase64)
@@ -75,9 +93,8 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                     await sendBankCertificateFlow(nombreProveedor, finalFileName, base64);
                 }
             }
-        } catch (emailError) {
-            console.error('Error al enviar notificaciones de aprobación:', emailError)
-        }
+    } catch (emailError) {
+        console.error('Error al enviar notificaciones de aprobación:', emailError)
     }
 
     revalidatePath('/proveedores')

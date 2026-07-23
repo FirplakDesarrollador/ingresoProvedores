@@ -227,6 +227,21 @@ export async function uploadDocument(formData: FormData) {
     }
 }
 
+export async function getActividadesEconomicas() {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('actividades_economica_sap')
+        .select('Code, Descripcion')
+        .order('Descripcion', { ascending: true })
+        
+    if (error) {
+        console.error('Error al obtener actividades económicas:', error)
+        return { success: false, data: [] }
+    }
+    
+    return { success: true, data: data || [] }
+}
+
 async function sendNotificationEmail(nombreProveedor: string) {
     const flowUrl = process.env.FLOW_URL
     
@@ -268,6 +283,60 @@ export async function sendBankCertificateFlow(nombreProveedor: string, fileName:
         console.warn('FLOW_CERTIFICADO_BANCARIO_URL no configurado. Saltando envío de certificado.')
         return
     }
+
+    const allowedKeys = [
+        'tipo_contraparte',
+        'razon_social',
+        'primer_nombre',
+        'segundo_nombre',
+        'primer_apellido',
+        'segundo_apellido',
+        'numero_identificacion',
+        'tipo_documento',
+        'email',
+        'celular',
+        'direccion',
+        'ciudad',
+        'departamento',
+        'pais',
+        'telefono1_numero',
+        'rep_legal_nombre_completo',
+        'rep_legal_numero_identificacion',
+        'correo_facturacion',
+        'pagina_web',
+        'persona_contacto',
+        'tipo_sociedad',
+        'codigo_ciiu',
+        'origen_capital',
+        'entidad_bancaria',
+        'numero_cuenta',
+        'tipo_cuenta',
+        'swift_code',
+        'aba_code',
+        'dias_credito',
+        'area_solicitante',
+        'tipo_provision',
+        'monto_aprox',
+        'frecuencia_compra',
+        'referencia_comercial_1',
+        'referencia_comercial_2',
+        'nacionalidad',
+        'regimen_tributario',
+        'regimen_fiscal',
+        'medio_de_pago',
+        'actividad_economica',
+        'municipio_med_mag',
+        'realiza_operaciones_internacionales',
+        'tiene_evaluacion_sst',
+        'rep_legal_es_pep',
+        'tiene_sanciones_lavado',
+        'rep_legal_lugar_expedicion',
+        'rep_legal_telefono',
+        'rep_legal_email',
+        'acepta_terminos',
+        'detalle_origen_fondos',
+        'tipo_transacciones'
+    ]
 
     const payload = {
         titulo: nombreProveedor,

@@ -68,16 +68,30 @@ const paymentTermsMap: Record<string, number> = {
     '90 days': 5,
 }
 
-// --- Mapeo de tipo_documento a UDF ---
 const tipoDocMap: Record<string, string> = {
-    'CC': '13',         // Cédula de Ciudadanía
-    'NIT': '31',        // NIT
-    'CE': '22',         // Cédula de Extranjería
-    'PAS': '41',        // Pasaporte
-    'TI': '12',         // Tarjeta de Identidad
-    'FIDC': '22',       // Foreign ID Card → CE
-    'IC': '13',         // Identity Card → CC
+    'CC': '13',
+    'Cédula de Ciudadanía': '13',
+    'NIT': '31',
+    'CE': '22',
+    'Cédula de Extranjería': '22',
+    'PAS': '41',
+    'Pasaporte': '41',
+    'TI': '12',
+    'Tarjeta de Identidad': '12',
+    'FIDC': '22',
+    'IC': '13',
+    'Otro': '',
 }
+
+const regimenTribMap: Record<string, string> = {
+    'Especial': '06',
+    'Extranjero': '04',
+    'Gran Contribuyente': '03',
+    'N/A': '05',
+    'Régimen Común': '01',
+    'Régimen Simplificado': '02'
+}
+
 
 // --- Mapeo de Departamentos a SAP State Codes ---
 const departamentosMap: Record<string, string> = {
@@ -196,6 +210,11 @@ export interface SapProveedorData {
     // Other
     dias_credito?: string | null
     tipo_solicitud?: string | null
+    regimen_fiscal?: string | null
+    regimen_tributario?: string | null
+    actividad_economica?: string | null
+    nacionalidad?: string | null
+    municipio?: string | null
 }
 
 export async function createBusinessPartner(data: SapProveedorData): Promise<{ success: boolean; cardCode?: string; error?: string }> {
@@ -262,11 +281,6 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             console.log(`SAP BP: ${cardCode} already exists. Skipping creation.`);
             return { success: true, cardCode, error: 'BP already exists in SAP' };
         }
-
-        // Determinar tipo de entidad (Natural o Jurídica)
-        const isJuridica = ['NIT'].includes(data.tipo_documento || '');
-        const tipoEntidad = isJuridica ? '2' : '1'; // 1 = Natural, 2 = Jurídica
-
         // 3. Build Business Partner payload
         const bpPayload: any = {
             CardCode: cardCode,
@@ -301,24 +315,36 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             ],
             
             // UDFs
-            U_HBT_TipDoc: (tipoDocMap[data.tipo_documento || ''] || '').substring(0, 2),
+            U_HBT_TipDoc: (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2),
             U_OK1_AC_ECO: (data.codigo_ciiu || '').substring(0, 4),  // max 4 chars (CIIU code)
+            U_HBT_ActEco: (data.codigo_ciiu || '').substring(0, 10), // User requested the CODE (e.g., 10) for this field
             U_HBT_TipEnt: tipoEntidad,
-            U_HBT_Nombres: isJuridica ? (data.razon_social || '').substring(0, 50) : (data.primer_nombre || '').substring(0, 50),
             U_HBT_Residente: isExtranjero ? 'NO' : 'SI',
             U_HBT_MailRecep_FE: (data.correo_facturacion || data.email || '').substring(0, 100),
             U_HBT_ResFis1: '49',  // No aplica - Otros default
+            U_HBT_ResFis2: '49',
             U_HBT_InfoTrib: 'ZZ', // No Aplica default
+            U_HBT_Nacional: (data.nacionalidad === 'Internacional' || isExtranjero) ? '2' : '1',
+            U_HBT_RegFis: data.regimen_fiscal || '',
+            U_HBT_RegTrib: regimenTribMap[data.regimen_tributario || ''] || '',
+            U_HBT_MedPag: '47', // Hardcoded per user request
+            U_HBT_MunMed: data.municipio_med_mag || '',
         };
 
-        // Nombre / Apellidos for persona natural
+        // Nombres / Apellidos
         if (!isJuridica) {
-            bpPayload.U_HBT_Nombres = data.primer_nombre || '';
-            // Note: SAP UDF for apellidos may need to be set via separate fields
+            bpPayload.U_HBT_Nombres = [data.primer_nombre || '', data.segundo_nombre || ''].filter(Boolean).join(' ').substring(0, 50);
+            bpPayload.U_HBT_Apellido1 = (data.primer_apellido || '').substring(0, 30);
+            bpPayload.U_HBT_Apellido2 = (data.segundo_apellido || '').substring(0, 30);
+        } else {
+            // Para persona jurídica no se llenan estos campos
+            bpPayload.U_HBT_Nombres = '';
+            bpPayload.U_HBT_Apellido1 = '';
+            bpPayload.U_HBT_Apellido2 = '';
         }
 
         // Address
-        if (data.direccion || data.ciudad) {
+        if (data.direccion || data.ciudad || data.municipio) {
             const addressString = (data.direccion || '').toUpperCase().substring(0, 50);
             
             // Map the department to SAP State Code
@@ -328,14 +354,28 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                 if (departamentosMap[depUpper]) {
                     stateCode = departamentosMap[depUpper];
                 } else if (/^\d+$/.test(depUpper)) {
-                    stateCode = depUpper.replace(/^0+/, ''); // Remove leading zeros
+                    const numCode = parseInt(depUpper, 10);
+                    // Only accept valid SAP state codes (typically 1 to 99)
+                    if (numCode >= 1 && numCode <= 99) {
+                        stateCode = numCode.toString();
+                    } else {
+                        stateCode = ''; // Invalid numeric code
+                    }
                 } else {
-                    // Fallback to max 3 chars for State field if no exact map
-                    stateCode = depUpper.substring(0, 3);
+                    // Try to find a partial match (e.g. "ANTIQUIA" ≈ "ANTIOQUIA")
+                    const matchedKey = Object.keys(departamentosMap).find(k => 
+                        k.length >= 4 && (k.startsWith(depUpper.substring(0, 4)) || depUpper.startsWith(k.substring(0, 4)))
+                    );
+                    if (matchedKey) {
+                        stateCode = departamentosMap[matchedKey];
+                    } else {
+                        // Better to send empty than an invalid code that crashes SAP
+                        stateCode = '';
+                    }
                 }
             }
             
-            const cityRaw = (data.ciudad || '').toUpperCase().trim();
+            const cityRaw = (data.municipio || data.ciudad || '').toUpperCase().trim();
             const cityUpper = ciudadesMap[cityRaw] || cityRaw;
             bpPayload.BPAddresses = [
                 {
@@ -343,7 +383,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                     AddressName3: addressString || cityUpper,
                     Street: addressString,
                     City: cityUpper,
-                    State: stateCode, // Departamento (SAP Code)
+                    State: stateCode.substring(0, 3), // Departamento (SAP Code) max 3 chars
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_BillTo',
                     U_HBT_MunMed: cityUpper, // Municipio en mayúsculas
@@ -354,7 +394,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                     AddressName3: addressString || cityUpper,
                     Street: addressString,
                     City: cityUpper,
-                    State: stateCode,
+                    State: stateCode.substring(0, 3),
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     AddressType: 'bo_ShipTo',
                     U_HBT_MunMed: cityUpper,

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { submitProveedorForm, uploadDocument } from './actions'
 import DocumentPreview from '@/components/DocumentPreview'
 import ExtranjeroForm from './ExtranjeroForm'
+import CiiuSelect from '@/components/CiiuSelect'
+import colombiaData from '@/lib/colombia.json'
 
 type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero' | ''
 
@@ -49,8 +51,15 @@ function RegistroForm() {
         }
     }, [searchParams])
 
+    const [ciudadesOptions, setCiudadesOptions] = useState<string[]>([])
+
     const updateField = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }))
+        if (field === 'departamento') {
+            const d = colombiaData.find((x: any) => x.departamento.toUpperCase() === String(value).toUpperCase())
+            if (d) setCiudadesOptions(d.ciudades)
+            else setCiudadesOptions([])
+        }
     }
 
     const isValidEmail = (email: string) => {
@@ -205,6 +214,12 @@ function RegistroForm() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <datalist id="departamentos-list">
+                {colombiaData.map((d: any) => <option key={d.departamento} value={d.departamento.toUpperCase()} />)}
+            </datalist>
+            <datalist id="ciudades-list">
+                {ciudadesOptions.map((c: string) => <option key={c} value={c.toUpperCase()} />)}
+            </datalist>
             {/* Header */}
             <header className="bg-[#254153] text-white py-6">
                 <div className="max-w-4xl mx-auto px-4">
@@ -349,8 +364,8 @@ function RegistroForm() {
                                 <Input label="Email" name="email" type="email" value={formData.email} onChange={updateField} />
                                 <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
                                 <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
-                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} />
-                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} />
+                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} list="ciudades-list" />
+                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} list="departamentos-list" />
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
@@ -364,8 +379,8 @@ function RegistroForm() {
                                 <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
                                 <Input label="Teléfono" name="telefono1_numero" value={formData.telefono1_numero} onChange={updateField} type="number" />
                                 <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
-                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} />
-                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} />
+                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} list="ciudades-list" />
+                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} list="departamentos-list" />
                                 <Input label="Nombre Representante Legal" name="rep_legal_nombre_completo" value={formData.rep_legal_nombre_completo} className="col-span-2" onChange={updateField} />
                                 <Input label="CC Representante Legal" name="rep_legal_numero_identificacion" value={formData.rep_legal_numero_identificacion} onChange={updateField} />
                                 <Input label="Correo Facturación" name="correo_facturacion" type="email" value={formData.correo_facturacion} className="col-span-2" onChange={updateField} />
@@ -455,6 +470,47 @@ function RegistroForm() {
 
                             {/* Campos bancarios para todos */}
                             <div className="col-span-2 pt-4 border-t border-gray-100 mb-2">
+                                <h3 className="text-sm font-bold text-[#254153] uppercase tracking-wider">Información Tributaria y Comercial</h3>
+                            </div>
+                            <Select 
+                                label="Nacionalidad" 
+                                name="nacionalidad" 
+                                value={formData.nacionalidad} 
+                                onChange={(name: string, val: string) => {
+                                    if (val === 'Nacional') {
+                                        setFormData(prev => ({ ...prev, nacionalidad: val, tipo_extranjero: '' }));
+                                    } else {
+                                        updateField(name, val);
+                                    }
+                                }} 
+                                options={['Nacional', 'Internacional']}
+                            />
+                            <Select 
+                                label="Tipo de Extranjero" 
+                                name="tipo_extranjero" 
+                                value={formData.tipo_extranjero} 
+                                onChange={updateField} 
+                                options={['01', '02', '03', '04', '05', '06']}
+                                disabled={formData.nacionalidad === 'Nacional'}
+                            />
+                            <Select 
+                                label="Régimen Tributario" 
+                                name="regimen_tributario" 
+                                value={formData.regimen_tributario} 
+                                onChange={updateField} 
+                                options={['Especial', 'Extranjero', 'Gran Contribuyente', 'N/A', 'Régimen Común', 'Régimen Simplificado']}
+                            />
+                            <Input label="Régimen Fiscal" name="regimen_fiscal" value={formData.regimen_fiscal} onChange={updateField} />
+                            <CiiuSelect 
+                                value={formData.codigo_ciiu ? `${formData.codigo_ciiu} - ${formData.actividad_economica}` : formData.actividad_economica} 
+                                onChange={(val) => {
+                                    const parts = val.split(' - ');
+                                    setFormData(prev => ({ ...prev, codigo_ciiu: parts[0], actividad_economica: parts[1] || val }));
+                                }} 
+                            />
+                            <Input label="Código SAP Municipio Medios Magnéticos" name="municipio_med_mag" type="number" value={formData.municipio_med_mag} onChange={updateField} />
+
+                            <div className="col-span-2 pt-4 border-t border-gray-100 mb-2 mt-4">
                                 <h3 className="text-sm font-bold text-[#254153] uppercase tracking-wider">Información Bancaria</h3>
                             </div>
                             <Select label="Tipo de Cuenta" name="tipo_cuenta" value={formData.tipo_cuenta} onChange={updateField} options={['Ahorros', 'Corriente']} />
@@ -990,32 +1046,36 @@ function RegistroForm() {
 }
 
 // Componentes auxiliares
-function Input({ label, name, type = 'text', value, onChange, className = '' }: any) {
+function Input({ label, name, type = 'text', value, onChange, className = '', optional = false, list, disabled = false }: any) {
     return (
-        <div className={className}>
+        <div className={`${className} ${disabled ? 'opacity-50' : ''}`}>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-                {label} <span className="text-red-500">*</span>
+                {label} {!optional && <span className="text-red-500">*</span>}
+                {optional && <span className="text-gray-400 font-normal"> (Opcional)</span>}
             </label>
             <input
                 type={type}
                 value={value || ''}
                 onChange={(e) => onChange(name, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153] focus:border-transparent"
+                list={list}
+                disabled={disabled}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153] focus:border-transparent disabled:bg-gray-100"
             />
         </div>
     )
 }
 
-function Select({ label, name, value, onChange, options }: any) {
+function Select({ label, name, value, onChange, options, disabled = false }: any) {
     return (
-        <div>
+        <div className={disabled ? "opacity-50" : ""}>
             <label className="block text-sm font-medium text-gray-700 mb-1">
                 {label} <span className="text-red-500">*</span>
             </label>
             <select
                 value={value || ''}
                 onChange={(e) => onChange(name, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153]"
+                disabled={disabled}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153] disabled:bg-gray-100"
             >
                 <option value="">Seleccione...</option>
                 {options.map((o: string) => <option key={o} value={o}>{o}</option>)}

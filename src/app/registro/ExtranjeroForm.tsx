@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { submitProveedorForm, uploadDocument, getPaises } from './actions'
+import CiiuSelect from '@/components/CiiuSelect'
 
 const esCountries = ['AR', 'BO', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'SV', 'GQ', 'GT', 'HN', 'MX', 'NI', 'PA', 'PY', 'PE', 'ES', 'UY', 'VE']
 const zhCountries = ['CN', 'TW', 'HK', 'MO']
@@ -280,7 +281,7 @@ export default function ExtranjeroForm() {
                 'rep_legal_lugar_expedicion', 'rep_legal_telefono', 'rep_legal_email', 'ciudad', 'departamento',
                 'administra_recursos_publicos', 'rep_legal_es_pep', 'tiene_grado_poder_publico', 'tiene_vinculo_pep',
                 'swift_code', 'aba_code', 'entidad_bancaria', 'direccion', 'numero_cuenta', 'telefono1_numero',
-                'dias_credito', 'persona_contacto', 'email', 'detalle_origen_fondos', 'acepta_terminos'
+                'dias_credito', 'persona_contacto', 'email', 'detalle_origen_fondos', 'acepta_terminos', 'actividad_economica'
             ]
 
             const cleanFormData: Record<string, any> = {}
