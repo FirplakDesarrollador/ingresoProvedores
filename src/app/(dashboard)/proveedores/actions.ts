@@ -20,37 +20,7 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
         return { success: false, error: 'Proveedor no encontrado' }
     }
 
-    let sapStatus = { success: false, cardCode: undefined as string | undefined, error: undefined as string | undefined }
-
-    // --- 1. Crear Socio de Negocios en SAP ---
-    try {
-        console.log(`Intentando crear BP en SAP para el proveedor ${id}...`)
-        const sapResult = await createBusinessPartner(prov as SapProveedorData)
-        sapStatus = { success: sapResult.success, cardCode: sapResult.cardCode, error: sapResult.error }
-        
-        if (!sapResult.success) {
-            console.error('El proveedor falló su creación en SAP, por lo que NO será aprobado en la base de datos:', sapResult.error)
-            return { 
-                success: false, 
-                sapSuccess: false, 
-                sapError: sapResult.error,
-                error: `Error al crear en SAP: ${sapResult.error}` 
-            }
-        } else {
-            console.log(`SAP BP Creado/Actualizado exitosamente. CardCode: ${sapResult.cardCode}`)
-        }
-    } catch (sapError: any) {
-        sapStatus = { success: false, cardCode: undefined, error: String(sapError.message || sapError) }
-        console.error('Error no controlado al integrar con SAP:', sapError)
-        return { 
-            success: false, 
-            sapSuccess: false, 
-            sapError: sapStatus.error,
-            error: `Error interno de conexión con SAP: ${sapStatus.error}` 
-        }
-    }
-
-    // --- 2. Si SAP fue exitoso, entonces SÍ aprobamos en base de datos ---
+    // --- 1. Aprobamos en base de datos (Cumplimiento) ---
     const { error: updateError } = await supabase
         .from('proveedores')
         .update({
@@ -64,11 +34,10 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
         .eq('id', id)
 
     if (updateError) {
-        // En un caso real podríamos requerir reversar en SAP, pero por ahora mostramos error
-        return { success: false, error: `Se creó en SAP pero falló la actualización en la BD: ${updateError.message}` }
+        return { success: false, error: `Falló la actualización en la BD: ${updateError.message}` }
     }
 
-    // --- 3. Flujos de Notificación y Certificados ---
+    // --- 2. Flujos de Notificación y Certificados ---
         try {
             const nombreProveedor = prov.razon_social || `${prov.primer_nombre || ''} ${prov.primer_apellido || ''}`.trim()
             await sendApprovalNotification(nombreProveedor, pdfBase64)
@@ -99,12 +68,7 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
 
     revalidatePath('/proveedores')
     revalidatePath(`/proveedores/${id}`)
-    return { 
-        success: true, 
-        sapSuccess: sapStatus.success, 
-        sapCardCode: sapStatus.cardCode, 
-        sapError: sapStatus.error 
-    }
+    return { success: true }
 }
 
 export async function rechazarProveedor(id: string, motivo: string) {
@@ -175,4 +139,63 @@ async function sendApprovalNotification(nombreProveedor: string, pdfBase64?: str
         console.error('Error al llamar al flow de notificación:', error)
         throw error
     }
+}
+
+export async function aprobarContabilidad(id: string, formData: any) {
+    const supabase = await createClient()
+
+    // Obtener información base del proveedor
+    const { data: prov, error: fetchError } = await supabase
+        .from('proveedores')
+        .select('*')
+        .eq('id', id)
+        .single()
+        
+    if (fetchError || !prov) {
+        return { success: false, error: 'Proveedor no encontrado' }
+    }
+
+    // Combinar los datos actuales con los nuevos datos de contabilidad
+    const completeProvData = { ...prov, ...formData }
+
+    // --- 1. Crear Socio de Negocios en SAP ---
+    try {
+        console.log(`Intentando crear BP en SAP para el proveedor ${id}...`)
+        const sapResult = await createBusinessPartner(completeProvData as SapProveedorData)
+        
+        if (!sapResult.success) {
+            console.error('El proveedor falló su creación en SAP:', sapResult.error)
+            return { 
+                success: false, 
+                error: `Error al crear en SAP: ${sapResult.error}` 
+            }
+        }
+    } catch (sapError: any) {
+        console.error('Error no controlado al integrar con SAP:', sapError)
+        return { 
+            success: false, 
+            error: `Error interno de conexión con SAP: ${sapError.message || sapError}` 
+        }
+    }
+
+    // --- 2. Si SAP fue exitoso, guardamos los datos contables y el nuevo estado ---
+    const { error: updateError } = await supabase
+        .from('proveedores')
+        .update({
+            estado_contabilidad: 'aprobado',
+            grupo_bp: formData.grupo_bp,
+            cuenta_asociada: formData.cuenta_asociada,
+            aplica_retenciones: formData.aplica_retenciones,
+            sujeto_a_retencion: formData.sujeto_a_retencion,
+            codigos_retencion: formData.codigos_retencion
+        })
+        .eq('id', id)
+
+    if (updateError) {
+        return { success: false, error: `Se creó en SAP pero falló al actualizar BD: ${updateError.message}` }
+    }
+
+    revalidatePath('/proveedores')
+    revalidatePath(`/proveedores/${id}`)
+    return { success: true }
 }

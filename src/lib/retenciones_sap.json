@@ -1,0 +1,102 @@
+[
+  {
+    "WTCode": "ACRE",
+    "WTName": "A.RENTA Y COMP.ART 365  0.4%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ACRS",
+    "WTName": "A.RENTA Y COMP.ART 365  0.4%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARI1",
+    "WTName": "A. INTERESES 7%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARO1",
+    "WTName": "A. OTROS CONCEPTOS 2.5%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARO2",
+    "WTName": "A.  COMISIONES 10%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARS1",
+    "WTName": "A. SERVICIOS 4%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARS2",
+    "WTName": "A. FLETES 1%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARV1",
+    "WTName": "A. VENTA 2.5%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARV2",
+    "WTName": "A. VENTA A.F. 1%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARV3",
+    "WTName": "A.VENTA NC ANTES NOV2013 3.5%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARV4",
+    "WTName": "A.ARRENDAMIENTOS 3.5%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ARV5",
+    "WTName": "A. ARRENDAMIENTOS BS MUEBLES",
+    "Rate": 100
+  },
+  {
+    "WTCode": "IC10",
+    "WTName": "R.ICA SERVICIOS 4%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA0",
+    "WTName": "R.ICA FAB MAQ 5%",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA1",
+    "WTName": "A. ICA INDUSTRIA 7%0",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA2",
+    "WTName": "R.ICA SERVICIOS 6%0",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA3",
+    "WTName": "R.ICA INDUSTRIA 7%0",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA4",
+    "WTName": "R.ICA COMERCIO 7%0",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA5",
+    "WTName": "R.ICA COMERCIO 8%o",
+    "Rate": 100
+  },
+  {
+    "WTCode": "ICA6",
+    "WTName": "R.ICA SERVICIOS 8%o",
+    "Rate": 100
+  }
+]

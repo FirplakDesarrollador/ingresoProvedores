@@ -227,6 +227,13 @@ export interface SapProveedorData {
     nacionalidad?: string | null
     municipio_med_mag?: string | null
     tipo_extranjero?: string | null
+    
+    // Contabilidad
+    grupo_bp?: string | null
+    cuenta_asociada?: string | null
+    aplica_retenciones?: boolean
+    sujeto_a_retencion?: boolean
+    codigos_retencion?: string[]
 }
 
 // Helper: resolve bank name to SAP BankCode
@@ -260,17 +267,22 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         ? (data.razon_social || 'SIN NOMBRE')
         : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE';
 
-    // Determine CardCode — prefix AC + NIT + suffix -01 (max 15 chars for SAP)
+    // Determine if foreign
+    const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
+                         (data.pais && data.pais !== 'CO' && data.pais !== 'Colombia');
+
+    // Determine CardCode — prefix + NIT + suffix -01 (max 15 chars for SAP)
     const cleanNit = (data.numero_identificacion || '').replace(/[^0-9]/g, '');
-    const prefix = 'AC';
+    let prefix = 'AC'; // default to AC
+    if (data.grupo_bp === 'Proveedor Nacional') prefix = 'PN';
+    else if (data.grupo_bp === 'Proveedor de Servicios') prefix = 'AC';
+    
+    if (isExtranjero) prefix = 'PE'; // always PE for foreign
+
     const suffix = '-01';
     const maxNitLen = 15 - prefix.length - suffix.length; // = 10
     const truncatedNit = cleanNit.substring(0, maxNitLen);
     const cardCode = `${prefix}${truncatedNit}${suffix}`;
-
-    // Determine if foreign
-    const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
-                         (data.pais && data.pais !== 'CO' && data.pais !== 'Colombia');
 
     // GroupCode: 100=Proveedor Nacional, 101=Proveedor Exterior
     const groupCode = isExtranjero ? 101 : 100;
@@ -327,7 +339,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             Website: data.pagina_web || '',
             Currency: isExtranjero ? 'USD' : '$',
             PayTermsGrpCode: paymentGroupNum,
-            DebitorAccount: '23359505',
+            DebitorAccount: data.cuenta_asociada || '23359505',
             
             // Si hay persona de contacto, crearla en la lista de contactos
             ContactEmployees: (data.persona_contacto || data.rep_legal_nombre_completo) ? [
@@ -339,6 +351,10 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             ] : [],
             
             // Requerido por SAP (SP): Cuenta Bancaria
+            ...(data.aplica_retenciones && {
+                SubjectToWithholdingTax: data.sujeto_a_retencion ? 'boYES' : 'boNO',
+                BPWithholdingTaxCollection: (data.codigos_retencion || []).map(wt => ({ WTCode: wt }))
+            }),
             BPBankAccounts: [
                 {
                     BankCode: resolveBankCode(data.entidad_bancaria || ''),

@@ -3,13 +3,17 @@ import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import AccionesProveedor from './AccionesProveedor'
 import DocumentosList from './DocumentosList'
+import ContabilidadForm from './ContabilidadForm'
 
 interface Props {
     params: Promise<{ id: string }>
+    searchParams: Promise<{ tab?: string }>
 }
 
-export default async function ProveedorDetallePage({ params }: Props) {
+export default async function ProveedorDetallePage({ params, searchParams }: Props) {
     const { id } = await params
+    const { tab } = (await searchParams) || {}
+    const activeTab = tab === 'contabilidad' ? 'contabilidad' : 'cumplimiento'
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -37,6 +41,10 @@ export default async function ProveedorDetallePage({ params }: Props) {
         </div>
     )
 
+    const isAllowedUser = user?.email?.toLowerCase().includes('mateo.benavides') || 
+                          user?.email?.toLowerCase().includes('esteban.munoz') ||
+                          user?.email?.toLowerCase().includes('analista2.desarrollo');
+
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-[#254153] text-white py-4">
@@ -47,7 +55,30 @@ export default async function ProveedorDetallePage({ params }: Props) {
             </header>
 
             <main className="max-w-4xl mx-auto px-4 py-8">
-                {/* Status Badge */}
+                {isAllowedUser && (
+                    <div className="flex border-b border-gray-200 mb-8">
+                        <Link 
+                            href={`/proveedores/${id}?tab=cumplimiento`} 
+                            className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${activeTab === 'cumplimiento' ? 'border-[#254153] text-[#254153]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                        >
+                            Oficial de Cumplimiento
+                        </Link>
+                        <Link 
+                            href={`/proveedores/${id}?tab=contabilidad`} 
+                            className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${activeTab === 'contabilidad' ? 'border-[#254153] text-[#254153]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                        >
+                            Contabilidad
+                        </Link>
+                    </div>
+                )}
+
+                {activeTab === 'contabilidad' ? (
+                    <div className="max-w-2xl mx-auto">
+                        <ContabilidadForm proveedor={proveedor} />
+                    </div>
+                ) : (
+                    <>
+                        {/* Status Badge */}
                 <div className="flex items-center gap-4 mb-6">
                     <span className={`px-4 py-2 rounded-full text-sm font-medium ${proveedor.estado === 'pendiente' ? 'bg-amber-100 text-amber-700' :
                             proveedor.estado === 'aprobado' ? 'bg-emerald-100 text-emerald-700' :
@@ -233,6 +264,8 @@ export default async function ProveedorDetallePage({ params }: Props) {
                         <AccionesProveedor proveedorId={id} estadoActual={proveedor.estado} />
                     </section>
                 </div>
+                </>
+                )}
             </main>
         </div>
     )

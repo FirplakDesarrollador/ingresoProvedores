@@ -64,14 +64,7 @@ export default function AccionesProveedor({ proveedorId, estadoActual }: Props) 
         setLoading(false)
         if (result.success) {
             setShowAprobar(false)
-            
-            // Notificar sobre SAP
-            if (result.sapSuccess) {
-                alert(`✅ Proveedor aprobado con éxito.\n\nTambién se creó el Socio de Negocios en SAP: ${result.sapCardCode}`)
-            } else {
-                alert(`⚠️ Proveedor aprobado en la plataforma, PERO hubo un error al crearlo en SAP:\n\n${result.sapError}`)
-            }
-            
+            alert('✅ Proveedor aprobado en plataforma. (Pendiente aprobación de Contabilidad para SAP)')
             router.refresh()
         } else {
             alert('Error al aprobar: ' + result.error)
