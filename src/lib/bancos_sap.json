@@ -1,0 +1,82 @@
+[
+  {
+    "BankCode": "00",
+    "BankName": "BANCO DE LA REPUBLICA"
+  },
+  {
+    "BankCode": "01",
+    "BankName": "BANCO DE BOGOTA"
+  },
+  {
+    "BankCode": "02",
+    "BankName": "BANCO POPULAR"
+  },
+  {
+    "BankCode": "06",
+    "BankName": "BANCO ITAU"
+  },
+  {
+    "BankCode": "07",
+    "BankName": "BANCOLOMBIA"
+  },
+  {
+    "BankCode": "08",
+    "BankName": "SCOTIABANK COLOMBIA"
+  },
+  {
+    "BankCode": "09",
+    "BankName": "CITIBANK"
+  },
+  {
+    "BankCode": "10",
+    "BankName": "HSBC"
+  },
+  {
+    "BankCode": "12",
+    "BankName": "BANCO GNB SUDAMERIS"
+  },
+  {
+    "BankCode": "13",
+    "BankName": "BBVA COLOMBIA"
+  },
+  {
+    "BankCode": "14",
+    "BankName": "HELM BANK"
+  },
+  {
+    "BankCode": "19",
+    "BankName": "BANCO COLPATRIA"
+  },
+  {
+    "BankCode": "23",
+    "BankName": "BANCO DE OCCIDENTE"
+  },
+  {
+    "BankCode": "31",
+    "BankName": "BANCOLDEX"
+  },
+  {
+    "BankCode": "32",
+    "BankName": "BANCO CAJA SOCIAL"
+  },
+  {
+    "BankCode": "40",
+    "BankName": "BANCO AGRARIO"
+  },
+  {
+    "BankCode": "51",
+    "BankName": "BANCO DAVIVIENDA S.A."
+  },
+  {
+    "BankCode": "52",
+    "BankName": "BANCO AV VILLAS"
+  },
+  {
+    "BankCode": "58",
+    "BankName": "BANCO PROCREDIT"
+  },
+  {
+    "BankCode": "59",
+    "BankName": "BANCAMIA"
+  }
+]

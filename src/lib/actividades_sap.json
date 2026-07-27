@@ -1,0 +1,2542 @@
+[
+  {
+    "Code": "0010",
+    "Name": "0010",
+    "U_Descripcion": "Asalariados"
+  },
+  {
+    "Code": "0081",
+    "Name": "0081",
+    "U_Descripcion": "Personas Naturales sin Actividad Económica"
+  },
+  {
+    "Code": "0082",
+    "Name": "0082",
+    "U_Descripcion": "Personas Naturales Subsidiadas por Terceros"
+  },
+  {
+    "Code": "0090",
+    "Name": "0090",
+    "U_Descripcion": "Rentistas de Capital, solo para personas naturales."
+  },
+  {
+    "Code": "0111",
+    "Name": "0111",
+    "U_Descripcion": "Cultivo de cereales (excepto arroz), legumbres y semillas oleaginosas."
+  },
+  {
+    "Code": "0112",
+    "Name": "0112",
+    "U_Descripcion": "Cultivo de arroz."
+  },
+  {
+    "Code": "0113",
+    "Name": "0113",
+    "U_Descripcion": "Cultivo de hortalizas, raíces y tubérculos."
+  },
+  {
+    "Code": "0114",
+    "Name": "0114",
+    "U_Descripcion": "Cultivo de tabaco."
+  },
+  {
+    "Code": "0115",
+    "Name": "0115",
+    "U_Descripcion": "Cultivo de plantas textiles."
+  },
+  {
+    "Code": "0119",
+    "Name": "0119",
+    "U_Descripcion": "Otros cultivos transitorios n.c.p."
+  },
+  {
+    "Code": "0121",
+    "Name": "0121",
+    "U_Descripcion": "Cultivo de frutas tropicales y subtropicales."
+  },
+  {
+    "Code": "0122",
+    "Name": "0122",
+    "U_Descripcion": "Cultivo de plátano y banano."
+  },
+  {
+    "Code": "0123",
+    "Name": "0123",
+    "U_Descripcion": "Cultivo de café."
+  },
+  {
+    "Code": "0124",
+    "Name": "0124",
+    "U_Descripcion": "Cultivo de caña de azúcar."
+  },
+  {
+    "Code": "0125",
+    "Name": "0125",
+    "U_Descripcion": "Cultivo de flor de corte."
+  },
+  {
+    "Code": "0126",
+    "Name": "0126",
+    "U_Descripcion": "Cultivo de palma para aceite (palma africana) y otros frutos oleaginosos."
+  },
+  {
+    "Code": "0127",
+    "Name": "0127",
+    "U_Descripcion": "Cultivo de plantas con las que se preparan bebidas."
+  },
+  {
+    "Code": "0128",
+    "Name": "0128",
+    "U_Descripcion": "Cultivo de especias y de plantas aromáticas y medicinales."
+  },
+  {
+    "Code": "0129",
+    "Name": "0129",
+    "U_Descripcion": "Otros cultivos permanentes n.c.p."
+  },
+  {
+    "Code": "0130",
+    "Name": "0130",
+    "U_Descripcion": "Propagación de plantas (actividades de los viveros, excepto viveros forestales)."
+  },
+  {
+    "Code": "0141",
+    "Name": "0141",
+    "U_Descripcion": "Cría de ganado bovino y bufalino."
+  },
+  {
+    "Code": "0142",
+    "Name": "0142",
+    "U_Descripcion": "Cría de caballos y otros equinos."
+  },
+  {
+    "Code": "0143",
+    "Name": "0143",
+    "U_Descripcion": "Cría de ovejas y cabras."
+  },
+  {
+    "Code": "0144",
+    "Name": "0144",
+    "U_Descripcion": "Cría de ganado porcino."
+  },
+  {
+    "Code": "0145",
+    "Name": "0145",
+    "U_Descripcion": "Cría de aves de corral."
+  },
+  {
+    "Code": "0149",
+    "Name": "0149",
+    "U_Descripcion": "Cría de otros animales n.c.p."
+  },
+  {
+    "Code": "0150",
+    "Name": "0150",
+    "U_Descripcion": "Explotación mixta (agrícola y pecuaria)."
+  },
+  {
+    "Code": "0161",
+    "Name": "0161",
+    "U_Descripcion": "Actividades de apoyo a la agricultura."
+  },
+  {
+    "Code": "0162",
+    "Name": "0162",
+    "U_Descripcion": "Actividades de apoyo a la ganadería."
+  },
+  {
+    "Code": "0163",
+    "Name": "0163",
+    "U_Descripcion": "Actividades posteriores a la cosecha."
+  },
+  {
+    "Code": "0164",
+    "Name": "0164",
+    "U_Descripcion": "Tratamiento de semillas para propagación."
+  },
+  {
+    "Code": "0170",
+    "Name": "0170",
+    "U_Descripcion": "Caza ordinaria y mediante trampas y actividades de servicios conexas."
+  },
+  {
+    "Code": "0210",
+    "Name": "0210",
+    "U_Descripcion": "Silvicultura y otras actividades forestales."
+  },
+  {
+    "Code": "0220",
+    "Name": "0220",
+    "U_Descripcion": "Extracción de madera."
+  },
+  {
+    "Code": "0230",
+    "Name": "0230",
+    "U_Descripcion": "Recolección de productos forestales diferentes a la madera."
+  },
+  {
+    "Code": "0240",
+    "Name": "0240",
+    "U_Descripcion": "Servicios de apoyo a la silvicultura."
+  },
+  {
+    "Code": "0311",
+    "Name": "0311",
+    "U_Descripcion": "Pesca marítima."
+  },
+  {
+    "Code": "0312",
+    "Name": "0312",
+    "U_Descripcion": "Pesca de agua dulce."
+  },
+  {
+    "Code": "0321",
+    "Name": "0321",
+    "U_Descripcion": "Acuicultura marítima."
+  },
+  {
+    "Code": "0322",
+    "Name": "0322",
+    "U_Descripcion": "Acuicultura de agua dulce."
+  },
+  {
+    "Code": "0510",
+    "Name": "0510",
+    "U_Descripcion": "Extracción de hulla (carbón de piedra)."
+  },
+  {
+    "Code": "0520",
+    "Name": "0520",
+    "U_Descripcion": "Extracción de carbón lignito."
+  },
+  {
+    "Code": "0610",
+    "Name": "0610",
+    "U_Descripcion": "Extracción de petróleo crudo."
+  },
+  {
+    "Code": "0620",
+    "Name": "0620",
+    "U_Descripcion": "Extracción de gas natural."
+  },
+  {
+    "Code": "0710",
+    "Name": "0710",
+    "U_Descripcion": "Extracción de minerales de hierro."
+  },
+  {
+    "Code": "0721",
+    "Name": "0721",
+    "U_Descripcion": "Extracción de minerales de uranio y de torio."
+  },
+  {
+    "Code": "0722",
+    "Name": "0722",
+    "U_Descripcion": "Extracción de oro y otros metales preciosos."
+  },
+  {
+    "Code": "0723",
+    "Name": "0723",
+    "U_Descripcion": "Extracción de minerales de níquel."
+  },
+  {
+    "Code": "0729",
+    "Name": "0729",
+    "U_Descripcion": "Extracción de otros minerales metalíferos no ferrosos n.c.p."
+  },
+  {
+    "Code": "0811",
+    "Name": "0811",
+    "U_Descripcion": "Extracción de piedra, arena, arcillas comunes, yeso y anhidrita."
+  },
+  {
+    "Code": "0812",
+    "Name": "0812",
+    "U_Descripcion": "Extracción de arcillas de uso industrial, caliza, caolín y bentonitas."
+  },
+  {
+    "Code": "0891",
+    "Name": "0891",
+    "U_Descripcion": "Extracción de minerales para la fabricación de abonos y productos químicos."
+  },
+  {
+    "Code": "0892",
+    "Name": "0892",
+    "U_Descripcion": "Extracción de halita (sal)."
+  },
+  {
+    "Code": "0899",
+    "Name": "0899",
+    "U_Descripcion": "Extracción de otros minerales no metálicos n.c.p."
+  },
+  {
+    "Code": "0910",
+    "Name": "0910",
+    "U_Descripcion": "Actividades de apoyo para la extracción de petróleo y de gas natural."
+  },
+  {
+    "Code": "0990",
+    "Name": "0990",
+    "U_Descripcion": "Actividades de apoyo para otras actividades de explotación de minas y canteras."
+  },
+  {
+    "Code": "1011",
+    "Name": "1011",
+    "U_Descripcion": "Procesamiento y conservación de carne y productos cárnicos."
+  },
+  {
+    "Code": "1012",
+    "Name": "1012",
+    "U_Descripcion": "Procesamiento y conservación de pescados, crustáceos y moluscos."
+  },
+  {
+    "Code": "1020",
+    "Name": "1020",
+    "U_Descripcion": "Procesamiento y conservación de frutas, legumbres, hortalizas y tubérculos."
+  },
+  {
+    "Code": "1031",
+    "Name": "1031",
+    "U_Descripcion": "Extracción de aceites de origen vegetal crudo"
+  },
+  {
+    "Code": "1032",
+    "Name": "1032",
+    "U_Descripcion": "Elaboración de aceites y grasas de origen vegetal refinados"
+  },
+  {
+    "Code": "1033",
+    "Name": "1033",
+    "U_Descripcion": "Elaboración de acedites y grasas de origen animal"
+  },
+  {
+    "Code": "1040",
+    "Name": "1040",
+    "U_Descripcion": "Elaboración de productos lácteos."
+  },
+  {
+    "Code": "1051",
+    "Name": "1051",
+    "U_Descripcion": "Elaboración de productos de molinería."
+  },
+  {
+    "Code": "1052",
+    "Name": "1052",
+    "U_Descripcion": "Elaboración de almidones y productos derivados del almidón."
+  },
+  {
+    "Code": "1061",
+    "Name": "1061",
+    "U_Descripcion": "Trilla de café."
+  },
+  {
+    "Code": "1062",
+    "Name": "1062",
+    "U_Descripcion": "Descafeinado, tostión y molienda del café."
+  },
+  {
+    "Code": "1063",
+    "Name": "1063",
+    "U_Descripcion": "Otros derivados del café."
+  },
+  {
+    "Code": "1071",
+    "Name": "1071",
+    "U_Descripcion": "Elaboración y refinación de azúcar."
+  },
+  {
+    "Code": "1072",
+    "Name": "1072",
+    "U_Descripcion": "Elaboración de panela."
+  },
+  {
+    "Code": "1081",
+    "Name": "1081",
+    "U_Descripcion": "Elaboración de productos de panadería."
+  },
+  {
+    "Code": "1082",
+    "Name": "1082",
+    "U_Descripcion": "Elaboración de cacao, chocolate y productos de confitería."
+  },
+  {
+    "Code": "1083",
+    "Name": "1083",
+    "U_Descripcion": "Elaboración de macarrones, fideos, alcuzcuz y productos farináceos similares,"
+  },
+  {
+    "Code": "1084",
+    "Name": "1084",
+    "U_Descripcion": "Elaboración de comidas y platos preparados."
+  },
+  {
+    "Code": "1089",
+    "Name": "1089",
+    "U_Descripcion": "Elaboración de otros productos alimenticios n.c.p."
+  },
+  {
+    "Code": "1090",
+    "Name": "1090",
+    "U_Descripcion": "Elaboración de alimentos preparados para animales."
+  },
+  {
+    "Code": "1101",
+    "Name": "1101",
+    "U_Descripcion": "Destilación, rectificación y mezcla de bebidas alcohólicas."
+  },
+  {
+    "Code": "1102",
+    "Name": "1102",
+    "U_Descripcion": "Elaboración de bebidas fermentadas no destiladas."
+  },
+  {
+    "Code": "1103",
+    "Name": "1103",
+    "U_Descripcion": "Producción de malta, elaboración de cervezas y otras bebidas malteadas."
+  },
+  {
+    "Code": "1104",
+    "Name": "1104",
+    "U_Descripcion": "Elaboración de bebidas no alcohólicas, producción de aguas minerales y de otras aguas embotelladas."
+  },
+  {
+    "Code": "1200",
+    "Name": "1200",
+    "U_Descripcion": "Elaboración de productos de tabaco."
+  },
+  {
+    "Code": "1311",
+    "Name": "1311",
+    "U_Descripcion": "Preparación e hilatura de fibras textiles."
+  },
+  {
+    "Code": "1312",
+    "Name": "1312",
+    "U_Descripcion": "Tejeduría de productos textiles."
+  },
+  {
+    "Code": "1313",
+    "Name": "1313",
+    "U_Descripcion": "Acabado de productos textiles."
+  },
+  {
+    "Code": "1391",
+    "Name": "1391",
+    "U_Descripcion": "Fabricación de tejidos de punto y ganchillo."
+  },
+  {
+    "Code": "1392",
+    "Name": "1392",
+    "U_Descripcion": "Confección de artículos con materiales textiles, excepto prendas de vestir."
+  },
+  {
+    "Code": "1393",
+    "Name": "1393",
+    "U_Descripcion": "Fabricación de tapetes y alfombras para pisos."
+  },
+  {
+    "Code": "1394",
+    "Name": "1394",
+    "U_Descripcion": "Fabricación de cuerdas, cordeles, cables, bramantes y redes."
+  },
+  {
+    "Code": "1399",
+    "Name": "1399",
+    "U_Descripcion": "Fabricación de otros artículos textiles n.c.p."
+  },
+  {
+    "Code": "1410",
+    "Name": "1410",
+    "U_Descripcion": "Confección de prendas de vestir, excepto prendas de piel."
+  },
+  {
+    "Code": "1420",
+    "Name": "1420",
+    "U_Descripcion": "Fabricación de artículos de piel."
+  },
+  {
+    "Code": "1430",
+    "Name": "1430",
+    "U_Descripcion": "Fabricación de artículos de punto y ganchillo."
+  },
+  {
+    "Code": "1511",
+    "Name": "1511",
+    "U_Descripcion": "Curtido y recurtido de cueros; recurtido y teñido de pieles."
+  },
+  {
+    "Code": "1512",
+    "Name": "1512",
+    "U_Descripcion": "Fabricación de artículos de viaje, bolsos de mano y artículos similares elaborados en cuero, y fabricación de artículos de talabartería y guarnicionería."
+  },
+  {
+    "Code": "1513",
+    "Name": "1513",
+    "U_Descripcion": "Fabricación de artículos de viaje, bolsos de mano y artículos similares; artículos de talabartería y guarnicionería elaborados en otros materiales."
+  },
+  {
+    "Code": "1521",
+    "Name": "1521",
+    "U_Descripcion": "Fabricación de calzado de cuero y piel, con cualquier tipo de suela."
+  },
+  {
+    "Code": "1522",
+    "Name": "1522",
+    "U_Descripcion": "Fabricación de otros tipos de calzado, excepto calzado de cuero y piel."
+  },
+  {
+    "Code": "1523",
+    "Name": "1523",
+    "U_Descripcion": "Fabricación de partes del calzado."
+  },
+  {
+    "Code": "1610",
+    "Name": "1610",
+    "U_Descripcion": "Aserrado, acepillado e impregnación de la madera."
+  },
+  {
+    "Code": "1620",
+    "Name": "1620",
+    "U_Descripcion": "Fabricación de hojas de madera para enchapado; fabricación de tableros contrachapados, tableros laminados, tableros de partículas y otros tableros y paneles."
+  },
+  {
+    "Code": "1630",
+    "Name": "1630",
+    "U_Descripcion": "Fabricación de partes y piezas de madera, de carpintería y ebanistería para la construcción."
+  },
+  {
+    "Code": "1640",
+    "Name": "1640",
+    "U_Descripcion": "Fabricación de recipientes de madera."
+  },
+  {
+    "Code": "1690",
+    "Name": "1690",
+    "U_Descripcion": "Fabricación de otros productos de madera; fabricación de artículos de corcho, cestería y espartería."
+  },
+  {
+    "Code": "1701",
+    "Name": "1701",
+    "U_Descripcion": "Fabricación de pulpas (pastas) celulósicas; papel y cartón."
+  },
+  {
+    "Code": "1702",
+    "Name": "1702",
+    "U_Descripcion": "Fabricación de papel y cartón ondulado (corrugado); fabricación de envases, empaques y de embalajes de papel y cartón."
+  },
+  {
+    "Code": "1709",
+    "Name": "1709",
+    "U_Descripcion": "Fabricación de otros artículos de papel y cartón."
+  },
+  {
+    "Code": "1811",
+    "Name": "1811",
+    "U_Descripcion": "Actividades de impresión."
+  },
+  {
+    "Code": "1812",
+    "Name": "1812",
+    "U_Descripcion": "Actividades de servicios relacionados con la impresión."
+  },
+  {
+    "Code": "1820",
+    "Name": "1820",
+    "U_Descripcion": "Producción de copias a partir de grabaciones originales."
+  },
+  {
+    "Code": "1910",
+    "Name": "1910",
+    "U_Descripcion": "Fabricación de productos de hornos de coque."
+  },
+  {
+    "Code": "1921",
+    "Name": "1921",
+    "U_Descripcion": "Fabricación de productos de la refinación del petróleo."
+  },
+  {
+    "Code": "1922",
+    "Name": "1922",
+    "U_Descripcion": "Actividad de mezcla de combustibles."
+  },
+  {
+    "Code": "2011",
+    "Name": "2011",
+    "U_Descripcion": "Fabricación de sustancias y productos químicos básicos."
+  },
+  {
+    "Code": "2012",
+    "Name": "2012",
+    "U_Descripcion": "Fabricación de abonos y compuestos inorgánicos nitrogenados."
+  },
+  {
+    "Code": "2013",
+    "Name": "2013",
+    "U_Descripcion": "Fabricación de plásticos en formas primarias."
+  },
+  {
+    "Code": "2014",
+    "Name": "2014",
+    "U_Descripcion": "Fabricación de caucho sintético en formas primarias."
+  },
+  {
+    "Code": "2021",
+    "Name": "2021",
+    "U_Descripcion": "Fabricación de plaguicidas y otros productos químicos de uso agropecuario."
+  },
+  {
+    "Code": "2022",
+    "Name": "2022",
+    "U_Descripcion": "Fabricación de pinturas, barnices y revestimientos similares, tintas para impresión y masillas."
+  },
+  {
+    "Code": "2023",
+    "Name": "2023",
+    "U_Descripcion": "Fabricación de jabones y detergentes, preparados para limpiar y pulir; perfumes y preparados de tocador."
+  },
+  {
+    "Code": "2029",
+    "Name": "2029",
+    "U_Descripcion": "Fabricación de otros productos químicos n.c.p."
+  },
+  {
+    "Code": "2030",
+    "Name": "2030",
+    "U_Descripcion": "Fabricación de fibras sintéticas y artificiales."
+  },
+  {
+    "Code": "2100",
+    "Name": "2100",
+    "U_Descripcion": "Fabricación de productos farmacéuticos, sustancias químicas medicinales y productos botánicos de uso farmacéutico."
+  },
+  {
+    "Code": "2211",
+    "Name": "2211",
+    "U_Descripcion": "Fabricación de llantas y neumáticos de caucho"
+  },
+  {
+    "Code": "2212",
+    "Name": "2212",
+    "U_Descripcion": "Reencauche de llantas usadas"
+  },
+  {
+    "Code": "2219",
+    "Name": "2219",
+    "U_Descripcion": "Fabricación de formas básicas de caucho y otros productos de caucho n.c.p."
+  },
+  {
+    "Code": "2221",
+    "Name": "2221",
+    "U_Descripcion": "Fabricación de formas básicas de plástico."
+  },
+  {
+    "Code": "2229",
+    "Name": "2229",
+    "U_Descripcion": "Fabricación de artículos de plástico n.c.p."
+  },
+  {
+    "Code": "2310",
+    "Name": "2310",
+    "U_Descripcion": "Fabricación de vidrio y productos de vidrio."
+  },
+  {
+    "Code": "2391",
+    "Name": "2391",
+    "U_Descripcion": "Fabricación de productos refractarios."
+  },
+  {
+    "Code": "2392",
+    "Name": "2392",
+    "U_Descripcion": "Fabricación de materiales de arcilla para la construcción."
+  },
+  {
+    "Code": "2393",
+    "Name": "2393",
+    "U_Descripcion": "Fabricación de otros productos de cerámica y porcelana."
+  },
+  {
+    "Code": "2394",
+    "Name": "2394",
+    "U_Descripcion": "Fabricación de cemento, cal y yeso."
+  },
+  {
+    "Code": "2395",
+    "Name": "2395",
+    "U_Descripcion": "Fabricación de artículos de hormigón, cemento y yeso."
+  },
+  {
+    "Code": "2396",
+    "Name": "2396",
+    "U_Descripcion": "Corte, tallado y acabado de la piedra."
+  },
+  {
+    "Code": "2399",
+    "Name": "2399",
+    "U_Descripcion": "Fabricación de otros productos minerales no metálicos n.c.p."
+  },
+  {
+    "Code": "2410",
+    "Name": "2410",
+    "U_Descripcion": "Industrias básicas de hierro y de acero."
+  },
+  {
+    "Code": "2421",
+    "Name": "2421",
+    "U_Descripcion": "Industrias básicas de metales preciosos."
+  },
+  {
+    "Code": "2429",
+    "Name": "2429",
+    "U_Descripcion": "Industrias básicas de otros metales no ferrosos."
+  },
+  {
+    "Code": "2431",
+    "Name": "2431",
+    "U_Descripcion": "Fundición de hierro y de acero."
+  },
+  {
+    "Code": "2432",
+    "Name": "2432",
+    "U_Descripcion": "Fundición de metales no ferrosos."
+  },
+  {
+    "Code": "2511",
+    "Name": "2511",
+    "U_Descripcion": "Fabricación de productos metálicos para uso estructural."
+  },
+  {
+    "Code": "2512",
+    "Name": "2512",
+    "U_Descripcion": "Fabricación de tanques, depósitos y recipientes de metal, excepto los utilizados para el envase o transporte de mercancías."
+  },
+  {
+    "Code": "2513",
+    "Name": "2513",
+    "U_Descripcion": "Fabricación de generadores de vapor, excepto calderas de agua caliente paracalefacción central."
+  },
+  {
+    "Code": "2520",
+    "Name": "2520",
+    "U_Descripcion": "Fabricación de armas y municiones."
+  },
+  {
+    "Code": "2591",
+    "Name": "2591",
+    "U_Descripcion": "Forja, prensado, estampado y laminado de metal; pulvimetalurgia."
+  },
+  {
+    "Code": "2592",
+    "Name": "2592",
+    "U_Descripcion": "Tratamiento y revestimiento de metales; mecanizado."
+  },
+  {
+    "Code": "2593",
+    "Name": "2593",
+    "U_Descripcion": "Fabricación de artículos de cuchillería, herramientas de mano y artículos de ferretería."
+  },
+  {
+    "Code": "2599",
+    "Name": "2599",
+    "U_Descripcion": "Fabricación de otros productos elaborados de metal n.c.p."
+  },
+  {
+    "Code": "2610",
+    "Name": "2610",
+    "U_Descripcion": "Fabricación de componentes y tableros electrónicos."
+  },
+  {
+    "Code": "2620",
+    "Name": "2620",
+    "U_Descripcion": "Fabricación de computadoras y de equipo periférico."
+  },
+  {
+    "Code": "2630",
+    "Name": "2630",
+    "U_Descripcion": "Fabricación de equipos de comunicación."
+  },
+  {
+    "Code": "2640",
+    "Name": "2640",
+    "U_Descripcion": "Fabricación de aparatos electrónicos de consumo."
+  },
+  {
+    "Code": "2651",
+    "Name": "2651",
+    "U_Descripcion": "Fabricación de equipo de medición, prueba, navegación y control."
+  },
+  {
+    "Code": "2652",
+    "Name": "2652",
+    "U_Descripcion": "Fabricación de relojes."
+  },
+  {
+    "Code": "2660",
+    "Name": "2660",
+    "U_Descripcion": "Fabricación de equipo de irradiación y equipo electrónico de uso médico y terapéutico."
+  },
+  {
+    "Code": "2670",
+    "Name": "2670",
+    "U_Descripcion": "Fabricación de instrumentos ópticos y equipo fotográfico."
+  },
+  {
+    "Code": "2680",
+    "Name": "2680",
+    "U_Descripcion": "Fabricación de medios magnéticos y ópticos para almacenamiento de datos."
+  },
+  {
+    "Code": "2711",
+    "Name": "2711",
+    "U_Descripcion": "Fabricación de motores, generadores y transformadores eléctricos."
+  },
+  {
+    "Code": "2712",
+    "Name": "2712",
+    "U_Descripcion": "Fabricación de aparatos de distribución y control de la energía eléctrica."
+  },
+  {
+    "Code": "2720",
+    "Name": "2720",
+    "U_Descripcion": "Fabricación de pilas, baterías y acumuladores eléctricos."
+  },
+  {
+    "Code": "2731",
+    "Name": "2731",
+    "U_Descripcion": "Fabricación de hilos y cables eléctricos y de fibra óptica."
+  },
+  {
+    "Code": "2732",
+    "Name": "2732",
+    "U_Descripcion": "Fabricación de dispositivos de cableado."
+  },
+  {
+    "Code": "2740",
+    "Name": "2740",
+    "U_Descripcion": "Fabricación de equipos eléctricos de iluminación."
+  },
+  {
+    "Code": "2750",
+    "Name": "2750",
+    "U_Descripcion": "Fabricación de aparatos de uso doméstico."
+  },
+  {
+    "Code": "2790",
+    "Name": "2790",
+    "U_Descripcion": "Fabricación de otros tipos de equipo eléctrico n.c.p."
+  },
+  {
+    "Code": "2811",
+    "Name": "2811",
+    "U_Descripcion": "Fabricación de motores, turbinas, y partes para motores de combustión interna."
+  },
+  {
+    "Code": "2812",
+    "Name": "2812",
+    "U_Descripcion": "Fabricación de equipos de potencia hidráulica y neumática."
+  },
+  {
+    "Code": "2813",
+    "Name": "2813",
+    "U_Descripcion": "Fabricación de otras bombas, compresores, grifos y válvulas."
+  },
+  {
+    "Code": "2814",
+    "Name": "2814",
+    "U_Descripcion": "Fabricación de cojinetes, engranajes, trenes de engranajes y piezas de transmisión."
+  },
+  {
+    "Code": "2815",
+    "Name": "2815",
+    "U_Descripcion": "Fabricación de hornos, hogares y quemadores industriales."
+  },
+  {
+    "Code": "2816",
+    "Name": "2816",
+    "U_Descripcion": "Fabricación de equipo de elevación y manipulación."
+  },
+  {
+    "Code": "2817",
+    "Name": "2817",
+    "U_Descripcion": "Fabricación de maquinaria y equipo de oficina (excepto computadoras y equipo periférico)."
+  },
+  {
+    "Code": "2818",
+    "Name": "2818",
+    "U_Descripcion": "Fabricación de herramientas manuales con motor."
+  },
+  {
+    "Code": "2819",
+    "Name": "2819",
+    "U_Descripcion": "Fabricación de otros tipos de maquinaria y equipo de uso general n.c.p."
+  },
+  {
+    "Code": "2821",
+    "Name": "2821",
+    "U_Descripcion": "Fabricación de maquinaria agropecuaria y forestal."
+  },
+  {
+    "Code": "2822",
+    "Name": "2822",
+    "U_Descripcion": "Fabricación de máquinas formadoras de metal y de máquinas herramienta."
+  },
+  {
+    "Code": "2823",
+    "Name": "2823",
+    "U_Descripcion": "Fabricación de maquinaria para la metalurgia."
+  },
+  {
+    "Code": "2824",
+    "Name": "2824",
+    "U_Descripcion": "Fabricación de maquinaria para explotación de minas y canteras y para obras de construcción."
+  },
+  {
+    "Code": "2825",
+    "Name": "2825",
+    "U_Descripcion": "Fabricación de maquinaria para la elaboración de alimentos, bebidas y tabaco."
+  },
+  {
+    "Code": "2826",
+    "Name": "2826",
+    "U_Descripcion": "Fabricación de maquinaria para la elaboración de productos textiles, prendas de vestir y cueros."
+  },
+  {
+    "Code": "2829",
+    "Name": "2829",
+    "U_Descripcion": "Fabricación de otros tipos de maquinaria y equipo de uso especial n.c.p."
+  },
+  {
+    "Code": "2910",
+    "Name": "2910",
+    "U_Descripcion": "Fabricación de vehículos automotores y sus motores."
+  },
+  {
+    "Code": "2920",
+    "Name": "2920",
+    "U_Descripcion": "Fabricación de carrocerías para vehículos automotores; fabricación de remolques y semirremolques."
+  },
+  {
+    "Code": "2930",
+    "Name": "2930",
+    "U_Descripcion": "Fabricación de partes, piezas (autopartes) y accesorios (lujos) para vehículos automotores."
+  },
+  {
+    "Code": "3011",
+    "Name": "3011",
+    "U_Descripcion": "Construcción de barcos y de estructuras flotantes."
+  },
+  {
+    "Code": "3012",
+    "Name": "3012",
+    "U_Descripcion": "Construcción de embarcaciones de recreo y deporte."
+  },
+  {
+    "Code": "302",
+    "Name": "302",
+    "U_Descripcion": "Fabricación de locomotoras y de material rodante"
+  },
+  {
+    "Code": "3020",
+    "Name": "3020",
+    "U_Descripcion": "Fabricación de locomotoras y de material rodante para ferrocarriles."
+  },
+  {
+    "Code": "3030",
+    "Name": "3030",
+    "U_Descripcion": "Fabricación de aeronaves, naves espaciales y de maquinaria conexa."
+  },
+  {
+    "Code": "3040",
+    "Name": "3040",
+    "U_Descripcion": "Fabricación de vehículos militares de combate."
+  },
+  {
+    "Code": "3091",
+    "Name": "3091",
+    "U_Descripcion": "Fabricación de motocicletas."
+  },
+  {
+    "Code": "3092",
+    "Name": "3092",
+    "U_Descripcion": "Fabricación de bicicletas y de sillas de ruedas para personas con discapacidad."
+  },
+  {
+    "Code": "3099",
+    "Name": "3099",
+    "U_Descripcion": "Fabricación de otros tipos de equipo de transporte n.c.p."
+  },
+  {
+    "Code": "3110",
+    "Name": "3110",
+    "U_Descripcion": "Fabricación de muebles."
+  },
+  {
+    "Code": "3120",
+    "Name": "3120",
+    "U_Descripcion": "Fabricación de colchones y somieres."
+  },
+  {
+    "Code": "3210",
+    "Name": "3210",
+    "U_Descripcion": "Fabricación de joyas, bisutería y artículos conexos."
+  },
+  {
+    "Code": "3220",
+    "Name": "3220",
+    "U_Descripcion": "Fabricación de instrumentos musicales."
+  },
+  {
+    "Code": "3230",
+    "Name": "3230",
+    "U_Descripcion": "Fabricación de artículos y equipo para la práctica del deporte."
+  },
+  {
+    "Code": "3240",
+    "Name": "3240",
+    "U_Descripcion": "Fabricación de juegos, juguetes y rompecabezas."
+  },
+  {
+    "Code": "3250",
+    "Name": "3250",
+    "U_Descripcion": "Fabricación de instrumentos, aparatos y materiales médicos y odontológicos (incluido mobiliario)."
+  },
+  {
+    "Code": "3290",
+    "Name": "3290",
+    "U_Descripcion": "Otras industrias manufactureras n.c.p."
+  },
+  {
+    "Code": "3311",
+    "Name": "3311",
+    "U_Descripcion": "Mantenimiento y reparación especializado de productos elaborados en metal."
+  },
+  {
+    "Code": "3312",
+    "Name": "3312",
+    "U_Descripcion": "Mantenimiento y reparación especializado de maquinaria y equipo."
+  },
+  {
+    "Code": "3313",
+    "Name": "3313",
+    "U_Descripcion": "Mantenimiento y reparación especializado de equipo electrónico y óptico."
+  },
+  {
+    "Code": "3314",
+    "Name": "3314",
+    "U_Descripcion": "Mantenimiento y reparación especializado de equipo eléctrico."
+  },
+  {
+    "Code": "3315",
+    "Name": "3315",
+    "U_Descripcion": "Mantenimiento y reparación especializado de equipo de transporte, excepto los vehículos automotores, motocicletas y bicicletas."
+  },
+  {
+    "Code": "3319",
+    "Name": "3319",
+    "U_Descripcion": "Mantenimiento y reparación de otros tipos de equipos y sus componentes n.c.p."
+  },
+  {
+    "Code": "3320",
+    "Name": "3320",
+    "U_Descripcion": "Instalación especializada de maquinaria y equipo industrial."
+  },
+  {
+    "Code": "3511",
+    "Name": "3511",
+    "U_Descripcion": "Generación de energía eléctrica."
+  },
+  {
+    "Code": "3512",
+    "Name": "3512",
+    "U_Descripcion": "Transmisión de energía eléctrica."
+  },
+  {
+    "Code": "3513",
+    "Name": "3513",
+    "U_Descripcion": "Distribución de energía eléctrica."
+  },
+  {
+    "Code": "3514",
+    "Name": "3514",
+    "U_Descripcion": "Comercialización de energía eléctrica."
+  },
+  {
+    "Code": "3520",
+    "Name": "3520",
+    "U_Descripcion": "Producción de gas; distribución de combustibles gaseosos por tuberías."
+  },
+  {
+    "Code": "3530",
+    "Name": "3530",
+    "U_Descripcion": "Suministro de vapor y aire acondicionado."
+  },
+  {
+    "Code": "3600",
+    "Name": "3600",
+    "U_Descripcion": "Captación, tratamiento y distribución de agua."
+  },
+  {
+    "Code": "3700",
+    "Name": "3700",
+    "U_Descripcion": "Evacuación y tratamiento de aguas residuales."
+  },
+  {
+    "Code": "3811",
+    "Name": "3811",
+    "U_Descripcion": "Recolección de desechos no peligrosos."
+  },
+  {
+    "Code": "3812",
+    "Name": "3812",
+    "U_Descripcion": "Recolección de desechos peligrosos."
+  },
+  {
+    "Code": "3821",
+    "Name": "3821",
+    "U_Descripcion": "Tratamiento y disposición de desechos no peligrosos."
+  },
+  {
+    "Code": "3822",
+    "Name": "3822",
+    "U_Descripcion": "Tratamiento y disposición de desechos peligrosos."
+  },
+  {
+    "Code": "3830",
+    "Name": "3830",
+    "U_Descripcion": "Recuperación de materiales."
+  },
+  {
+    "Code": "3900",
+    "Name": "3900",
+    "U_Descripcion": "Actividades de saneamiento ambiental y otros servicios de gestión de desechos."
+  },
+  {
+    "Code": "4111",
+    "Name": "4111",
+    "U_Descripcion": "Construcción de edificios residenciales."
+  },
+  {
+    "Code": "4112",
+    "Name": "4112",
+    "U_Descripcion": "Construcción de edificios no residenciales."
+  },
+  {
+    "Code": "4210",
+    "Name": "4210",
+    "U_Descripcion": "Construcción de carreteras y vías de ferrocarril."
+  },
+  {
+    "Code": "4220",
+    "Name": "4220",
+    "U_Descripcion": "Construcción de proyectos de servicio público."
+  },
+  {
+    "Code": "4290",
+    "Name": "4290",
+    "U_Descripcion": "Construcción de otras obras de ingeniería civil."
+  },
+  {
+    "Code": "4311",
+    "Name": "4311",
+    "U_Descripcion": "Demolición."
+  },
+  {
+    "Code": "4312",
+    "Name": "4312",
+    "U_Descripcion": "Preparación del terreno."
+  },
+  {
+    "Code": "4321",
+    "Name": "4321",
+    "U_Descripcion": "Instalaciones eléctricas."
+  },
+  {
+    "Code": "4322",
+    "Name": "4322",
+    "U_Descripcion": "Instalaciones de fontanería, calefacción y aire acondicionado."
+  },
+  {
+    "Code": "4329",
+    "Name": "4329",
+    "U_Descripcion": "Otras instalaciones especializadas."
+  },
+  {
+    "Code": "4330",
+    "Name": "4330",
+    "U_Descripcion": "Terminación y acabado de edificios y obras de ingeniería civil."
+  },
+  {
+    "Code": "4390",
+    "Name": "4390",
+    "U_Descripcion": "Otras actividades especializadas para la construcción de edificios y obras de ingeniería civil."
+  },
+  {
+    "Code": "4511",
+    "Name": "4511",
+    "U_Descripcion": "Comercio de vehículos automotores nuevos."
+  },
+  {
+    "Code": "4512",
+    "Name": "4512",
+    "U_Descripcion": "Comercio de vehículos automotores usados."
+  },
+  {
+    "Code": "4520",
+    "Name": "4520",
+    "U_Descripcion": "Mantenimiento y reparación de vehículos automotores."
+  },
+  {
+    "Code": "4530",
+    "Name": "4530",
+    "U_Descripcion": "Comercio de partes, piezas (autopartes) y accesorios (lujos) para vehículos automotores."
+  },
+  {
+    "Code": "4541",
+    "Name": "4541",
+    "U_Descripcion": "Comercio de motocicletas y de sus partes, piezas y accesorios."
+  },
+  {
+    "Code": "4542",
+    "Name": "4542",
+    "U_Descripcion": "Mantenimiento y reparación de motocicletas y de sus partes y piezas."
+  },
+  {
+    "Code": "4610",
+    "Name": "4610",
+    "U_Descripcion": "Comercio al por mayor a cambio de una retribución o por contrata."
+  },
+  {
+    "Code": "4620",
+    "Name": "4620",
+    "U_Descripcion": "Comercio al por mayor de materias primas agropecuarias; animales vivos."
+  },
+  {
+    "Code": "4631",
+    "Name": "4631",
+    "U_Descripcion": "Comercio al por mayor de productos alimenticios."
+  },
+  {
+    "Code": "4632",
+    "Name": "4632",
+    "U_Descripcion": "Comercio al por mayor de bebidas y tabaco."
+  },
+  {
+    "Code": "4641",
+    "Name": "4641",
+    "U_Descripcion": "Comercio al por mayor de productos textiles, productos confeccionados para uso doméstico."
+  },
+  {
+    "Code": "4642",
+    "Name": "4642",
+    "U_Descripcion": "Comercio al por mayor de prendas de vestir."
+  },
+  {
+    "Code": "4643",
+    "Name": "4643",
+    "U_Descripcion": "Comercio al por mayor de calzado."
+  },
+  {
+    "Code": "4644",
+    "Name": "4644",
+    "U_Descripcion": "Comercio al por mayor de aparatos y equipo de uso doméstico."
+  },
+  {
+    "Code": "4645",
+    "Name": "4645",
+    "U_Descripcion": "Comercio al por mayor de productos farmacéuticos, medicinales, cosméticos y de tocador."
+  },
+  {
+    "Code": "4649",
+    "Name": "4649",
+    "U_Descripcion": "Comercio al por mayor de otros utensilios domésticos n.c.p."
+  },
+  {
+    "Code": "4651",
+    "Name": "4651",
+    "U_Descripcion": "Comercio al por mayor de computadores, equipo periférico y programas de informática."
+  },
+  {
+    "Code": "4652",
+    "Name": "4652",
+    "U_Descripcion": "Comercio al por mayor de equipo, partes y piezas electrónicos y de telecomunicaciones."
+  },
+  {
+    "Code": "4653",
+    "Name": "4653",
+    "U_Descripcion": "Comercio al por mayor de maquinaria y equipo agropecuarios."
+  },
+  {
+    "Code": "4659",
+    "Name": "4659",
+    "U_Descripcion": "Comercio al por mayor de otros tipos de maquinaria y equipo n.c.p."
+  },
+  {
+    "Code": "4661",
+    "Name": "4661",
+    "U_Descripcion": "Comercio al por mayor de combustibles sólidos, líquidos, gaseosos y productos conexos."
+  },
+  {
+    "Code": "4662",
+    "Name": "4662",
+    "U_Descripcion": "Comercio al por mayor de metales y productos metalíferos."
+  },
+  {
+    "Code": "4663",
+    "Name": "4663",
+    "U_Descripcion": "Comercio al por mayor de materiales de construcción, artículos de ferretería, pinturas, productos de vidrio, equipo y materiales de fontanería y calefacción."
+  },
+  {
+    "Code": "4664",
+    "Name": "4664",
+    "U_Descripcion": "Comercio al por mayor de productos químicos básicos, cauchos y plásticos en formas primarias y productos químicos de uso agropecuario."
+  },
+  {
+    "Code": "4665",
+    "Name": "4665",
+    "U_Descripcion": "Comercio al por mayor de desperdicios, desechos y chatarra."
+  },
+  {
+    "Code": "4669",
+    "Name": "4669",
+    "U_Descripcion": "Comercio al por mayor de otros productos n.c.p."
+  },
+  {
+    "Code": "4690",
+    "Name": "4690",
+    "U_Descripcion": "Comercio al por mayor no especializado."
+  },
+  {
+    "Code": "4711",
+    "Name": "4711",
+    "U_Descripcion": "Comercio al por menor en establecimientos no especializados con surtido compuesto principalmente por alimentos, bebidas o tabaco."
+  },
+  {
+    "Code": "4719",
+    "Name": "4719",
+    "U_Descripcion": "Comercio al por menor en establecimientos no especializados, con surtido compuesto principalmente por productos diferentes de alimentos (víveres en general), bebidas y tabaco."
+  },
+  {
+    "Code": "4721",
+    "Name": "4721",
+    "U_Descripcion": "Comercio al por menor de productos agrícolas para el consumo en establecimientos especializados."
+  },
+  {
+    "Code": "4722",
+    "Name": "4722",
+    "U_Descripcion": "Comercio al por menor de leche, productos lácteos y huevos, en establecimientos especializados."
+  },
+  {
+    "Code": "4723",
+    "Name": "4723",
+    "U_Descripcion": "Comercio al por menor de carnes (incluye aves de corral), productos cárnicos, pescados y productos de mar, en establecimientos especializados."
+  },
+  {
+    "Code": "4724",
+    "Name": "4724",
+    "U_Descripcion": "Comercio al por menor de bebidas y productos del tabaco, en establecimientos especializados."
+  },
+  {
+    "Code": "4729",
+    "Name": "4729",
+    "U_Descripcion": "Comercio al por menor de otros productos alimenticios n.c.p., en establecimientos especializados."
+  },
+  {
+    "Code": "4731",
+    "Name": "4731",
+    "U_Descripcion": "Comercio al por menor de combustible para automotores."
+  },
+  {
+    "Code": "4732",
+    "Name": "4732",
+    "U_Descripcion": "Comercio al por menor de lubricantes (aceites, grasas), aditivos y productos de limpieza para vehículos automotores."
+  },
+  {
+    "Code": "4741",
+    "Name": "4741",
+    "U_Descripcion": "Comercio al por menor de computadores, equipos periféricos, programas de informática y equipos de telecomunicaciones en establecimientos especializados."
+  },
+  {
+    "Code": "4742",
+    "Name": "4742",
+    "U_Descripcion": "Comercio al por menor de equipos y aparatos de sonido y de video, en establecimientos especializados."
+  },
+  {
+    "Code": "4751",
+    "Name": "4751",
+    "U_Descripcion": "Comercio al por menor de productos textiles en establecimientos especializados."
+  },
+  {
+    "Code": "4752",
+    "Name": "4752",
+    "U_Descripcion": "Comercio al por menor de artículos de ferretería, pinturas y productos de vidrio en establecimientos especializados."
+  },
+  {
+    "Code": "4753",
+    "Name": "4753",
+    "U_Descripcion": "Comercio al por menor de tapices, alfombras y cubrimientos para paredes y pisos en establecimientos especializados."
+  },
+  {
+    "Code": "4754",
+    "Name": "4754",
+    "U_Descripcion": "Comercio al por menor de electrodomésticos y gasodomésticos de uso doméstico, muebles y equipos de iluminación."
+  },
+  {
+    "Code": "4755",
+    "Name": "4755",
+    "U_Descripcion": "Comercio al por menor de artículos y utensilios de uso doméstico."
+  },
+  {
+    "Code": "4759",
+    "Name": "4759",
+    "U_Descripcion": "Comercio al por menor de otros artículos domésticos en establecimientos especializados."
+  },
+  {
+    "Code": "4761",
+    "Name": "4761",
+    "U_Descripcion": "Comercio al por menor de libros, periódicos, materiales y artículos de papelería y escritorio, en establecimientos especializados."
+  },
+  {
+    "Code": "4762",
+    "Name": "4762",
+    "U_Descripcion": "Comercio al por menor de artículos deportivos, en establecimientos especializados."
+  },
+  {
+    "Code": "4769",
+    "Name": "4769",
+    "U_Descripcion": "Comercio al por menor de otros artículos culturales y de entretenimiento n.c.p. en establecimientos especializados."
+  },
+  {
+    "Code": "4771",
+    "Name": "4771",
+    "U_Descripcion": "Comercio al por menor de prendas de vestir y sus accesorios (incluye artículos de piel) en establecimientos especializados."
+  },
+  {
+    "Code": "4772",
+    "Name": "4772",
+    "U_Descripcion": "Comercio al por menor de todo tipo de calzado y artículos de cuero y sucedáneos del cuero en establecimientos especializados."
+  },
+  {
+    "Code": "4773",
+    "Name": "4773",
+    "U_Descripcion": "Comercio al por menor de productos farmacéuticos y medicinales, cosméticos y artículos de tocador en establecimientos especializados."
+  },
+  {
+    "Code": "4774",
+    "Name": "4774",
+    "U_Descripcion": "Comercio al por menor de otros productos nuevos en establecimientos especializados."
+  },
+  {
+    "Code": "4775",
+    "Name": "4775",
+    "U_Descripcion": "Comercio al por menor de artículos de segunda mano."
+  },
+  {
+    "Code": "4781",
+    "Name": "4781",
+    "U_Descripcion": "Comercio al por menor de alimentos, bebidas y tabaco, en puestos de venta móviles."
+  },
+  {
+    "Code": "4782",
+    "Name": "4782",
+    "U_Descripcion": "Comercio al por menor de productos textiles, prendas de vestir y calzado, en puestos de venta móviles."
+  },
+  {
+    "Code": "4789",
+    "Name": "4789",
+    "U_Descripcion": "Comercio al por menor de otros productos en puestos de venta móviles."
+  },
+  {
+    "Code": "4791",
+    "Name": "4791",
+    "U_Descripcion": "Comercio al por menor realizado a través de internet."
+  },
+  {
+    "Code": "4792",
+    "Name": "4792",
+    "U_Descripcion": "Comercio al por menor realizado a través de casas de venta o por correo."
+  },
+  {
+    "Code": "4799",
+    "Name": "4799",
+    "U_Descripcion": "Otros tipos de comercio al por menor no realizado en establecimientos, puestos de venta o mercados."
+  },
+  {
+    "Code": "4911",
+    "Name": "4911",
+    "U_Descripcion": "Transporte férreo de pasajeros."
+  },
+  {
+    "Code": "4912",
+    "Name": "4912",
+    "U_Descripcion": "Transporte férreo de carga."
+  },
+  {
+    "Code": "4921",
+    "Name": "4921",
+    "U_Descripcion": "Transporte de pasajeros."
+  },
+  {
+    "Code": "4922",
+    "Name": "4922",
+    "U_Descripcion": "Transporte mixto."
+  },
+  {
+    "Code": "4923",
+    "Name": "4923",
+    "U_Descripcion": "Transporte de carga por carretera."
+  },
+  {
+    "Code": "4930",
+    "Name": "4930",
+    "U_Descripcion": "Transporte por tuberías."
+  },
+  {
+    "Code": "5011",
+    "Name": "5011",
+    "U_Descripcion": "Transporte de pasajeros marítimo y de cabotaje."
+  },
+  {
+    "Code": "5012",
+    "Name": "5012",
+    "U_Descripcion": "Transporte de carga marítimo y de cabotaje."
+  },
+  {
+    "Code": "5021",
+    "Name": "5021",
+    "U_Descripcion": "Transporte fluvial de pasajeros."
+  },
+  {
+    "Code": "5022",
+    "Name": "5022",
+    "U_Descripcion": "Transporte fluvial de carga."
+  },
+  {
+    "Code": "5111",
+    "Name": "5111",
+    "U_Descripcion": "Transporte aéreo nacional de pasajeros."
+  },
+  {
+    "Code": "5112",
+    "Name": "5112",
+    "U_Descripcion": "Transporte aéreo internacional de pasajeros."
+  },
+  {
+    "Code": "5121",
+    "Name": "5121",
+    "U_Descripcion": "Transporte aéreo nacional de carga."
+  },
+  {
+    "Code": "5122",
+    "Name": "5122",
+    "U_Descripcion": "Transporte aéreo internacional de carga."
+  },
+  {
+    "Code": "5210",
+    "Name": "5210",
+    "U_Descripcion": "Almacenamiento y depósito."
+  },
+  {
+    "Code": "5221",
+    "Name": "5221",
+    "U_Descripcion": "Actividades de estaciones, vías y servicios complementarios para el transporte terrestre."
+  },
+  {
+    "Code": "5222",
+    "Name": "5222",
+    "U_Descripcion": "Actividades de puertos y servicios complementarios para el transporte acuático."
+  },
+  {
+    "Code": "5223",
+    "Name": "5223",
+    "U_Descripcion": "Actividades de aeropuertos, servicios de navegación aérea y demás actividades conexas al transporte aéreo."
+  },
+  {
+    "Code": "5224",
+    "Name": "5224",
+    "U_Descripcion": "Manipulación de carga."
+  },
+  {
+    "Code": "5229",
+    "Name": "5229",
+    "U_Descripcion": "Otras actividades complementarias al transporte."
+  },
+  {
+    "Code": "5310",
+    "Name": "5310",
+    "U_Descripcion": "Actividades postales nacionales."
+  },
+  {
+    "Code": "5320",
+    "Name": "5320",
+    "U_Descripcion": "Actividades de mensajería."
+  },
+  {
+    "Code": "5511",
+    "Name": "5511",
+    "U_Descripcion": "Alojamiento en hoteles."
+  },
+  {
+    "Code": "5512",
+    "Name": "5512",
+    "U_Descripcion": "Alojamiento en apartahoteles."
+  },
+  {
+    "Code": "5513",
+    "Name": "5513",
+    "U_Descripcion": "Alojamiento en centros vacacionales."
+  },
+  {
+    "Code": "5514",
+    "Name": "5514",
+    "U_Descripcion": "Alojamiento rural."
+  },
+  {
+    "Code": "5519",
+    "Name": "5519",
+    "U_Descripcion": "Otros tipos de alojamientos para visitantes."
+  },
+  {
+    "Code": "5520",
+    "Name": "5520",
+    "U_Descripcion": "Actividades de zonas de camping y parques para vehículos recreacionales."
+  },
+  {
+    "Code": "5530",
+    "Name": "5530",
+    "U_Descripcion": "Servicio por horas"
+  },
+  {
+    "Code": "5590",
+    "Name": "5590",
+    "U_Descripcion": "Otros tipos de alojamiento n.c.p."
+  },
+  {
+    "Code": "5611",
+    "Name": "5611",
+    "U_Descripcion": "Expendio a la mesa de comidas preparadas."
+  },
+  {
+    "Code": "5612",
+    "Name": "5612",
+    "U_Descripcion": "Expendio por autoservicio de comidas preparadas."
+  },
+  {
+    "Code": "5613",
+    "Name": "5613",
+    "U_Descripcion": "Expendio de comidas preparadas en cafeterías."
+  },
+  {
+    "Code": "5619",
+    "Name": "5619",
+    "U_Descripcion": "Otros tipos de expendio de comidas preparadas n.c.p."
+  },
+  {
+    "Code": "5621",
+    "Name": "5621",
+    "U_Descripcion": "Catering para eventos."
+  },
+  {
+    "Code": "5629",
+    "Name": "5629",
+    "U_Descripcion": "Actividades de otros servicios de comidas."
+  },
+  {
+    "Code": "5630",
+    "Name": "5630",
+    "U_Descripcion": "Expendio de bebidas alcohólicas para el consumo dentro del establecimiento."
+  },
+  {
+    "Code": "5811",
+    "Name": "5811",
+    "U_Descripcion": "Edición de libros."
+  },
+  {
+    "Code": "5812",
+    "Name": "5812",
+    "U_Descripcion": "Edición de directorios y listas de correo."
+  },
+  {
+    "Code": "5813",
+    "Name": "5813",
+    "U_Descripcion": "Edición de periódicos, revistas y otras publicaciones periódicas."
+  },
+  {
+    "Code": "5819",
+    "Name": "5819",
+    "U_Descripcion": "Otros trabajos de edición."
+  },
+  {
+    "Code": "5820",
+    "Name": "5820",
+    "U_Descripcion": "Edición de programas de informática (software)."
+  },
+  {
+    "Code": "5911",
+    "Name": "5911",
+    "U_Descripcion": "Actividades de producción de películas cinematográficas, videos, programas, anuncios y comerciales de televisión."
+  },
+  {
+    "Code": "5912",
+    "Name": "5912",
+    "U_Descripcion": "Actividades de posproducción de películas cinematográficas, videos, programas, anuncios y comerciales de televisión."
+  },
+  {
+    "Code": "5913",
+    "Name": "5913",
+    "U_Descripcion": "Actividades de distribución de películas cinematográficas, videos, programas, anuncios y comerciales de televisión."
+  },
+  {
+    "Code": "5914",
+    "Name": "5914",
+    "U_Descripcion": "Actividades de exhibición de películas cinematográficas y videos."
+  },
+  {
+    "Code": "5920",
+    "Name": "5920",
+    "U_Descripcion": "Actividades de grabación de sonido y edición de música."
+  },
+  {
+    "Code": "6010",
+    "Name": "6010",
+    "U_Descripcion": "Actividades de programación y transmisión en el servicio de radiodifusión sonora."
+  },
+  {
+    "Code": "6020",
+    "Name": "6020",
+    "U_Descripcion": "Actividades de programación y transmisión de televisión."
+  },
+  {
+    "Code": "6110",
+    "Name": "6110",
+    "U_Descripcion": "Actividades de telecomunicaciones alámbricas."
+  },
+  {
+    "Code": "6120",
+    "Name": "6120",
+    "U_Descripcion": "Actividades de telecomunicaciones inalámbricas."
+  },
+  {
+    "Code": "6130",
+    "Name": "6130",
+    "U_Descripcion": "Actividades de telecomunicación satelital."
+  },
+  {
+    "Code": "6190",
+    "Name": "6190",
+    "U_Descripcion": "Otras actividades de telecomunicaciones."
+  },
+  {
+    "Code": "6201",
+    "Name": "6201",
+    "U_Descripcion": "Actividades de desarrollo de sistemas informáticos (planificación, análisis, diseño, programación, pruebas)."
+  },
+  {
+    "Code": "6202",
+    "Name": "6202",
+    "U_Descripcion": "Actividades de consultoría informática y actividades de administración de instalaciones informáticas."
+  },
+  {
+    "Code": "6209",
+    "Name": "6209",
+    "U_Descripcion": "Otras actividades de tecnologías de información y actividades de serviciosinformáticos."
+  },
+  {
+    "Code": "6311",
+    "Name": "6311",
+    "U_Descripcion": "Procesamiento de datos, alojamiento (hosting) y actividades relacionadas."
+  },
+  {
+    "Code": "6312",
+    "Name": "6312",
+    "U_Descripcion": "Portales web."
+  },
+  {
+    "Code": "6391",
+    "Name": "6391",
+    "U_Descripcion": "Actividades de agencias de noticias."
+  },
+  {
+    "Code": "6399",
+    "Name": "6399",
+    "U_Descripcion": "Otras actividades de servicio de información n.c.p."
+  },
+  {
+    "Code": "6411",
+    "Name": "6411",
+    "U_Descripcion": "Banco Central."
+  },
+  {
+    "Code": "6412",
+    "Name": "6412",
+    "U_Descripcion": "Bancos comerciales."
+  },
+  {
+    "Code": "6421",
+    "Name": "6421",
+    "U_Descripcion": "Actividades de las corporaciones financieras."
+  },
+  {
+    "Code": "6422",
+    "Name": "6422",
+    "U_Descripcion": "Actividades de las compañías de financiamiento."
+  },
+  {
+    "Code": "6423",
+    "Name": "6423",
+    "U_Descripcion": "Banca de segundo piso."
+  },
+  {
+    "Code": "6424",
+    "Name": "6424",
+    "U_Descripcion": "Actividades de las cooperativas financieras."
+  },
+  {
+    "Code": "6431",
+    "Name": "6431",
+    "U_Descripcion": "Fideicomisos, fondos y entidades financieras similares."
+  },
+  {
+    "Code": "6432",
+    "Name": "6432",
+    "U_Descripcion": "Fondos de cesantías."
+  },
+  {
+    "Code": "6491",
+    "Name": "6491",
+    "U_Descripcion": "Leasing financiero (arrendamiento financiero)."
+  },
+  {
+    "Code": "6492",
+    "Name": "6492",
+    "U_Descripcion": "Actividades financieras de fondos de empleados y otras formas asociativas del sector solidario."
+  },
+  {
+    "Code": "6493",
+    "Name": "6493",
+    "U_Descripcion": "Actividades de compra de cartera o factoring."
+  },
+  {
+    "Code": "6494",
+    "Name": "6494",
+    "U_Descripcion": "Otras actividades de distribución de fondos."
+  },
+  {
+    "Code": "6495",
+    "Name": "6495",
+    "U_Descripcion": "Instituciones especiales oficiales."
+  },
+  {
+    "Code": "6496",
+    "Name": "6496",
+    "U_Descripcion": "Capitalización."
+  },
+  {
+    "Code": "6499",
+    "Name": "6499",
+    "U_Descripcion": "Otras actividades de servicio financiero, excepto las de seguros y pensiones n.c.p."
+  },
+  {
+    "Code": "6511",
+    "Name": "6511",
+    "U_Descripcion": "Seguros generales."
+  },
+  {
+    "Code": "6512",
+    "Name": "6512",
+    "U_Descripcion": "Seguros de vida."
+  },
+  {
+    "Code": "6513",
+    "Name": "6513",
+    "U_Descripcion": "Reaseguros."
+  },
+  {
+    "Code": "6514",
+    "Name": "6514",
+    "U_Descripcion": "Capitalización."
+  },
+  {
+    "Code": "6515",
+    "Name": "6515",
+    "U_Descripcion": "Seguros de Salud."
+  },
+  {
+    "Code": "6521",
+    "Name": "6521",
+    "U_Descripcion": "Servicios de seguros sociales de salud."
+  },
+  {
+    "Code": "6522",
+    "Name": "6522",
+    "U_Descripcion": "Servicios de seguros sociales de riesgos profesionales."
+  },
+  {
+    "Code": "6523",
+    "Name": "6523",
+    "U_Descripcion": "Servicios de seguros sociales en riesgos familia."
+  },
+  {
+    "Code": "6531",
+    "Name": "6531",
+    "U_Descripcion": "Régimen de prima media con prestación definida (RPM)."
+  },
+  {
+    "Code": "6532",
+    "Name": "6532",
+    "U_Descripcion": "Régimen de ahorro individual (RAI)."
+  },
+  {
+    "Code": "6611",
+    "Name": "6611",
+    "U_Descripcion": "Administración de mercados financieros."
+  },
+  {
+    "Code": "6612",
+    "Name": "6612",
+    "U_Descripcion": "Corretaje de valores y de contratos de productos básicos."
+  },
+  {
+    "Code": "6613",
+    "Name": "6613",
+    "U_Descripcion": "Otras actividades relacionadas con el mercado de valores."
+  },
+  {
+    "Code": "6614",
+    "Name": "6614",
+    "U_Descripcion": "Actividades de las casas de cambio."
+  },
+  {
+    "Code": "6615",
+    "Name": "6615",
+    "U_Descripcion": "Actividades de los profesionales de compra y venta de divisas."
+  },
+  {
+    "Code": "6619",
+    "Name": "6619",
+    "U_Descripcion": "Otras actividades auxiliares de las actividades de servicios financieros n.c.p."
+  },
+  {
+    "Code": "6621",
+    "Name": "6621",
+    "U_Descripcion": "Actividades de agentes y corredores de seguros"
+  },
+  {
+    "Code": "6629",
+    "Name": "6629",
+    "U_Descripcion": "Evaluación de riesgos y daños, y otras actividades de servicios auxiliares"
+  },
+  {
+    "Code": "6630",
+    "Name": "6630",
+    "U_Descripcion": "Actividades de administración de fondos."
+  },
+  {
+    "Code": "6810",
+    "Name": "6810",
+    "U_Descripcion": "Actividades inmobiliarias realizadas con bienes propios o arrendados."
+  },
+  {
+    "Code": "6820",
+    "Name": "6820",
+    "U_Descripcion": "Actividades inmobiliarias realizadas a cambio de una retribución o por contrata."
+  },
+  {
+    "Code": "6910",
+    "Name": "6910",
+    "U_Descripcion": "Actividades jurídicas."
+  },
+  {
+    "Code": "6920",
+    "Name": "6920",
+    "U_Descripcion": "Actividades de contabilidad, teneduría de libros, auditoría financiera y asesoría tributaria."
+  },
+  {
+    "Code": "7010",
+    "Name": "7010",
+    "U_Descripcion": "Actividades de administración empresarial."
+  },
+  {
+    "Code": "7020",
+    "Name": "7020",
+    "U_Descripcion": "Actividades de consultaría de gestión."
+  },
+  {
+    "Code": "7110",
+    "Name": "7110",
+    "U_Descripcion": "Actividades de arquitectura e ingeniería y otras actividades conexas de consultoría técnica."
+  },
+  {
+    "Code": "7111",
+    "Name": "7111",
+    "U_Descripcion": "Actividades de arquitectura."
+  },
+  {
+    "Code": "7112",
+    "Name": "7112",
+    "U_Descripcion": "Actividades de ingeniería y otras actividades conexas de consultoría técnica."
+  },
+  {
+    "Code": "7120",
+    "Name": "7120",
+    "U_Descripcion": "Ensayos y análisis técnicos."
+  },
+  {
+    "Code": "7210",
+    "Name": "7210",
+    "U_Descripcion": "Investigaciones y desarrollo experimental en el campo de las ciencias naturales y la ingeniería."
+  },
+  {
+    "Code": "7220",
+    "Name": "7220",
+    "U_Descripcion": "Investigaciones y desarrollo experimental en el campo de las ciencias sociales y las humanidades."
+  },
+  {
+    "Code": "7310",
+    "Name": "7310",
+    "U_Descripcion": "Publicidad."
+  },
+  {
+    "Code": "7320",
+    "Name": "7320",
+    "U_Descripcion": "Estudios de mercado y realización de encuestas de opinión pública."
+  },
+  {
+    "Code": "7410",
+    "Name": "7410",
+    "U_Descripcion": "Actividades especializadas de diseño."
+  },
+  {
+    "Code": "7420",
+    "Name": "7420",
+    "U_Descripcion": "Actividades de fotografía."
+  },
+  {
+    "Code": "7490",
+    "Name": "7490",
+    "U_Descripcion": "Otras actividades profesionales, científicas y técnicas n.c.p."
+  },
+  {
+    "Code": "7500",
+    "Name": "7500",
+    "U_Descripcion": "Actividades veterinarias."
+  },
+  {
+    "Code": "7710",
+    "Name": "7710",
+    "U_Descripcion": "Alquiler y arrendamiento de vehículos automotores."
+  },
+  {
+    "Code": "7721",
+    "Name": "7721",
+    "U_Descripcion": "Alquiler y arrendamiento de equipo recreativo y deportivo."
+  },
+  {
+    "Code": "7722",
+    "Name": "7722",
+    "U_Descripcion": "Alquiler de videos y discos."
+  },
+  {
+    "Code": "7729",
+    "Name": "7729",
+    "U_Descripcion": "Alquiler y arrendamiento de otros efectos personales y enseres domésticos n.c.p."
+  },
+  {
+    "Code": "7730",
+    "Name": "7730",
+    "U_Descripcion": "Alquiler y arrendamiento de otros tipos de maquinaria, equipo y bienes tangibles n.c.p."
+  },
+  {
+    "Code": "7740",
+    "Name": "7740",
+    "U_Descripcion": "Arrendamiento de propiedad intelectual y productos similares, excepto obras protegidas por derechos de autor."
+  },
+  {
+    "Code": "7810",
+    "Name": "7810",
+    "U_Descripcion": "Actividades de agencias de empleo."
+  },
+  {
+    "Code": "7820",
+    "Name": "7820",
+    "U_Descripcion": "Actividades de agencias de empleo temporal."
+  },
+  {
+    "Code": "7830",
+    "Name": "7830",
+    "U_Descripcion": "Otras actividades de suministro de recurso humano."
+  },
+  {
+    "Code": "7911",
+    "Name": "7911",
+    "U_Descripcion": "Actividades de las agencias de viaje."
+  },
+  {
+    "Code": "7912",
+    "Name": "7912",
+    "U_Descripcion": "Actividades de operadores turísticos."
+  },
+  {
+    "Code": "7990",
+    "Name": "7990",
+    "U_Descripcion": "Otros servicios de reserva y actividades relacionadas."
+  },
+  {
+    "Code": "8010",
+    "Name": "8010",
+    "U_Descripcion": "Actividades de seguridad privada."
+  },
+  {
+    "Code": "8020",
+    "Name": "8020",
+    "U_Descripcion": "Actividades de servicios de sistemas de seguridad."
+  },
+  {
+    "Code": "8030",
+    "Name": "8030",
+    "U_Descripcion": "Actividades de detectives e investigadores privados."
+  },
+  {
+    "Code": "8110",
+    "Name": "8110",
+    "U_Descripcion": "Actividades combinadas de apoyo a instalaciones."
+  },
+  {
+    "Code": "8121",
+    "Name": "8121",
+    "U_Descripcion": "Limpieza general interior de edificios."
+  },
+  {
+    "Code": "8129",
+    "Name": "8129",
+    "U_Descripcion": "Otras actividades de limpieza de edificios e instalaciones industriales."
+  },
+  {
+    "Code": "8130",
+    "Name": "8130",
+    "U_Descripcion": "Actividades de paisajismo y servicios de mantenimiento conexos."
+  },
+  {
+    "Code": "8211",
+    "Name": "8211",
+    "U_Descripcion": "Actividades combinadas de servicios administrativos de oficina"
+  },
+  {
+    "Code": "8219",
+    "Name": "8219",
+    "U_Descripcion": "Fotocopiado, preparación de documentos y otras actividades especializadas de apoyo a oficina."
+  },
+  {
+    "Code": "8220",
+    "Name": "8220",
+    "U_Descripcion": "Actividades de centros de llamadas (Call center)."
+  },
+  {
+    "Code": "8230",
+    "Name": "8230",
+    "U_Descripcion": "Organización de convenciones y eventos comerciales."
+  },
+  {
+    "Code": "8291",
+    "Name": "8291",
+    "U_Descripcion": "Actividades de agencias de cobranza y oficinas de calificación crediticia."
+  },
+  {
+    "Code": "8292",
+    "Name": "8292",
+    "U_Descripcion": "Actividades de envase y empaque."
+  },
+  {
+    "Code": "8299",
+    "Name": "8299",
+    "U_Descripcion": "Otras actividades de servicio de apoyo a las empresas n.c.p."
+  },
+  {
+    "Code": "8411",
+    "Name": "8411",
+    "U_Descripcion": "Actividades legislativas de la administración pública."
+  },
+  {
+    "Code": "8412",
+    "Name": "8412",
+    "U_Descripcion": "Actividades ejecutivas de la administración pública."
+  },
+  {
+    "Code": "8413",
+    "Name": "8413",
+    "U_Descripcion": "Regulación de las actividades de organismos que prestan servicios de salud, educativos, culturales.y otros servicios sociales, excepto servicios de seguridad social."
+  },
+  {
+    "Code": "8414",
+    "Name": "8414",
+    "U_Descripcion": "Actividades reguladoras y facilitadoras de la actividad económica."
+  },
+  {
+    "Code": "8415",
+    "Name": "8415",
+    "U_Descripcion": "Actividades de los otros órganos de control."
+  },
+  {
+    "Code": "8421",
+    "Name": "8421",
+    "U_Descripcion": "Relaciones exteriores."
+  },
+  {
+    "Code": "8422",
+    "Name": "8422",
+    "U_Descripcion": "Actividades de defensa."
+  },
+  {
+    "Code": "8423",
+    "Name": "8423",
+    "U_Descripcion": "Orden público y actividades de seguridad."
+  },
+  {
+    "Code": "8424",
+    "Name": "8424",
+    "U_Descripcion": "Administración de justicia."
+  },
+  {
+    "Code": "8430",
+    "Name": "8430",
+    "U_Descripcion": "Actividades de planes de seguridad social de afiliación obligatoria."
+  },
+  {
+    "Code": "8511",
+    "Name": "8511",
+    "U_Descripcion": "Educación de la primera infancia."
+  },
+  {
+    "Code": "8512",
+    "Name": "8512",
+    "U_Descripcion": "Educación preescolar."
+  },
+  {
+    "Code": "8513",
+    "Name": "8513",
+    "U_Descripcion": "Educación básica primaria."
+  },
+  {
+    "Code": "8521",
+    "Name": "8521",
+    "U_Descripcion": "Educación básica secundaria."
+  },
+  {
+    "Code": "8522",
+    "Name": "8522",
+    "U_Descripcion": "Educación media académica."
+  },
+  {
+    "Code": "8523",
+    "Name": "8523",
+    "U_Descripcion": "Educación media técnica y de formación laboral."
+  },
+  {
+    "Code": "8530",
+    "Name": "8530",
+    "U_Descripcion": "Establecimientos que combinan diferentes niveles de educación."
+  },
+  {
+    "Code": "8541",
+    "Name": "8541",
+    "U_Descripcion": "Educación técnica profesional."
+  },
+  {
+    "Code": "8542",
+    "Name": "8542",
+    "U_Descripcion": "Educación tecnológica."
+  },
+  {
+    "Code": "8543",
+    "Name": "8543",
+    "U_Descripcion": "Educación de instituciones universitarias o de escuelas tecnológicas."
+  },
+  {
+    "Code": "8544",
+    "Name": "8544",
+    "U_Descripcion": "Educación de universidades."
+  },
+  {
+    "Code": "8551",
+    "Name": "8551",
+    "U_Descripcion": "Formación académica no formal."
+  },
+  {
+    "Code": "8552",
+    "Name": "8552",
+    "U_Descripcion": "Enseñanza deportiva y recreativa."
+  },
+  {
+    "Code": "8553",
+    "Name": "8553",
+    "U_Descripcion": "Enseñanza cultural."
+  },
+  {
+    "Code": "8559",
+    "Name": "8559",
+    "U_Descripcion": "Otros tipos de educación n.c.p."
+  },
+  {
+    "Code": "8560",
+    "Name": "8560",
+    "U_Descripcion": "Actividades de apoyo a la educación."
+  },
+  {
+    "Code": "8610",
+    "Name": "8610",
+    "U_Descripcion": "Actividades de hospitales y clínicas, con internación."
+  },
+  {
+    "Code": "8621",
+    "Name": "8621",
+    "U_Descripcion": "Actividades de la práctica médica, sin internación."
+  },
+  {
+    "Code": "8622",
+    "Name": "8622",
+    "U_Descripcion": "Actividades de la práctica odontológica."
+  },
+  {
+    "Code": "8691",
+    "Name": "8691",
+    "U_Descripcion": "Actividades de apoyo diagnóstico."
+  },
+  {
+    "Code": "8692",
+    "Name": "8692",
+    "U_Descripcion": "Actividades de apoyo terapéutico."
+  },
+  {
+    "Code": "8699",
+    "Name": "8699",
+    "U_Descripcion": "Otras actividades de atención de la salud humana."
+  },
+  {
+    "Code": "8710",
+    "Name": "8710",
+    "U_Descripcion": "Actividades de atención residencial medicalizada de tipo general."
+  },
+  {
+    "Code": "8720",
+    "Name": "8720",
+    "U_Descripcion": "Actividades de atención residencial, para el cuidado de pacientes con retardo mental, enfermedad mental y consumo de sustancias psicoactivas."
+  },
+  {
+    "Code": "8730",
+    "Name": "8730",
+    "U_Descripcion": "Actividades de atención en instituciones para el cuidado de personas mayores y/o discapacitadas."
+  },
+  {
+    "Code": "8790",
+    "Name": "8790",
+    "U_Descripcion": "Otras actividades de atención en instituciones con alojamiento"
+  },
+  {
+    "Code": "8810",
+    "Name": "8810",
+    "U_Descripcion": "Actividades de asistencia social sin alojamiento para personas mayores y discapacitadas."
+  },
+  {
+    "Code": "8890",
+    "Name": "8890",
+    "U_Descripcion": "Otras actividades de asistencia social sin alojamiento."
+  },
+  {
+    "Code": "8891",
+    "Name": "8891",
+    "U_Descripcion": "Actividades de guarderías para niños y niñas."
+  },
+  {
+    "Code": "8899",
+    "Name": "8899",
+    "U_Descripcion": "Otras Actividades de asistencia social sin alojamiento. C.P."
+  },
+  {
+    "Code": "9001",
+    "Name": "9001",
+    "U_Descripcion": "Creación literaria."
+  },
+  {
+    "Code": "9002",
+    "Name": "9002",
+    "U_Descripcion": "Creación musical."
+  },
+  {
+    "Code": "9003",
+    "Name": "9003",
+    "U_Descripcion": "Creación teatral."
+  },
+  {
+    "Code": "9004",
+    "Name": "9004",
+    "U_Descripcion": "Creación audiovisual."
+  },
+  {
+    "Code": "9005",
+    "Name": "9005",
+    "U_Descripcion": "Artes plásticas y visuales."
+  },
+  {
+    "Code": "9006",
+    "Name": "9006",
+    "U_Descripcion": "Actividades teatrales."
+  },
+  {
+    "Code": "9007",
+    "Name": "9007",
+    "U_Descripcion": "Actividades de espectáculos musicales en vivo."
+  },
+  {
+    "Code": "9008",
+    "Name": "9008",
+    "U_Descripcion": "Otras actividades de espectáculos en vivo."
+  },
+  {
+    "Code": "9101",
+    "Name": "9101",
+    "U_Descripcion": "Actividades de bibliotecas y archivos."
+  },
+  {
+    "Code": "9102",
+    "Name": "9102",
+    "U_Descripcion": "Actividades y funcionamiento de museos, conservación de edificios y sitios históricos."
+  },
+  {
+    "Code": "9103",
+    "Name": "9103",
+    "U_Descripcion": "Actividades de jardines botánicos, zoológicos y reservas naturales."
+  },
+  {
+    "Code": "9200",
+    "Name": "9200",
+    "U_Descripcion": "Actividades de juegos de azar y apuestas."
+  },
+  {
+    "Code": "9311",
+    "Name": "9311",
+    "U_Descripcion": "Gestión de instalaciones deportivas."
+  },
+  {
+    "Code": "9312",
+    "Name": "9312",
+    "U_Descripcion": "Actividades de clubes deportivos."
+  },
+  {
+    "Code": "9319",
+    "Name": "9319",
+    "U_Descripcion": "Otras actividades deportivas."
+  },
+  {
+    "Code": "9321",
+    "Name": "9321",
+    "U_Descripcion": "Actividades de parques de atracciones y parques temáticos."
+  },
+  {
+    "Code": "9329",
+    "Name": "9329",
+    "U_Descripcion": "Otras actividades recreativas y de esparcimiento n.c.p."
+  },
+  {
+    "Code": "9411",
+    "Name": "9411",
+    "U_Descripcion": "Actividades de asociaciones empresariales y de empleadores"
+  },
+  {
+    "Code": "9412",
+    "Name": "9412",
+    "U_Descripcion": "Actividades de asociaciones profesionales"
+  },
+  {
+    "Code": "9420",
+    "Name": "9420",
+    "U_Descripcion": "Actividades de sindicatos de empleados."
+  },
+  {
+    "Code": "9491",
+    "Name": "9491",
+    "U_Descripcion": "Actividades de asociaciones religiosas."
+  },
+  {
+    "Code": "9492",
+    "Name": "9492",
+    "U_Descripcion": "Actividades de asociaciones políticas."
+  },
+  {
+    "Code": "9499",
+    "Name": "9499",
+    "U_Descripcion": "Actividades de otras asociaciones n.c.p."
+  },
+  {
+    "Code": "9511",
+    "Name": "9511",
+    "U_Descripcion": "Mantenimiento y reparación de computadores y de equipo periférico."
+  },
+  {
+    "Code": "9512",
+    "Name": "9512",
+    "U_Descripcion": "Mantenimiento y reparación de equipos de comunicación."
+  },
+  {
+    "Code": "9521",
+    "Name": "9521",
+    "U_Descripcion": "Mantenimiento y reparación de aparatos electrónicos de consumo."
+  },
+  {
+    "Code": "9522",
+    "Name": "9522",
+    "U_Descripcion": "Mantenimiento y reparación de aparatos y equipos domésticos y de jardinería."
+  },
+  {
+    "Code": "9523",
+    "Name": "9523",
+    "U_Descripcion": "Reparación de calzado y artículos de cuero."
+  },
+  {
+    "Code": "9524",
+    "Name": "9524",
+    "U_Descripcion": "Reparación de muebles y accesorios para el hogar."
+  },
+  {
+    "Code": "9529",
+    "Name": "9529",
+    "U_Descripcion": "Mantenimiento y reparación de otros efectos personales y enseres domésticos."
+  },
+  {
+    "Code": "9601",
+    "Name": "9601",
+    "U_Descripcion": "Lavado y limpieza, incluso la limpieza en seco, de productos textiles y de piel."
+  },
+  {
+    "Code": "9602",
+    "Name": "9602",
+    "U_Descripcion": "Peluquería y otros tratamientos de belleza."
+  },
+  {
+    "Code": "9603",
+    "Name": "9603",
+    "U_Descripcion": "Pompas fúnebres y actividades relacionadas."
+  },
+  {
+    "Code": "9609",
+    "Name": "9609",
+    "U_Descripcion": "Otras actividades de servicios personales n.c.p."
+  },
+  {
+    "Code": "9700",
+    "Name": "9700",
+    "U_Descripcion": "Actividades de los hogares individuales como empleadores de personal doméstico."
+  },
+  {
+    "Code": "9810",
+    "Name": "9810",
+    "U_Descripcion": "Actividades no diferenciadas de los hogares individuales como productores de bienes para uso propio."
+  },
+  {
+    "Code": "9820",
+    "Name": "9820",
+    "U_Descripcion": "Actividades no diferenciadas de los hogares individuales como productores de servicios para uso propio."
+  },
+  {
+    "Code": "9900",
+    "Name": "9900",
+    "U_Descripcion": "Actividades de organizaciones y entidades extraterritoriales."
+  }
+]

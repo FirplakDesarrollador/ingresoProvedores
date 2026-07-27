@@ -80,7 +80,7 @@ const dict = {
         options_ciiu: [{value: 'Alimentos y bebidas', label: 'Food and beverage'}, {value: 'Farmacéutica', label: 'Pharmaceutical'}, {value: 'Química', label: 'Chemical'}, {value: 'Servicios', label: 'Services'}, {value: 'Industria', label: 'Industry'}, {value: 'Salud', label: 'Health'}, {value: 'Minería y Petróleo', label: 'Mining and Oil'}, {value: 'Ventas', label: 'Sales'}, {value: 'Financiero', label: 'Financial'}, {value: 'Transporte', label: 'Transportation'}, {value: 'Otro', label: 'Other'}],
         options_doc: [{value: 'CC', label: 'CC'}, {value: 'FIDC', label: 'FIDC'}, {value: 'IC', label: 'IC'}, {value: 'PAS', label: 'PAS'}],
         options_yesno: [{value: 'Sí', label: 'Yes'}, {value: 'No', label: 'No'}],
-        options_pay: [{value: '60 días', label: '60 days'}, {value: '75 días', label: '75 days'}, {value: '90 días', label: '90 days'}, {value: 'Contado', label: 'Cash'}, {value: 'Otro', label: 'Other'}],
+        options_pay: [{value: 'Crédito a 30 días', label: '30 days'}, {value: 'Crédito a 60 días', label: '60 days'}, {value: 'Crédito a 90 días', label: '90 days'}],
         error_submit: "Registration error:",
         error_unexpected: "Unexpected error:",
         alert_docs: "The registration was saved, but there were issues with some documents:\n",
@@ -157,7 +157,7 @@ const dict = {
         options_ciiu: [{value: 'Alimentos y bebidas', label: 'Alimentos y bebidas'}, {value: 'Farmacéutica', label: 'Farmacéutica'}, {value: 'Química', label: 'Química'}, {value: 'Servicios', label: 'Servicios'}, {value: 'Industria', label: 'Industria'}, {value: 'Salud', label: 'Salud'}, {value: 'Minería y Petróleo', label: 'Minería y Petróleo'}, {value: 'Ventas', label: 'Ventas'}, {value: 'Financiero', label: 'Financiero'}, {value: 'Transporte', label: 'Transporte'}, {value: 'Otro', label: 'Otro'}],
         options_doc: [{value: 'CC', label: 'CC'}, {value: 'FIDC', label: 'FIDC'}, {value: 'IC', label: 'IC'}, {value: 'PAS', label: 'PAS'}],
         options_yesno: [{value: 'Sí', label: 'Sí'}, {value: 'No', label: 'No'}],
-        options_pay: [{value: '60 días', label: '60 días'}, {value: '75 días', label: '75 días'}, {value: '90 días', label: '90 días'}, {value: 'Contado', label: 'Contado'}, {value: 'Otro', label: 'Otro'}],
+        options_pay: [{value: 'Crédito a 30 días', label: '30 días'}, {value: 'Crédito a 60 días', label: '60 días'}, {value: 'Crédito a 90 días', label: '90 días'}],
         error_submit: "Error de registro:",
         error_unexpected: "Error inesperado:",
         alert_docs: "El registro fue guardado, pero hubo problemas con algunos documentos:\n",
@@ -234,7 +234,7 @@ const dict = {
         options_ciiu: [{value: 'Alimentos y bebidas', label: '食品和饮料 (Food/Beverage)'}, {value: 'Farmacéutica', label: '制药 (Pharmaceutical)'}, {value: 'Química', label: '化工 (Chemical)'}, {value: 'Servicios', label: '服务 (Services)'}, {value: 'Industria', label: '工业 (Industry)'}, {value: 'Salud', label: '健康 (Health)'}, {value: 'Minería y Petróleo', label: '采矿和石油 (Mining/Oil)'}, {value: 'Ventas', label: '销售 (Sales)'}, {value: 'Financiero', label: '金融 (Financial)'}, {value: 'Transporte', label: '运输 (Transportation)'}, {value: 'Otro', label: '其他 (Other)'}],
         options_doc: [{value: 'CC', label: 'CC'}, {value: 'FIDC', label: 'FIDC'}, {value: 'IC', label: 'IC'}, {value: 'PAS', label: '护照 (PAS)'}],
         options_yesno: [{value: 'Sí', label: '是 (Yes)'}, {value: 'No', label: '否 (No)'}],
-        options_pay: [{value: '60 días', label: '60 天'}, {value: '75 días', label: '75 天'}, {value: '90 días', label: '90 天'}, {value: 'Contado', label: '现金 (Cash)'}, {value: 'Otro', label: '其他 (Other)'}],
+        options_pay: [{value: 'Crédito a 30 días', label: '30 days'}, {value: 'Crédito a 60 días', label: '60 days'}, {value: 'Crédito a 90 días', label: '90 days'}],
         error_submit: "注册错误:",
         error_unexpected: "意外错误:",
         alert_docs: "注册已保存，但某些文件出现问题：\n",
@@ -644,18 +644,19 @@ function Input({ label, name, value, onChange, type = 'text', className = '', op
     )
 }
 
-function Select({ label, name, value, onChange, options, className = '', optional = false, t }: any) {
+function Select({ label, name, value, onChange, options, className = '', optional = false, disabled = false, t }: any) {
     return (
-        <div className={className}>
+        <div className={`${className} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
             <label className="block text-sm font-medium text-gray-700 mb-1">
                 {label} {!optional && <span className="text-red-500">*</span>}
             </label>
             <select
                 value={value || ''}
                 onChange={(e) => onChange(name, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153]"
+                disabled={disabled}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153] disabled:bg-gray-200 disabled:cursor-not-allowed"
             >
-                <option value="">{t.select_placeholder}</option>
+                <option value="">{t?.select_placeholder || 'Seleccionar...'}</option>
                 {options.map((o: {value: string, label: string}) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
         </div>

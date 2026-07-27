@@ -6,6 +6,8 @@ import { submitProveedorForm, uploadDocument } from './actions'
 import DocumentPreview from '@/components/DocumentPreview'
 import ExtranjeroForm from './ExtranjeroForm'
 import CiiuSelect from '@/components/CiiuSelect'
+import MunicipioSelect from '@/components/MunicipioSelect'
+import BancoSelect from '@/components/BancoSelect'
 import colombiaData from '@/lib/colombia.json'
 
 type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero' | ''
@@ -108,7 +110,8 @@ function RegistroForm() {
                 'tipo_cuenta', 'entidad_bancaria', 'numero_cuenta', 'acepta_terminos', 
                 'detalle_origen_fondos', 'rep_legal_nombre_completo', 'rep_legal_numero_identificacion',
                 'rep_legal_es_pep', 'tiene_sanciones_lavado', 'realiza_operaciones_internacionales', 
-                'tiene_evaluacion_sst'
+                'tiene_evaluacion_sst', 'regimen_tributario', 'regimen_fiscal', 'actividad_economica',
+                'municipio_med_mag', 'nacionalidad', 'tipo_extranjero', 'medio_de_pago'
             ]
 
             const cleanFormData: Record<string, any> = {}
@@ -266,7 +269,7 @@ function RegistroForm() {
                                     name="dias_credito" 
                                     value={formData.dias_credito} 
                                     onChange={updateField} 
-                                    options={['30', '60', '90']} 
+                                    options={['Crédito a 30 días', 'Crédito a 60 días', 'Crédito a 90 días']} 
                                 />
                                 <Select 
                                     label="¿Cuál es la naturaleza de su relación comercial con Firplak?" 
@@ -478,21 +481,30 @@ function RegistroForm() {
                                 value={formData.nacionalidad} 
                                 onChange={(name: string, val: string) => {
                                     if (val === 'Nacional') {
-                                        setFormData(prev => ({ ...prev, nacionalidad: val, tipo_extranjero: '' }));
+                                        setFormData(prev => ({ ...prev, nacionalidad: val, tipo_extranjero: 'No aplica' }));
                                     } else {
-                                        updateField(name, val);
+                                        setFormData(prev => ({ ...prev, nacionalidad: val, tipo_extranjero: '' }));
                                     }
                                 }} 
                                 options={['Nacional', 'Internacional']}
                             />
-                            <Select 
-                                label="Tipo de Extranjero" 
-                                name="tipo_extranjero" 
-                                value={formData.tipo_extranjero} 
-                                onChange={updateField} 
-                                options={['01', '02', '03', '04', '05', '06']}
-                                disabled={formData.nacionalidad === 'Nacional'}
-                            />
+                            {formData.nacionalidad === 'Nacional' ? (
+                                <Input 
+                                    label="Tipo de Extranjero" 
+                                    name="tipo_extranjero" 
+                                    value="No aplica" 
+                                    onChange={() => {}} 
+                                    disabled={true} 
+                                />
+                            ) : (
+                                <Select 
+                                    label="Tipo de Extranjero" 
+                                    name="tipo_extranjero" 
+                                    value={formData.tipo_extranjero} 
+                                    onChange={updateField} 
+                                    options={['01', '02', '03', '04', '05', '06']}
+                                />
+                            )}
                             <Select 
                                 label="Régimen Tributario" 
                                 name="regimen_tributario" 
@@ -500,7 +512,13 @@ function RegistroForm() {
                                 onChange={updateField} 
                                 options={['Especial', 'Extranjero', 'Gran Contribuyente', 'N/A', 'Régimen Común', 'Régimen Simplificado']}
                             />
-                            <Input label="Régimen Fiscal" name="regimen_fiscal" value={formData.regimen_fiscal} onChange={updateField} />
+                            <Select 
+                                label="Régimen Fiscal" 
+                                name="regimen_fiscal" 
+                                value={formData.regimen_fiscal} 
+                                onChange={updateField} 
+                                options={['04 - Régimen Simple', '05 - Régimen Ordinario', '48 - Impuesto sobre la renta', '49 - No responsable']}
+                            />
                             <CiiuSelect 
                                 value={formData.codigo_ciiu ? `${formData.codigo_ciiu} - ${formData.actividad_economica}` : formData.actividad_economica} 
                                 onChange={(val) => {
@@ -508,13 +526,22 @@ function RegistroForm() {
                                     setFormData(prev => ({ ...prev, codigo_ciiu: parts[0], actividad_economica: parts[1] || val }));
                                 }} 
                             />
-                            <Input label="Código SAP Municipio Medios Magnéticos" name="municipio_med_mag" type="number" value={formData.municipio_med_mag} onChange={updateField} />
+                            <MunicipioSelect 
+                                value={formData.municipio_med_mag} 
+                                onChange={(val) => {
+                                    const parts = val.split(' - ');
+                                    updateField('municipio_med_mag', parts[0]);
+                                }} 
+                            />
 
                             <div className="col-span-2 pt-4 border-t border-gray-100 mb-2 mt-4">
                                 <h3 className="text-sm font-bold text-[#254153] uppercase tracking-wider">Información Bancaria</h3>
                             </div>
                             <Select label="Tipo de Cuenta" name="tipo_cuenta" value={formData.tipo_cuenta} onChange={updateField} options={['Ahorros', 'Corriente']} />
-                            <Input label="Entidad Bancaria" name="entidad_bancaria" value={formData.entidad_bancaria} onChange={updateField} />
+                            <BancoSelect 
+                                value={formData.entidad_bancaria} 
+                                onChange={updateField} 
+                            />
                             <Input label="Número de Cuenta" name="numero_cuenta" value={formData.numero_cuenta} onChange={updateField} />
                             
                             {/* Nuevas preguntas financieras/cumplimiento */}
@@ -1067,7 +1094,7 @@ function Input({ label, name, type = 'text', value, onChange, className = '', op
 
 function Select({ label, name, value, onChange, options, disabled = false }: any) {
     return (
-        <div className={disabled ? "opacity-50" : ""}>
+        <div className={disabled ? "opacity-60 cursor-not-allowed" : ""}>
             <label className="block text-sm font-medium text-gray-700 mb-1">
                 {label} <span className="text-red-500">*</span>
             </label>
@@ -1075,7 +1102,7 @@ function Select({ label, name, value, onChange, options, disabled = false }: any
                 value={value || ''}
                 onChange={(e) => onChange(name, e.target.value)}
                 disabled={disabled}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153] disabled:bg-gray-100"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#254153] disabled:bg-gray-200 disabled:cursor-not-allowed"
             >
                 <option value="">Seleccione...</option>
                 {options.map((o: string) => <option key={o} value={o}>{o}</option>)}

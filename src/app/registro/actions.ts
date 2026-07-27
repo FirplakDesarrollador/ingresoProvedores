@@ -228,18 +228,62 @@ export async function uploadDocument(formData: FormData) {
 }
 
 export async function getActividadesEconomicas() {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('actividades_economica_sap')
-        .select('Code, Descripcion')
-        .order('Descripcion', { ascending: true })
+    try {
+        const fs = await import('fs');
+        const path = await import('path');
+        const filePath = path.join(process.cwd(), 'src', 'lib', 'actividades_sap.json');
         
-    if (error) {
-        console.error('Error al obtener actividades económicas:', error)
-        return { success: false, data: [] }
+        if (fs.existsSync(filePath)) {
+            const fileData = fs.readFileSync(filePath, 'utf8');
+            const parsed = JSON.parse(fileData);
+            // SAP fields: Code, Descripcion
+            return { success: true, data: parsed };
+        }
+        
+        return { success: true, data: [] };
+    } catch (e) {
+        console.error('Error al obtener actividades económicas de JSON:', e);
+        return { success: false, data: [] };
     }
-    
-    return { success: true, data: data || [] }
+}
+
+export async function getMunicipiosSap() {
+    try {
+        const fs = await import('fs');
+        const path = await import('path');
+        const filePath = path.join(process.cwd(), 'src', 'lib', 'municipios_sap.json');
+        
+        if (fs.existsSync(filePath)) {
+            const fileData = fs.readFileSync(filePath, 'utf8');
+            const parsed = JSON.parse(fileData);
+            // SAP fields: Code, Name, U_NomDepartamento, U_NomMunicipio
+            return { success: true, data: parsed };
+        }
+        
+        return { success: true, data: [] };
+    } catch (e) {
+        console.error('Error al obtener municipios de JSON:', e);
+        return { success: false, data: [] };
+    }
+}
+
+export async function getBancosSap() {
+    try {
+        const fs = await import('fs');
+        const path = await import('path');
+        const filePath = path.join(process.cwd(), 'src', 'lib', 'bancos_sap.json');
+        
+        if (fs.existsSync(filePath)) {
+            const fileData = fs.readFileSync(filePath, 'utf8');
+            const parsed = JSON.parse(fileData);
+            return { success: true, data: parsed };
+        }
+        
+        return { success: true, data: [] };
+    } catch (e) {
+        console.error('Error al obtener bancos de JSON:', e);
+        return { success: false, data: [] };
+    }
 }
 
 async function sendNotificationEmail(nombreProveedor: string) {

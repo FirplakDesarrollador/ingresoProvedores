@@ -59,14 +59,25 @@ async function sapRequestWithRetry(url: string, options: { method?: string; head
 // --- Mapeo de dias_credito a SAP PaymentTermsGroupNumber ---
 const paymentTermsMap: Record<string, number> = {
     'Contado': -1,
-    'Cash': -1,
-    '60 días': 59,
-    '60 days': 59,
-    '75 días': 35,
-    '75 days': 35,
+    'Crédito a 30 días': 2,
+    'Crédito a 60 días': 4,
+    'Crédito a 90 días': 5, // mapped to '90 días'
+    '30 días': 2,
+    '60 días': 4,
     '90 días': 5,
-    '90 days': 5,
 }
+
+import bancosSap from './bancos_sap.json'
+
+// Fallback legacy mappings just in case
+const bankCodeMapLegacy: Record<string, string> = {
+    'NEQUI': '07',         // Opera bajo Bancolombia
+    'DAVIPLATA': '51',     // Opera bajo Davivienda
+    'SCOTIABANK': '08',
+    'COLPATRIA': '19',
+    'CAJA SOCIAL': '32'
+}
+
 
 const tipoDocMap: Record<string, string> = {
     'CC': '13',
@@ -88,8 +99,8 @@ const regimenTribMap: Record<string, string> = {
     'Extranjero': '04',
     'Gran Contribuyente': '03',
     'N/A': '05',
-    'Régimen Común': '01',
-    'Régimen Simplificado': '02'
+    'Régimen Común': 'RC',
+    'Régimen Simplificado': 'RS'
 }
 
 
@@ -214,7 +225,29 @@ export interface SapProveedorData {
     regimen_tributario?: string | null
     actividad_economica?: string | null
     nacionalidad?: string | null
-    municipio?: string | null
+    municipio_med_mag?: string | null
+    tipo_extranjero?: string | null
+}
+
+// Helper: resolve bank name to SAP BankCode
+function resolveBankCode(bankName: string): string {
+    if (!bankName) return '99';
+    const upper = bankName.toUpperCase().trim();
+    
+    // Legacy / Aliases
+    if (bankCodeMapLegacy[upper]) return bankCodeMapLegacy[upper];
+    
+    // Exact match from SAP list
+    const exact = bancosSap.find((b: any) => b.BankName.toUpperCase() === upper);
+    if (exact) return exact.BankCode;
+    
+    // Partial match from SAP list
+    const partialMatch = bancosSap.find((b: any) => 
+        upper.includes(b.BankName.toUpperCase()) || b.BankName.toUpperCase().includes(upper)
+    );
+    if (partialMatch) return partialMatch.BankCode;
+    
+    return '99'; // OTROS BANCOS
 }
 
 export async function createBusinessPartner(data: SapProveedorData): Promise<{ success: boolean; cardCode?: string; error?: string }> {
@@ -308,9 +341,12 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             // Requerido por SAP (SP): Cuenta Bancaria
             BPBankAccounts: [
                 {
-                    BankCode: '99', // Código genérico o por defecto
+                    BankCode: resolveBankCode(data.entidad_bancaria || ''),
                     AccountNo: data.numero_cuenta || '00000000',
-                    Country: 'CO'
+                    ControlKey: data.tipo_cuenta === 'Corriente' ? '01' : '02',
+                    Country: isExtranjero ? (data.pais || '') : 'CO',
+                    BPCode: cardCode,
+                    AccountName: cardName,
                 }
             ],
             
@@ -325,7 +361,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             U_HBT_ResFis2: '49',
             U_HBT_InfoTrib: 'ZZ', // No Aplica default
             U_HBT_Nacional: (data.nacionalidad === 'Internacional' || isExtranjero) ? '2' : '1',
-            U_HBT_RegFis: data.regimen_fiscal || '',
+            U_HBT_RegFis: (data.regimen_fiscal || '').split(' - ')[0].trim(),
             U_HBT_RegTrib: regimenTribMap[data.regimen_tributario || ''] || '',
             U_HBT_MedPag: '47', // Hardcoded per user request
             U_HBT_MunMed: data.municipio_med_mag || '',
@@ -344,7 +380,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         }
 
         // Address
-        if (data.direccion || data.ciudad || data.municipio) {
+        if (data.direccion || data.ciudad || data.municipio_med_mag) {
             const addressString = (data.direccion || '').toUpperCase().substring(0, 50);
             
             // Map the department to SAP State Code
@@ -375,7 +411,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                 }
             }
             
-            const cityRaw = (data.municipio || data.ciudad || '').toUpperCase().trim();
+            const cityRaw = (data.municipio_med_mag || data.ciudad || '').toUpperCase().trim();
             const cityUpper = ciudadesMap[cityRaw] || cityRaw;
             bpPayload.BPAddresses = [
                 {
