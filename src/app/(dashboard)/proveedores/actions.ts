@@ -179,16 +179,23 @@ export async function aprobarContabilidad(id: string, formData: any) {
     }
 
     // --- 2. Si SAP fue exitoso, guardamos los datos contables y el nuevo estado ---
+    const updateData: any = {
+        estado_contabilidad: 'aprobado',
+        grupo_bp: formData.grupo_bp,
+        cuenta_asociada: formData.cuenta_asociada,
+        aplica_retenciones: formData.aplica_retenciones,
+        sujeto_a_retencion: formData.sujeto_a_retencion,
+        codigos_retencion: formData.codigos_retencion
+    }
+
+    if (prov.tipo_contraparte === 'empleado') {
+        updateData.estado = 'aprobado'
+        updateData.fecha_decision = new Date().toISOString()
+    }
+
     const { error: updateError } = await supabase
         .from('proveedores')
-        .update({
-            estado_contabilidad: 'aprobado',
-            grupo_bp: formData.grupo_bp,
-            cuenta_asociada: formData.cuenta_asociada,
-            aplica_retenciones: formData.aplica_retenciones,
-            sujeto_a_retencion: formData.sujeto_a_retencion,
-            codigos_retencion: formData.codigos_retencion
-        })
+        .update(updateData)
         .eq('id', id)
 
     if (updateError) {

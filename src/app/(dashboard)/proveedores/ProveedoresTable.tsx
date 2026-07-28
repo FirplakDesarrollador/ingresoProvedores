@@ -2,6 +2,37 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { aprobarContabilidad } from './actions'
+
+function SubirSapButton({ proveedorId }: { proveedorId: string }) {
+    const [loading, setLoading] = useState(false)
+
+    const handleUpload = async () => {
+        setLoading(true)
+        try {
+            const result = await aprobarContabilidad(proveedorId, {})
+            if (result.success) {
+                alert('✅ Enviado a SAP con éxito.')
+            } else {
+                alert('❌ Error: ' + result.error)
+            }
+        } catch (error: any) {
+            alert('❌ Error: ' + (error.message || 'Desconocido'))
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <button
+            onClick={handleUpload}
+            disabled={loading}
+            className="inline-flex items-center px-4 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition-all shadow-sm hover:shadow-md uppercase tracking-wider disabled:opacity-50"
+        >
+            {loading ? 'Subiendo...' : 'Subir a SAP'}
+        </button>
+    )
+}
 
 interface Proveedor {
     id: string
@@ -156,11 +187,13 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
                             {filteredProveedores.map((p) => (
                                 <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className={`px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${p.tipo_contraparte === 'persona_natural'
+                                        <span className={`px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
+                                            p.tipo_contraparte === 'empleado' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
+                                            p.tipo_contraparte === 'persona_natural'
                                                 ? 'bg-blue-50 text-blue-600 border border-blue-100'
                                                 : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
                                             }`}>
-                                            {p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
+                                            {p.tipo_contraparte === 'empleado' ? '👤 Empleado' : p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 font-semibold text-[#254153] max-w-xs truncate">
@@ -171,23 +204,39 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
                                     <td className="px-4 py-3 text-gray-600 font-medium">{p.numero_identificacion || '-'}</td>
                                     <td className="px-4 py-3 text-gray-500 text-sm italic">{p.email || p.correo_facturacion || '-'}</td>
                                     <td className="px-4 py-3 whitespace-nowrap">
-                                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${p.estado === 'pendiente' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                        {p.tipo_contraparte === 'empleado' ? (
+                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
+                                                p.estado_contabilidad === 'aprobado' 
+                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                                    : 'bg-red-50 text-red-700 border-red-200'
+                                                }`}>
+                                                {p.estado_contabilidad === 'aprobado' ? 'SUBIDO A SAP' : 'NO SUBIDO A SAP'}
+                                            </span>
+                                        ) : (
+                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
+                                                p.estado === 'pendiente' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                                 p.estado === 'aprobado' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                                    'bg-red-50 text-red-700 border-red-200'
-                                            }`}>
-                                            {p.estado}
-                                        </span>
+                                                'bg-red-50 text-red-700 border-red-200'
+                                                }`}>
+                                                {p.estado}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-4 py-3 text-gray-400 text-sm">
                                         {new Date(p.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </td>
                                     <td className="px-4 py-3 text-right">
-                                        <Link
-                                            href={`/proveedores/${p.id}`}
-                                            className="inline-flex items-center px-4 py-1.5 bg-[#254153] text-white text-xs font-bold rounded-lg hover:bg-[#1a2e3a] transition-all shadow-sm hover:shadow-md uppercase tracking-wider"
-                                        >
-                                            Ver detalle
-                                        </Link>
+                                        <div className="flex justify-end gap-2">
+                                            {p.tipo_contraparte === 'empleado' && p.estado_contabilidad !== 'aprobado' && (
+                                                <SubirSapButton proveedorId={p.id} />
+                                            )}
+                                            <Link
+                                                href={`/proveedores/${p.id}`}
+                                                className="inline-flex items-center px-4 py-1.5 bg-[#254153] text-white text-xs font-bold rounded-lg hover:bg-[#1a2e3a] transition-all shadow-sm hover:shadow-md uppercase tracking-wider"
+                                            >
+                                                Ver detalle
+                                            </Link>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

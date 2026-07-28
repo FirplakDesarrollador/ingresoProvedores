@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import ProveedoresTable from './ProveedoresTable'
+import ProveedoresTable from '../proveedores/ProveedoresTable'
 
-export default async function ProveedoresPage() {
+export default async function EmpleadosPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -18,19 +18,19 @@ export default async function ProveedoresPage() {
     ] = await Promise.all([
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .in('estado', ['pendiente', 'aprobado', 'rechazado'])
-            .neq('tipo_contraparte', 'empleado'),
+            .eq('tipo_contraparte', 'empleado'),
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .eq('estado', 'pendiente')
-            .neq('tipo_contraparte', 'empleado'),
+            .eq('tipo_contraparte', 'empleado'),
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .eq('estado', 'aprobado')
-            .neq('tipo_contraparte', 'empleado'),
+            .eq('tipo_contraparte', 'empleado'),
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .eq('estado', 'rechazado')
-            .neq('tipo_contraparte', 'empleado'),
+            .eq('tipo_contraparte', 'empleado'),
         supabase.from('proveedores').select('*')
             .in('estado', ['pendiente', 'aprobado', 'rechazado'])
-            .neq('tipo_contraparte', 'empleado')
+            .eq('tipo_contraparte', 'empleado')
             .order('created_at', { ascending: false })
             .limit(500),
     ])
@@ -48,8 +48,8 @@ export default async function ProveedoresPage() {
             <main className="max-w-7xl mx-auto px-4 py-8">
                 {/* Header Section */}
                 <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-[#254153]">Gestión de Proveedores</h1>
-                    <p className="text-gray-500 text-sm">Administra y revisa las solicitudes de registro de proveedores.</p>
+                    <h1 className="text-2xl font-bold text-[#254153]">Gestión de Empleados</h1>
+                    <p className="text-gray-500 text-sm">Administra y revisa los registros de empleados.</p>
                 </div>
 
                 {/* Stats */}

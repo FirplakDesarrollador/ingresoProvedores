@@ -50,6 +50,13 @@ function RegistroForm() {
         if (tipo === 'empleado') {
             setTipoContraparte('empleado')
             setStep(2)
+            setFormData(prev => ({
+                ...prev,
+                codigo_ciiu: '0010',
+                actividad_economica: 'Asalariados',
+                regimen_fiscal: '49 - No Aplica',
+                regimen_tributario: 'N/A'
+            }))
         }
     }, [searchParams])
 
@@ -361,9 +368,9 @@ function RegistroForm() {
                                 />
                                 <Input label="Número Identificación" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} type="number" />
                                 <Input label="Primer Nombre" name="primer_nombre" value={formData.primer_nombre} onChange={updateField} />
-                                <Input label="Segundo Nombre" name="segundo_nombre" value={formData.segundo_nombre} onChange={updateField} />
+                                <Input label="Segundo Nombre" name="segundo_nombre" value={formData.segundo_nombre} onChange={updateField} optional />
                                 <Input label="Primer Apellido" name="primer_apellido" value={formData.primer_apellido} onChange={updateField} />
-                                <Input label="Segundo Apellido" name="segundo_apellido" value={formData.segundo_apellido} onChange={updateField} />
+                                <Input label="Segundo Apellido" name="segundo_apellido" value={formData.segundo_apellido} onChange={updateField} optional />
                                 <Input label="Email" name="email" type="email" value={formData.email} onChange={updateField} />
                                 <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
                                 <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
@@ -505,27 +512,41 @@ function RegistroForm() {
                                     options={['01', '02', '03', '04', '05', '06']}
                                 />
                             )}
-                            <Select 
-                                label="Régimen Tributario" 
-                                name="regimen_tributario" 
-                                value={formData.regimen_tributario} 
-                                onChange={updateField} 
-                                options={['Especial', 'Extranjero', 'Gran Contribuyente', 'N/A', 'Régimen Común', 'Régimen Simplificado']}
-                            />
-                            <Select 
-                                label="Régimen Fiscal" 
-                                name="regimen_fiscal" 
-                                value={formData.regimen_fiscal} 
-                                onChange={updateField} 
-                                options={['04 - Régimen Simple', '05 - Régimen Ordinario', '48 - Impuesto sobre la renta', '49 - No responsable']}
-                            />
-                            <CiiuSelect 
-                                value={formData.codigo_ciiu ? `${formData.codigo_ciiu} - ${formData.actividad_economica}` : formData.actividad_economica} 
-                                onChange={(val) => {
-                                    const parts = val.split(' - ');
-                                    setFormData(prev => ({ ...prev, codigo_ciiu: parts[0], actividad_economica: parts[1] || val }));
-                                }} 
-                            />
+                            {tipoContraparte !== 'empleado' && (
+                                <>
+                                    <Select 
+                                        label="Régimen Tributario" 
+                                        name="regimen_tributario" 
+                                        value={formData.regimen_tributario} 
+                                        onChange={updateField} 
+                                        options={['Especial', 'Extranjero', 'Gran Contribuyente', 'N/A', 'Régimen Común', 'Régimen Simplificado']}
+                                    />
+                                    <Select 
+                                        label="Régimen Fiscal" 
+                                        name="regimen_fiscal" 
+                                        value={formData.regimen_fiscal} 
+                                        onChange={updateField} 
+                                        options={['04 - Régimen Simple', '05 - Régimen Ordinario', '48 - Impuesto sobre la renta', '49 - No responsable']}
+                                    />
+                                </>
+                            )}
+                            {tipoContraparte === 'empleado' ? (
+                                <Input
+                                    label="Actividad Económica"
+                                    name="actividad_economica"
+                                    value="0010 - Asalariados"
+                                    onChange={() => {}}
+                                    disabled={true}
+                                />
+                            ) : (
+                                <CiiuSelect 
+                                    value={formData.codigo_ciiu ? `${formData.codigo_ciiu} - ${formData.actividad_economica}` : formData.actividad_economica} 
+                                    onChange={(val) => {
+                                        const parts = val.split(' - ');
+                                        setFormData(prev => ({ ...prev, codigo_ciiu: parts[0], actividad_economica: parts[1] || val }));
+                                    }} 
+                                />
+                            )}
                             <MunicipioSelect 
                                 value={formData.municipio_med_mag} 
                                 onChange={(val) => {
@@ -545,22 +566,30 @@ function RegistroForm() {
                             <Input label="Número de Cuenta" name="numero_cuenta" value={formData.numero_cuenta} onChange={updateField} />
                             
                             {/* Nuevas preguntas financieras/cumplimiento */}
-                            <div className="col-span-2 pt-4 border-t border-gray-100 space-y-4">
-                                <Select 
-                                    label="¿Realiza negocios en moneda extranjera?" 
-                                    name="realiza_operaciones_internacionales" 
-                                    value={formData.realiza_operaciones_internacionales} 
-                                    onChange={updateField} 
-                                    options={['Sí', 'No']} 
-                                />
-                                <Select 
-                                    label="¿La empresa cuenta con la evaluación de autodiagnóstico SST (Resolución 0312; Artículo 27)?" 
-                                    name="tiene_evaluacion_sst" 
-                                    value={formData.tiene_evaluacion_sst} 
-                                    onChange={updateField} 
-                                    options={['Sí', 'No']} 
-                                />
-                            </div>
+                            {tipoContraparte !== 'empleado' && (
+                                <div className="col-span-2 pt-4 border-t border-gray-100 space-y-4">
+                                    <Select 
+                                        label="¿Realiza negocios en moneda extranjera?" 
+                                        name="realiza_operaciones_internacionales" 
+                                        value={formData.realiza_operaciones_internacionales} 
+                                        onChange={updateField} 
+                                        options={['Sí', 'No']} 
+                                    />
+                                    <Select 
+                                        label="¿La empresa cuenta con la evaluación de autodiagnóstico SST (Resolución 0312; Artículo 27)?" 
+                                        name="tiene_evaluacion_sst" 
+                                        value={formData.tiene_evaluacion_sst} 
+                                        onChange={updateField} 
+                                        options={['Sí', 'No']} 
+                                    />
+                                </div>
+                            )}
+
+                            {tipoContraparte === 'empleado' && (
+                                <div className="col-span-2 pt-4 border-t border-gray-100 mt-4">
+                                    <FileInput label="Certificación Bancaria" name="cert_bancaria" onChange={updateField} />
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex gap-4 mt-6">
@@ -569,7 +598,7 @@ function RegistroForm() {
                             {tipoContraparte === 'empleado' ? (
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={loading || !formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.realiza_operaciones_internacionales || !formData.tiene_evaluacion_sst}
+                                    disabled={loading || !formData.tipo_cuenta || !formData.entidad_bancaria || !formData.numero_cuenta || !formData.cert_bancaria}
                                     className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                                 >
                                     {loading ? (

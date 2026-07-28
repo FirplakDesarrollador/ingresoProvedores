@@ -1,11 +1,12 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createBusinessPartner, SapProveedorData } from '@/lib/sap'
 
 export interface ProveedorFormData {
     // Tipo
     tipo_solicitud: string
-    tipo_contraparte: 'persona_natural' | 'persona_juridica'
+    tipo_contraparte: 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero'
     area_solicitante?: string
 
     // Persona Natural
@@ -144,7 +145,30 @@ export async function submitProveedorForm(data: ProveedorFormData) {
 
         console.log('Proveedor registrado con éxito:', proveedor.id)
 
-
+        // Automatización para empleados: Enviar a SAP de inmediato y marcar como aprobado
+        if (proveedor.tipo_contraparte === 'empleado') {
+            try {
+                console.log(`Intentando crear BP en SAP automáticamente para el empleado ${proveedor.id}...`)
+                const sapResult = await createBusinessPartner(proveedor as SapProveedorData)
+                
+                if (sapResult.success) {
+                    await supabase
+                        .from('proveedores')
+                        .update({
+                            estado: 'aprobado',
+                            estado_contabilidad: 'aprobado',
+                            fecha_decision: new Date().toISOString()
+                        })
+                        .eq('id', proveedor.id)
+                    console.log('Empleado enviado a SAP y aprobado automáticamente.')
+                } else {
+                    console.error('El empleado falló su creación automática en SAP:', sapResult.error)
+                    // No detenemos el proceso, quedará pendiente para revisión manual si falla
+                }
+            } catch (sapError) {
+                console.error('Error en la integración automática con SAP para empleado:', sapError)
+            }
+        }
 
         return { success: true, id: proveedor.id }
     } catch (e: any) {
@@ -217,7 +241,22 @@ export async function uploadDocument(formData: FormData) {
             return { success: false, error: `Error de base de datos: ${dbError.message}` }
         }
 
-        // Nota: El envío del certificado bancario ahora se hace en aprobarProveedor
+        // Si es certificado bancario Y el proveedor es un empleado, lo enviamos al flujo de inmediato
+        if (tipoDocumento.includes('CERT BANCARI')) {
+            const { data: provData } = await supabase.from('proveedores').select('tipo_contraparte').eq('id', proveedorId).single();
+            
+            if (provData && provData.tipo_contraparte === 'empleado') {
+                try {
+                    console.log('Enviando certificado bancario al flujo automáticamente para el empleado...');
+                    const base64 = Buffer.from(fileBuffer).toString('base64');
+                    const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${fileExtension}`;
+                    await sendBankCertificateFlow(nombreProveedor, finalFileName, base64);
+                    console.log('Certificado bancario enviado al flujo exitosamente.');
+                } catch (flowError) {
+                    console.error('Error al enviar el certificado bancario al flujo:', flowError);
+                }
+            }
+        }
 
         console.log(`Documento ${tipoDocumento} subido y registrado con éxito`)
         return { success: true, path: filePath }

@@ -55,7 +55,7 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
             </header>
 
             <main className="max-w-4xl mx-auto px-4 py-8">
-                {isAllowedUser && (
+                {isAllowedUser && proveedor.tipo_contraparte !== 'empleado' && (
                     <div className="flex border-b border-gray-200 mb-8">
                         <Link 
                             href={`/proveedores/${id}?tab=cumplimiento`} 
@@ -171,21 +171,23 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
                         )}
                     </section>
 5. 
-                    {/* PEP y Cumplimiento */}
-                    <section className="bg-white rounded-xl border p-6">
-                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Cumplimiento y PEP</h2>
-                        <div className="grid grid-cols-2 gap-x-8">
-                            <Campo label="¿Es PEP?" value={proveedor.es_pep ? 'Sí' : 'No'} />
-                            <Campo label="¿Vínculo con PEP?" value={proveedor.tiene_vinculo_pep ? 'Sí' : 'No'} />
-                            <Campo label="¿Administra recursos públicos?" value={proveedor.administra_recursos_publicos ? 'Sí' : 'No'} />
-                            <Campo label="¿Tiene reconocimiento público?" value={proveedor.tiene_reconocimiento_publico ? 'Sí' : 'No'} />
-                            <Campo label="¿Tiene grado de poder público?" value={proveedor.tiene_grado_poder_publico ? 'Sí' : 'No'} />
-                            <Campo label="¿Rep. Legal es PEP?" value={proveedor.rep_legal_es_pep ? 'Sí' : 'No'} />
-                            <div className="col-span-2">
-                                <Campo label="¿Sanciones o investigaciones (Lavado/Corrupción)?" value={proveedor.tiene_sanciones_lavado ? 'Sí' : 'No'} />
+                    {/* PEP y Cumplimiento (Oculto para empleados) */}
+                    {proveedor.tipo_contraparte !== 'empleado' && (
+                        <section className="bg-white rounded-xl border p-6">
+                            <h2 className="text-lg font-semibold text-[#254153] mb-4">Cumplimiento y PEP</h2>
+                            <div className="grid grid-cols-2 gap-x-8">
+                                <Campo label="¿Es PEP?" value={proveedor.es_pep ? 'Sí' : 'No'} />
+                                <Campo label="¿Vínculo con PEP?" value={proveedor.tiene_vinculo_pep ? 'Sí' : 'No'} />
+                                <Campo label="¿Administra recursos públicos?" value={proveedor.administra_recursos_publicos ? 'Sí' : 'No'} />
+                                <Campo label="¿Tiene reconocimiento público?" value={proveedor.tiene_reconocimiento_publico ? 'Sí' : 'No'} />
+                                <Campo label="¿Tiene grado de poder público?" value={proveedor.tiene_grado_poder_publico ? 'Sí' : 'No'} />
+                                <Campo label="¿Rep. Legal es PEP?" value={proveedor.rep_legal_es_pep ? 'Sí' : 'No'} />
+                                <div className="col-span-2">
+                                    <Campo label="¿Sanciones o investigaciones (Lavado/Corrupción)?" value={proveedor.tiene_sanciones_lavado ? 'Sí' : 'No'} />
+                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
  
                     {/* Financiera */}
                     <section className="bg-white rounded-xl border p-6">
@@ -204,11 +206,13 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
                         </div>
                     </section>
  
-                    {/* SST */}
-                    <section className="bg-white rounded-xl border p-6">
-                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Seguridad y Salud en el Trabajo</h2>
-                        <Campo label="¿Cuenta con evaluación de autodiagnóstico SST?" value={proveedor.tiene_evaluacion_sst ? 'Sí' : 'No'} />
-                    </section>
+                    {/* SST (Oculto para empleados) */}
+                    {proveedor.tipo_contraparte !== 'empleado' && (
+                        <section className="bg-white rounded-xl border p-6">
+                            <h2 className="text-lg font-semibold text-[#254153] mb-4">Seguridad y Salud en el Trabajo</h2>
+                            <Campo label="¿Cuenta con evaluación de autodiagnóstico SST?" value={proveedor.tiene_evaluacion_sst ? 'Sí' : 'No'} />
+                        </section>
+                    )}
  
                     {/* Bancaria */}
                     <section className="bg-white rounded-xl border p-6">
@@ -220,25 +224,27 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
                         </div>
                     </section>
 
-                    {/* Previsualización PDF Oficial */}
-                    <section className="bg-white rounded-xl border overflow-hidden">
-                        <div className="p-6 border-b bg-gray-50 flex justify-between items-center">
-                            <div>
-                                <h2 className="text-lg font-semibold text-[#254153]">Formulario Oficial Generado (PDF)</h2>
-                                <p className="text-sm text-gray-500">Documento de conocimiento de contraparte.</p>
+                    {/* Previsualización PDF Oficial (Oculto para empleados) */}
+                    {proveedor.tipo_contraparte !== 'empleado' && (
+                        <section className="bg-white rounded-xl border overflow-hidden">
+                            <div className="p-6 border-b bg-gray-50 flex justify-between items-center">
+                                <div>
+                                    <h2 className="text-lg font-semibold text-[#254153]">Formulario Oficial Generado (PDF)</h2>
+                                    <p className="text-sm text-gray-500">Documento de conocimiento de contraparte.</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="bg-gray-200 p-4 flex justify-center">
-                            <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden border">
-                                <iframe 
-                                    id="pdf-iframe"
-                                    src={`/visor-pdf/${id}`} 
-                                    className="w-full h-[800px] border-none"
-                                    title="Previsualización PDF"
-                                />
+                            <div className="bg-gray-200 p-4 flex justify-center">
+                                <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden border">
+                                    <iframe 
+                                        id="pdf-iframe"
+                                        src={`/visor-pdf/${id}`} 
+                                        className="w-full h-[800px] border-none"
+                                        title="Previsualización PDF"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Documentos de Soporte del Bucket */}
                     <section className="bg-white rounded-xl border p-6">
@@ -259,10 +265,16 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
                     </section>
 
                     {/* Acciones */}
-                    <section className="bg-white rounded-xl border p-6">
-                        <h2 className="text-lg font-semibold text-[#254153] mb-4">Acciones de Aprobación</h2>
-                        <AccionesProveedor proveedorId={id} estadoActual={proveedor.estado} />
-                    </section>
+                    {proveedor.tipo_contraparte !== 'empleado' ? (
+                        <section className="bg-white rounded-xl border p-6">
+                            <h2 className="text-lg font-semibold text-[#254153] mb-4">Acciones de Aprobación</h2>
+                            <AccionesProveedor proveedorId={id} estadoActual={proveedor.estado} />
+                        </section>
+                    ) : (
+                        <div className="mt-8">
+                            <ContabilidadForm proveedor={proveedor} />
+                        </div>
+                    )}
                 </div>
                 </>
                 )}

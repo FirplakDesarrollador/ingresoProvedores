@@ -67,75 +67,78 @@ export default function ContabilidadForm({ proveedor }: ContabilidadFormProps) {
             <h2 className="text-xl font-medium text-gray-600 mb-6">Módulo de Contabilidad</h2>
             
             <div className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-[#254153] mb-1">Grupo SAP <span className="text-red-500">*</span></label>
-                    <select 
-                        name="grupo_bp" 
-                        value={formData.grupo_bp} 
-                        onChange={updateField} 
-                        required
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#254153]"
-                    >
-                        <option value="">Seleccione un grupo...</option>
-                        <option value="Proveedor Nacional">Proveedor Nacional</option>
-                        <option value="Proveedor de Servicios">Proveedor de Servicios</option>
-                    </select>
-                    <p className="text-xs text-gray-400 mt-1">Este grupo determinará el prefijo del código en SAP (PN o AC).</p>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#254153] mb-1">Cuenta asociada a proveedores <span className="text-red-500">*</span></label>
-                    <input 
-                        type="text" 
-                        name="cuenta_asociada" 
-                        value={formData.cuenta_asociada} 
-                        onChange={updateField} 
-                        required
-                        placeholder="Ej: 23359505"
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#254153]"
-                    />
-                </div>
-
-                <div className="pt-4 border-t">
-                    <label className="flex items-center gap-2 cursor-pointer mb-4">
-                        <input 
-                            type="checkbox" 
-                            name="sujeto_a_retencion" 
-                            checked={formData.sujeto_a_retencion} 
-                            onChange={(e) => {
-                                updateField(e)
-                                setFormData(p => ({ ...p, aplica_retenciones: e.target.checked }))
-                            }}
-                            className="w-4 h-4 text-[#254153] rounded" 
-                        />
-                        <span className="text-sm text-[#254153] font-medium">Sujeto a retención (SAP)</span>
-                    </label>
-
-                {formData.sujeto_a_retencion && (
-                    <div className="space-y-4">
+                {proveedor.tipo_contraparte !== 'empleado' && (
+                    <>
+                        <div>
+                            <label className="block text-sm font-medium text-[#254153] mb-1">Grupo SAP <span className="text-red-500">*</span></label>
+                            <select 
+                                name="grupo_bp" 
+                                value={formData.grupo_bp} 
+                                onChange={updateField} 
+                                required
+                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#254153]"
+                            >
+                                <option value="">Seleccione un grupo...</option>
+                                <option value="Proveedor Nacional">Proveedor Nacional</option>
+                                <option value="Proveedor de Servicios">Proveedor de Servicios</option>
+                            </select>
+                            <p className="text-xs text-gray-400 mt-1">Este grupo determinará el prefijo del código en SAP (PN o AC).</p>
+                        </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#254153] mb-2">Código(s) Permitido(s)</label>
-                            <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 p-2 space-y-1">
-                                {retencionesSap.map((wt) => (
-                                    <label key={wt.WTCode} className="flex items-start gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
-                                        <input 
-                                            type="checkbox" 
-                                            checked={formData.codigos_retencion.includes(wt.WTCode)}
-                                            onChange={() => toggleRetencion(wt.WTCode)}
-                                            className="w-4 h-4 mt-0.5 text-[#254153] rounded"
-                                        />
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-700">{wt.WTCode} - {wt.WTName}</div>
-                                            <div className="text-xs text-gray-500">Tasa: {wt.Rate}%</div>
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
+                            <label className="block text-sm font-medium text-[#254153] mb-1">Cuenta asociada a proveedores <span className="text-red-500">*</span></label>
+                            <input 
+                                type="text" 
+                                name="cuenta_asociada" 
+                                value={formData.cuenta_asociada} 
+                                onChange={updateField} 
+                                required
+                                placeholder="Ej: 23359505"
+                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#254153]"
+                            />
                         </div>
-                    </div>
+
+                        <div className="pt-4 border-t">
+                            <label className="flex items-center gap-2 cursor-pointer mb-4">
+                                <input 
+                                    type="checkbox" 
+                                    name="sujeto_a_retencion" 
+                                    checked={formData.sujeto_a_retencion} 
+                                    onChange={(e) => {
+                                        updateField(e)
+                                        setFormData(p => ({ ...p, aplica_retenciones: e.target.checked }))
+                                    }}
+                                    className="w-4 h-4 text-[#254153] rounded" 
+                                />
+                                <span className="text-sm text-[#254153] font-medium">Sujeto a retención (SAP)</span>
+                            </label>
+
+                        {formData.sujeto_a_retencion && (
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-[#254153] mb-2">Código(s) Permitido(s)</label>
+                                    <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 p-2 space-y-1">
+                                        {retencionesSap.map((wt) => (
+                                            <label key={wt.WTCode} className="flex items-start gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={formData.codigos_retencion.includes(wt.WTCode)}
+                                                    onChange={() => toggleRetencion(wt.WTCode)}
+                                                    className="w-4 h-4 mt-0.5 text-[#254153] rounded"
+                                                />
+                                                <div>
+                                                    <div className="text-sm font-medium text-gray-700">{wt.WTCode} - {wt.WTName}</div>
+                                                    <div className="text-xs text-gray-500">Tasa: {wt.Rate}%</div>
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        </div>
+                    </>
                 )}
-            </div>
             </div>
             
             {error && (

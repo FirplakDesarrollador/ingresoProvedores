@@ -274,18 +274,30 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     // Determine CardCode — prefix + NIT + suffix -01 (max 15 chars for SAP)
     const cleanNit = (data.numero_identificacion || '').replace(/[^0-9]/g, '');
     let prefix = 'AC'; // default to AC
-    if (data.grupo_bp === 'Proveedor Nacional') prefix = 'PN';
-    else if (data.grupo_bp === 'Proveedor de Servicios') prefix = 'AC';
     
-    if (isExtranjero) prefix = 'PE'; // always PE for foreign
+    if (data.tipo_contraparte === 'empleado') {
+        prefix = 'EM';
+    } else {
+        if (data.grupo_bp === 'Proveedor Nacional') prefix = 'PN';
+        else if (data.grupo_bp === 'Proveedor de Servicios') prefix = 'AC';
+        
+        if (isExtranjero) prefix = 'PE'; // always PE for foreign
+    }
 
     const suffix = '-01';
     const maxNitLen = 15 - prefix.length - suffix.length; // = 10
     const truncatedNit = cleanNit.substring(0, maxNitLen);
     const cardCode = `${prefix}${truncatedNit}${suffix}`;
 
-    // GroupCode: 100=Proveedor Nacional, 101=Proveedor Exterior
-    const groupCode = isExtranjero ? 101 : 100;
+    // GroupCode: 100=Proveedor Nacional, 101=Proveedor Exterior, 102=Proveedor Servicios, 112=Empleados
+    let groupCode = 100;
+    if (data.tipo_contraparte === 'empleado') {
+        groupCode = 112;
+    } else if (isExtranjero) {
+        groupCode = 101;
+    } else if (data.grupo_bp === 'Proveedor de Servicios') {
+        groupCode = 102;
+    }
 
     // Payment Terms
     const paymentGroupNum = paymentTermsMap[data.dias_credito || ''] ?? -1;
@@ -324,7 +336,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
 
         if (checkRes.status === 200 && checkRes.data.value && checkRes.data.value.length > 0) {
             console.log(`SAP BP: ${cardCode} already exists. Skipping creation.`);
-            return { success: true, cardCode, error: 'BP already exists in SAP' };
+            return { success: false, cardCode, error: `El registro ya existe en SAP con el código ${cardCode}. Por favor verifique.` };
         }
         // 3. Build Business Partner payload
         const bpPayload: any = {
@@ -427,7 +439,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                 }
             }
             
-            const cityRaw = (data.municipio_med_mag || data.ciudad || '').toUpperCase().trim();
+            const cityRaw = (data.ciudad || data.municipio_med_mag || '').toUpperCase().trim();
             const cityUpper = ciudadesMap[cityRaw] || cityRaw;
             bpPayload.BPAddresses = [
                 {
