@@ -277,6 +277,8 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     
     if (data.tipo_contraparte === 'empleado') {
         prefix = 'EM';
+    } else if (data.tipo_contraparte === 'contado') {
+        prefix = 'AC';
     } else {
         if (data.grupo_bp === 'Proveedor Nacional') prefix = 'PN';
         else if (data.grupo_bp === 'Proveedor de Servicios') prefix = 'AC';
@@ -293,6 +295,8 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     let groupCode = 100;
     if (data.tipo_contraparte === 'empleado') {
         groupCode = 112;
+    } else if (data.tipo_contraparte === 'contado') {
+        groupCode = 102;
     } else if (isExtranjero) {
         groupCode = 101;
     } else if (data.grupo_bp === 'Proveedor de Servicios') {
@@ -300,7 +304,8 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     }
 
     // Payment Terms
-    const paymentGroupNum = paymentTermsMap[data.dias_credito || ''] ?? -1;
+    const isContado = data.tipo_contraparte === 'contado';
+    const paymentGroupNum = isContado ? -1 : (paymentTermsMap[data.dias_credito || ''] ?? -1);
 
     // Tipo entidad: 1=Natural, 2=Jurídica
     const tipoEntidad = isJuridica ? '2' : '1';
@@ -369,9 +374,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             }),
             BPBankAccounts: [
                 {
-                    BankCode: resolveBankCode(data.entidad_bancaria || ''),
-                    AccountNo: data.numero_cuenta || '00000000',
-                    ControlKey: data.tipo_cuenta === 'Corriente' ? '01' : '02',
+                    BankCode: isContado ? '99' : resolveBankCode(data.entidad_bancaria || ''),
+                    AccountNo: isContado ? '00' : (data.numero_cuenta || '00000000'),
+                    ControlKey: isContado ? '02' : (data.tipo_cuenta === 'Corriente' ? '01' : '02'),
                     Country: isExtranjero ? (data.pais || '') : 'CO',
                     BPCode: cardCode,
                     AccountName: cardName,
@@ -379,9 +384,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             ],
             
             // UDFs
-            U_HBT_TipDoc: (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2),
-            U_OK1_AC_ECO: (data.codigo_ciiu || '').substring(0, 4),  // max 4 chars (CIIU code)
-            U_HBT_ActEco: (data.codigo_ciiu || '').substring(0, 10), // User requested the CODE (e.g., 10) for this field
+            U_HBT_TipDoc: isContado ? '31' : (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2),
+            U_OK1_AC_ECO: isContado ? '' : (data.codigo_ciiu || '').substring(0, 4),
+            U_HBT_ActEco: isContado ? '' : (data.codigo_ciiu || '').substring(0, 10),
             U_HBT_TipEnt: tipoEntidad,
             U_HBT_Residente: isExtranjero ? 'NO' : 'SI',
             U_HBT_MailRecep_FE: (data.correo_facturacion || data.email || '').substring(0, 100),

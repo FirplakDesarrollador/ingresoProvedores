@@ -10,7 +10,7 @@ import MunicipioSelect from '@/components/MunicipioSelect'
 import BancoSelect from '@/components/BancoSelect'
 import colombiaData from '@/lib/colombia.json'
 
-type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero' | ''
+type TipoContraparte = 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero' | 'contado' | ''
 
 export default function RegistroPage() {
     return (
@@ -47,15 +47,24 @@ function RegistroForm() {
     useEffect(() => {
         setMounted(true)
         const tipo = searchParams.get('tipo')
-        if (tipo === 'empleado') {
-            setTipoContraparte('empleado')
+        if (tipo === 'empleado' || tipo === 'contado') {
+            setTipoContraparte(tipo as TipoContraparte)
             setStep(2)
             setFormData(prev => ({
                 ...prev,
                 codigo_ciiu: '0010',
                 actividad_economica: 'Asalariados',
                 regimen_fiscal: '49 - No Aplica',
-                regimen_tributario: 'N/A'
+                regimen_tributario: 'N/A',
+                area_solicitante: 'Otros',
+                dias_credito: 'Crédito a 30 días',
+                tipo_provision: 'Prestación de Servicios (Ej: Trabajos, mantenimientos o actividades dentro/fuera de la empresa)',
+                detalle_servicio: tipo === 'empleado' ? 'Servicios personales' : 'Servicios generales',
+                ...(tipo === 'contado' ? {
+                    tipo_cuenta: 'Ahorros',
+                    entidad_bancaria: 'CITIBANK',
+                    numero_cuenta: '1231231212'
+                } : {})
             }))
         }
     }, [searchParams])
@@ -77,14 +86,15 @@ function RegistroForm() {
 
     // Determinar el número total de pasos según el tipo
     const getTotalSteps = () => {
+        if (tipoContraparte === 'contado') return 2 // Info General -> Submit
         if (tipoContraparte === 'empleado') return 3 // Tipo, Info General, Bancaria
         return 5 // Tipo, Info General, PEP, Financiera, Documentos
     }
 
     // Obtener el siguiente paso según el tipo
     const getNextStep = (currentStep: number) => {
-        if (tipoContraparte === 'empleado') {
-            // Empleado: 1 -> 2 -> 4 (bancaria) -> submit
+        if (tipoContraparte === 'empleado' || tipoContraparte === 'contado') {
+            // Empleado/Contado: 1 -> 2 -> 4 (bancaria) -> submit
             if (currentStep === 2) return 4 // Saltar directo a bancaria
         }
         return currentStep + 1
@@ -92,7 +102,7 @@ function RegistroForm() {
 
     // Obtener el paso anterior según el tipo
     const getPrevStep = (currentStep: number) => {
-        if (tipoContraparte === 'empleado') {
+        if (tipoContraparte === 'empleado' || tipoContraparte === 'contado') {
             if (currentStep === 4) return 2 // De bancaria volver a info general
         }
         return currentStep - 1
@@ -344,13 +354,24 @@ function RegistroForm() {
                 {/* Step 2: Info General */}
                 {step === 2 && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border">
+                        {tipoContraparte === 'contado' && (
+                            <div className="mb-6 grid grid-cols-2">
+                                <Select 
+                                    label="¿Es persona natural o jurídica?" 
+                                    name="subtipo_contado" 
+                                    value={formData.subtipo_contado || 'Persona Natural'} 
+                                    onChange={updateField} 
+                                    options={['Persona Natural', 'Persona Jurídica']} 
+                                />
+                            </div>
+                        )}
                         <h2 className="text-xl font-semibold text-[#254153] mb-6">
-                            {tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado'
+                            {tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado' || (tipoContraparte === 'contado' && formData.subtipo_contado !== 'Persona Jurídica')
                                 ? 'Información Personal'
                                 : 'Información de la Empresa'}
                         </h2>
 
-                        {(tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado') ? (
+                        {(tipoContraparte === 'persona_natural' || tipoContraparte === 'empleado' || (tipoContraparte === 'contado' && formData.subtipo_contado !== 'Persona Jurídica')) ? (
                             <div className="grid grid-cols-2 gap-4">
                                 <Select 
                                     label="Tipo Documento" 
@@ -374,42 +395,71 @@ function RegistroForm() {
                                 <Input label="Email" name="email" type="email" value={formData.email} onChange={updateField} />
                                 <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
                                 <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
-                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} list="ciudades-list" />
-                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} list="departamentos-list" />
+                                <MunicipioSelect 
+                                    label="Ciudad *"
+                                    value={formData.municipio_sap || ''} 
+                                    onChange={(val) => {
+                                        const parts = val.split(' - ');
+                                        const code = parts[0]?.trim() || '';
+                                        const city = parts.length > 1 ? parts[1].trim() : val;
+                                        const dept = parts.length > 2 ? parts[2].trim() : '';
+                                        updateField('municipio_sap', val);
+                                        updateField('municipio_med_mag', code);
+                                        updateField('ciudad', city);
+                                        updateField('departamento', dept);
+                                    }} 
+                                />
+                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} disabled={true} />
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4">
                                 <Input label="Razón Social" name="razon_social" value={formData.razon_social} className="col-span-2" onChange={updateField} />
                                 <Input label="NIT" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} />
-                                <Input label="Código CIIU" name="codigo_ciiu" value={formData.codigo_ciiu} onChange={updateField} />
-                                <Select label="Tipo Sociedad" name="tipo_sociedad" value={formData.tipo_sociedad} onChange={updateField}
-                                    options={['Anónima', 'Limitada', 'S.A.S.', 'Sin Ánimo de Lucro', 'Otra']} />
-                                <Select label="Origen Capital" name="origen_capital" value={formData.origen_capital} onChange={updateField}
-                                    options={['Privada', 'Pública', 'Mixta']} />
+                                {tipoContraparte !== 'contado' && <Input label="Código CIIU" name="codigo_ciiu" value={formData.codigo_ciiu} onChange={updateField} />}
+                                {tipoContraparte !== 'contado' && <Select label="Tipo Sociedad" name="tipo_sociedad" value={formData.tipo_sociedad} onChange={updateField}
+                                    options={['Anónima', 'Limitada', 'S.A.S.', 'Sin Ánimo de Lucro', 'Otra']} />}
+                                {tipoContraparte !== 'contado' && <Select label="Origen Capital" name="origen_capital" value={formData.origen_capital} onChange={updateField}
+                                    options={['Privada', 'Pública', 'Mixta']} />}
                                 <Input label="Dirección" name="direccion" value={formData.direccion} className="col-span-2" onChange={updateField} />
                                 <Input label="Teléfono" name="telefono1_numero" value={formData.telefono1_numero} onChange={updateField} type="number" />
                                 <Input label="Celular" name="celular" value={formData.celular} onChange={updateField} type="number" />
-                                <Input label="Ciudad" name="ciudad" value={formData.ciudad} onChange={updateField} list="ciudades-list" />
-                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} list="departamentos-list" />
-                                <Input label="Nombre Representante Legal" name="rep_legal_nombre_completo" value={formData.rep_legal_nombre_completo} className="col-span-2" onChange={updateField} />
-                                <Input label="CC Representante Legal" name="rep_legal_numero_identificacion" value={formData.rep_legal_numero_identificacion} onChange={updateField} />
-                                <Input label="Correo Facturación" name="correo_facturacion" type="email" value={formData.correo_facturacion} className="col-span-2" onChange={updateField} />
+                                <MunicipioSelect 
+                                    label="Ciudad *"
+                                    value={formData.municipio_sap || ''} 
+                                    onChange={(val) => {
+                                        const parts = val.split(' - ');
+                                        const code = parts[0]?.trim() || '';
+                                        const city = parts.length > 1 ? parts[1].trim() : val;
+                                        const dept = parts.length > 2 ? parts[2].trim() : '';
+                                        updateField('municipio_sap', val);
+                                        updateField('municipio_med_mag', code);
+                                        updateField('ciudad', city);
+                                        updateField('departamento', dept);
+                                    }} 
+                                />
+                                <Input label="Departamento" name="departamento" value={formData.departamento} onChange={updateField} disabled={true} />
+                                {tipoContraparte !== 'contado' && <Input label="Nombre Representante Legal" name="rep_legal_nombre_completo" value={formData.rep_legal_nombre_completo} className="col-span-2" onChange={updateField} />}
+                                {tipoContraparte !== 'contado' && <Input label="CC Representante Legal" name="rep_legal_numero_identificacion" value={formData.rep_legal_numero_identificacion} onChange={updateField} />}
+                                <Input label={tipoContraparte === 'contado' ? "Correo" : "Correo Facturación"} name="correo_facturacion" type="email" value={formData.correo_facturacion} className="col-span-2" onChange={updateField} />
                             </div>
 
                         )}
 
                         <div className="flex gap-4 mt-6">
-                            <button onClick={() => setStep(1)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
+                            {tipoContraparte !== 'empleado' && tipoContraparte !== 'contado' && (
+                                <button onClick={() => setStep(1)} className="flex-1 py-3 border border-gray-300 rounded-xl">Atrás</button>
+                            )}
                             <button 
-                                onClick={() => setStep(getNextStep(2))} 
+                                onClick={() => tipoContraparte === 'contado' ? handleSubmit() : setStep(getNextStep(2))} 
                                 disabled={
-                                    tipoContraparte === 'persona_juridica' 
-                                    ? (!formData.razon_social || !formData.numero_identificacion || !formData.codigo_ciiu || !formData.tipo_sociedad || !formData.origen_capital || !formData.correo_facturacion || !isValidEmail(formData.correo_facturacion) || !formData.ciudad || !formData.departamento || !formData.rep_legal_nombre_completo || !formData.rep_legal_numero_identificacion)
-                                    : (!formData.tipo_documento || !formData.numero_identificacion || !formData.primer_nombre || !formData.primer_apellido || !formData.email || !isValidEmail(formData.email) || !formData.celular || !formData.direccion || !formData.ciudad || !formData.departamento)
+                                    loading ||
+                                    ((tipoContraparte === 'persona_juridica' || (tipoContraparte === 'contado' && formData.subtipo_contado === 'Persona Jurídica'))
+                                    ? (!formData.razon_social || !formData.numero_identificacion || !formData.correo_facturacion || !isValidEmail(formData.correo_facturacion) || !formData.ciudad || !formData.departamento || (tipoContraparte !== 'contado' && (!formData.codigo_ciiu || !formData.tipo_sociedad || !formData.origen_capital || !formData.rep_legal_nombre_completo || !formData.rep_legal_numero_identificacion)))
+                                    : (!formData.tipo_documento || !formData.numero_identificacion || !formData.primer_nombre || !formData.primer_apellido || !formData.email || !isValidEmail(formData.email) || !formData.celular || !formData.direccion || !formData.ciudad || !formData.departamento))
                                 }
                                 className="flex-1 py-3 bg-[#254153] text-white rounded-xl font-semibold disabled:opacity-50"
                             >
-                                Continuar
+                                {tipoContraparte === 'contado' ? (loading ? loadingText || 'Enviando...' : 'Enviar Formulario') : 'Continuar'}
                             </button>
                         </div>
                     </div>

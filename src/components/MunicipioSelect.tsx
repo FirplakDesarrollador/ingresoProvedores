@@ -7,9 +7,10 @@ interface MunicipioSelectProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  label?: string;
 }
 
-export default function MunicipioSelect({ value, onChange, className = '' }: MunicipioSelectProps) {
+export default function MunicipioSelect({ value, onChange, className = '', label = 'Código SAP Municipio Medios Magnéticos' }: MunicipioSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [muniList, setMuniList] = useState<Array<{codigo: string, descripcion: string}>>([])
@@ -68,7 +69,7 @@ export default function MunicipioSelect({ value, onChange, className = '' }: Mun
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       <label className="block text-xs font-medium text-gray-700 mb-1">
-        Código SAP Municipio Medios Magnéticos
+        {label}
       </label>
       <input
         type="text"

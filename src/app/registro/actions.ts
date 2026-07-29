@@ -6,7 +6,7 @@ import { createBusinessPartner, SapProveedorData } from '@/lib/sap'
 export interface ProveedorFormData {
     // Tipo
     tipo_solicitud: string
-    tipo_contraparte: 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero'
+    tipo_contraparte: 'persona_natural' | 'persona_juridica' | 'empleado' | 'extranjero' | 'contado'
     area_solicitante?: string
 
     // Persona Natural
@@ -146,7 +146,7 @@ export async function submitProveedorForm(data: ProveedorFormData) {
         console.log('Proveedor registrado con éxito:', proveedor.id)
 
         // Automatización para empleados: Enviar a SAP de inmediato y marcar como aprobado
-        if (proveedor.tipo_contraparte === 'empleado') {
+        if (proveedor.tipo_contraparte === 'empleado' || proveedor.tipo_contraparte === 'contado') {
             try {
                 console.log(`Intentando crear BP en SAP automáticamente para el empleado ${proveedor.id}...`)
                 const sapResult = await createBusinessPartner(proveedor as SapProveedorData)
@@ -245,7 +245,7 @@ export async function uploadDocument(formData: FormData) {
         if (tipoDocumento.includes('CERT BANCARI')) {
             const { data: provData } = await supabase.from('proveedores').select('tipo_contraparte').eq('id', proveedorId).single();
             
-            if (provData && provData.tipo_contraparte === 'empleado') {
+            if (provData && (provData.tipo_contraparte === 'empleado' || provData.tipo_contraparte === 'contado')) {
                 try {
                     console.log('Enviando certificado bancario al flujo automáticamente para el empleado...');
                     const base64 = Buffer.from(fileBuffer).toString('base64');
