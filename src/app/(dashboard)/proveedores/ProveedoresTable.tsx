@@ -44,6 +44,7 @@ interface Proveedor {
     email?: string
     correo_facturacion?: string
     estado: string
+    estado_contabilidad?: string
     created_at: string
 }
 
