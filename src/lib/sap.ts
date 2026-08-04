@@ -272,7 +272,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                          (data.pais && data.pais !== 'CO' && data.pais !== 'Colombia');
 
     // Determine CardCode — prefix + NIT + suffix -01 (max 15 chars for SAP)
-    const cleanNit = (data.numero_identificacion || '').replace(/[^0-9]/g, '');
+    const cleanNit = (data.numero_identificacion || '').replace(/[^a-zA-Z0-9]/g, '');
     let prefix = 'AC'; // default to AC
     
     if (data.tipo_contraparte === 'empleado') {
@@ -374,19 +374,19 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             }),
             BPBankAccounts: [
                 {
-                    BankCode: isContado ? '99' : resolveBankCode(data.entidad_bancaria || ''),
+                    BankCode: isExtranjero ? '99' : (isContado ? '99' : resolveBankCode(data.entidad_bancaria || '')),
                     AccountNo: isContado ? '00' : (data.numero_cuenta || '00000000'),
                     ControlKey: isContado ? '02' : (data.tipo_cuenta === 'Corriente' ? '01' : '02'),
-                    Country: isExtranjero ? (data.pais || '') : 'CO',
+                    Country: isExtranjero ? 'CO' : 'CO',
                     BPCode: cardCode,
                     AccountName: cardName,
                 }
             ],
             
             // UDFs
-            U_HBT_TipDoc: isContado ? '31' : (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2),
-            U_OK1_AC_ECO: isContado ? '' : (data.codigo_ciiu || '').substring(0, 4),
-            U_HBT_ActEco: isContado ? '' : (data.codigo_ciiu || '').substring(0, 10),
+            U_HBT_TipDoc: isExtranjero ? '43' : (isContado ? '31' : (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2)),
+            U_OK1_AC_ECO: (isContado || isExtranjero) ? '' : (data.codigo_ciiu || '').substring(0, 4),
+            U_HBT_ActEco: (isContado || isExtranjero) ? '' : (data.codigo_ciiu || '').substring(0, 10),
             U_HBT_TipEnt: tipoEntidad,
             U_HBT_Residente: isExtranjero ? 'NO' : 'SI',
             U_HBT_MailRecep_FE: (data.correo_facturacion || data.email || '').substring(0, 100),
@@ -394,10 +394,10 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             U_HBT_ResFis2: '49',
             U_HBT_InfoTrib: 'ZZ', // No Aplica default
             U_HBT_Nacional: (data.nacionalidad === 'Internacional' || isExtranjero) ? '2' : '1',
-            U_HBT_RegFis: (data.regimen_fiscal || '').split(' - ')[0].trim(),
-            U_HBT_RegTrib: regimenTribMap[data.regimen_tributario || ''] || '',
+            U_HBT_RegFis: isExtranjero ? '49' : (data.regimen_fiscal || '').split(' - ')[0].trim(),
+            U_HBT_RegTrib: isExtranjero ? '05' : (regimenTribMap[data.regimen_tributario || ''] || ''),
             U_HBT_MedPag: '47', // Hardcoded per user request
-            U_HBT_MunMed: data.municipio_med_mag || '',
+            U_HBT_MunMed: isExtranjero ? '05001' : (data.municipio_med_mag || ''),
         };
 
         // Nombres / Apellidos
@@ -418,7 +418,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             
             // Map the department to SAP State Code
             let stateCode = '';
-            if (data.departamento) {
+            if (!isExtranjero && data.departamento) {
                 const depUpper = data.departamento.toUpperCase().trim();
                 if (departamentosMap[depUpper]) {
                     stateCode = departamentosMap[depUpper];
@@ -427,8 +427,6 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                     // Only accept valid SAP state codes (typically 1 to 99)
                     if (numCode >= 1 && numCode <= 99) {
                         stateCode = numCode.toString();
-                    } else {
-                        stateCode = ''; // Invalid numeric code
                     }
                 } else {
                     // Try to find a partial match (e.g. "ANTIQUIA" ≈ "ANTIOQUIA")
@@ -437,9 +435,6 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                     );
                     if (matchedKey) {
                         stateCode = departamentosMap[matchedKey];
-                    } else {
-                        // Better to send empty than an invalid code that crashes SAP
-                        stateCode = '';
                     }
                 }
             }

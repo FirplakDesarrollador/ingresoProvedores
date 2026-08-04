@@ -81,8 +81,9 @@ export default function ContabilidadForm({ proveedor }: ContabilidadFormProps) {
                                 <option value="">Seleccione un grupo...</option>
                                 <option value="Proveedor Nacional">Proveedor Nacional</option>
                                 <option value="Proveedor de Servicios">Proveedor de Servicios</option>
+                                <option value="Proveedor del Exterior">Proveedor del Exterior</option>
                             </select>
-                            <p className="text-xs text-gray-400 mt-1">Este grupo determinará el prefijo del código en SAP (PN o AC).</p>
+                            <p className="text-xs text-gray-400 mt-1">Este grupo determinará el prefijo del código en SAP (PN, AC, PE).</p>
                         </div>
 
                         <div>

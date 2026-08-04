@@ -258,15 +258,13 @@ export default function ExtranjeroForm() {
     }, [])
 
     const updateField = (field: string, value: any) => {
-        setFormData(prev => {
-            const next = { ...prev, [field]: value }
-            if (field === 'pais') {
-                if (esCountries.includes(value)) setLang('es')
-                else if (zhCountries.includes(value)) setLang('zh')
-                else setLang('en')
-            }
-            return next
-        })
+        setFormData(prev => ({ ...prev, [field]: value }))
+        
+        if (field === 'pais') {
+            if (esCountries.includes(value)) setLang('es')
+            else if (zhCountries.includes(value)) setLang('zh')
+            else setLang('en')
+        }
     }
 
     const t = dict[lang]
