@@ -137,24 +137,28 @@ export async function submitProveedorForm(data: ProveedorFormData) {
             }
         })
 
-        const { data: proveedor, error } = await supabase
+        // Generar UUID en el servidor para no depender de .select() después del insert.
+        // RLS bloquea SELECT para usuarios no autenticados, lo que causaba que el insert
+        // se guardara exitosamente pero el .select().single() fallara, mostrando un error
+        // falso al usuario. Al reintentar, el segundo insert fallaba con error 23505 (duplicado).
+        const proveedorId = crypto.randomUUID()
+
+        const { error } = await supabase
             .from('proveedores')
-            .insert(processedData)
-            .select()
-            .single()
+            .insert({ id: proveedorId, ...processedData })
 
         if (error) {
             console.error('Error al insertar proveedor:', error)
             return { success: false, error: `DB Error: ${error.message} (${error.code})` }
         }
 
-        console.log('Proveedor registrado con éxito:', proveedor.id)
+        console.log('Proveedor registrado con éxito:', proveedorId)
 
         // Automatización para empleados: Enviar a SAP de inmediato y marcar como aprobado
-        if (proveedor.tipo_contraparte === 'empleado') {
+        if (processedData.tipo_contraparte === 'empleado') {
             try {
-                console.log(`Intentando crear BP en SAP automáticamente para el empleado ${proveedor.id}...`)
-                const sapResult = await createBusinessPartner(proveedor as SapProveedorData)
+                console.log(`Intentando crear BP en SAP automáticamente para el empleado ${proveedorId}...`)
+                const sapResult = await createBusinessPartner({ id: proveedorId, ...processedData } as SapProveedorData)
                 
                 if (sapResult.success) {
                     await supabase
@@ -164,7 +168,7 @@ export async function submitProveedorForm(data: ProveedorFormData) {
                             estado_contabilidad: 'aprobado',
                             fecha_decision: new Date().toISOString()
                         })
-                        .eq('id', proveedor.id)
+                        .eq('id', proveedorId)
                     console.log('Empleado enviado a SAP y aprobado automáticamente.')
                 } else {
                     console.error('El empleado falló su creación automática en SAP:', sapResult.error)
@@ -175,7 +179,7 @@ export async function submitProveedorForm(data: ProveedorFormData) {
             }
         }
 
-        return { success: true, id: proveedor.id }
+        return { success: true, id: proveedorId }
     } catch (e: any) {
         console.error('Excepción en submitProveedorForm:', e)
         return { success: false, error: e.message || 'Error desconocido en el servidor' }
