@@ -145,7 +145,7 @@ export async function submitProveedorForm(data: ProveedorFormData) {
 
         const { error } = await supabase
             .from('proveedores')
-            .insert({ id: proveedorId, ...processedData })
+            .upsert({ id: proveedorId, ...processedData }, { onConflict: 'numero_identificacion' })
 
         if (error) {
             console.error('Error al insertar proveedor:', error)
@@ -257,9 +257,10 @@ export async function uploadDocument(formData: FormData) {
             if (provData && provData.tipo_contraparte === 'empleado') {
                 try {
                     console.log('Enviando certificado bancario al flujo automáticamente para el empleado...');
-                    const base64 = Buffer.from(fileBuffer).toString('base64');
+                    const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath);
+                    const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`;
                     const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${fileExtension}`;
-                    await sendBankCertificateFlow(nombreProveedor, finalFileName, base64);
+                    await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl);
                     console.log('Certificado bancario enviado al flujo exitosamente.');
                 } catch (flowError) {
                     console.error('Error al enviar el certificado bancario al flujo:', flowError);
@@ -368,7 +369,7 @@ async function sendNotificationEmail(nombreProveedor: string) {
     }
 }
 
-export async function sendBankCertificateFlow(nombreProveedor: string, fileName: string, fileBase64: string) {
+export async function sendBankCertificateFlow(nombreProveedor: string, fileName: string, archivoUrl: string) {
     const flowUrl = process.env.FLOW_CERTIFICADO_BANCARIO_URL
     
     if (!flowUrl) {
@@ -376,65 +377,11 @@ export async function sendBankCertificateFlow(nombreProveedor: string, fileName:
         return
     }
 
-    const allowedKeys = [
-        'tipo_contraparte',
-        'razon_social',
-        'primer_nombre',
-        'segundo_nombre',
-        'primer_apellido',
-        'segundo_apellido',
-        'numero_identificacion',
-        'tipo_documento',
-        'email',
-        'celular',
-        'direccion',
-        'ciudad',
-        'departamento',
-        'pais',
-        'telefono1_numero',
-        'rep_legal_nombre_completo',
-        'rep_legal_numero_identificacion',
-        'correo_facturacion',
-        'pagina_web',
-        'persona_contacto',
-        'tipo_sociedad',
-        'codigo_ciiu',
-        'origen_capital',
-        'entidad_bancaria',
-        'numero_cuenta',
-        'tipo_cuenta',
-        'swift_code',
-        'aba_code',
-        'dias_credito',
-        'area_solicitante',
-        'tipo_provision',
-        'monto_aprox',
-        'frecuencia_compra',
-        'referencia_comercial_1',
-        'referencia_comercial_2',
-        'nacionalidad',
-        'regimen_tributario',
-        'regimen_fiscal',
-        'medio_de_pago',
-        'actividad_economica',
-        'municipio_med_mag',
-        'realiza_operaciones_internacionales',
-        'tiene_evaluacion_sst',
-        'rep_legal_es_pep',
-        'tiene_sanciones_lavado',
-        'rep_legal_lugar_expedicion',
-        'rep_legal_telefono',
-        'rep_legal_email',
-        'acepta_terminos',
-        'detalle_origen_fondos',
-        'tipo_transacciones'
-    ]
-
     const payload = {
         titulo: nombreProveedor,
         contenido: "Se ha adjuntado un nuevo certificado bancario para tu revisión.",
         nombreArchivo: fileName,
-        pdf: fileBase64
+        archivoUrl: archivoUrl
     }
 
     try {

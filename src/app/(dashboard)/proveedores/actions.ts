@@ -52,15 +52,13 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                 .limit(1);
 
             if (certDocs && certDocs.length > 0 && certDocs[0].file_path) {
-                const { data: fileData } = await supabase.storage.from('proveedores').download(certDocs[0].file_path);
-                if (fileData) {
-                    const arrayBuffer = await fileData.arrayBuffer();
-                    const base64 = Buffer.from(arrayBuffer).toString('base64');
-                    const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf';
-                    const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
-                    const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`;
-                    await sendBankCertificateFlow(nombreProveedor, finalFileName, base64);
-                }
+                const filePath = certDocs[0].file_path;
+                const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath);
+                const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`;
+                const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf';
+                const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
+                const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`;
+                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl);
             }
     } catch (emailError) {
         console.error('Error al enviar notificaciones de aprobación:', emailError)
