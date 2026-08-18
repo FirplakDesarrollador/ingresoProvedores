@@ -188,7 +188,7 @@ export async function aprobarContabilidad(id: string, formData: any) {
         codigos_retencion: formData.codigos_retencion
     }
 
-    if (prov.tipo_contraparte === 'empleado') {
+    if (prov.tipo_contraparte === 'empleado' || prov.tipo_contraparte === 'contado') {
         updateData.estado = 'aprobado'
         updateData.fecha_decision = new Date().toISOString()
     }

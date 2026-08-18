@@ -154,10 +154,10 @@ export async function submitProveedorForm(data: ProveedorFormData) {
 
         console.log('Proveedor registrado con éxito:', proveedorId)
 
-        // Automatización para empleados: Enviar a SAP de inmediato y marcar como aprobado
-        if (processedData.tipo_contraparte === 'empleado') {
+        // Automatización para empleados y proveedores de contado: Enviar a SAP de inmediato y marcar como aprobado
+        if (processedData.tipo_contraparte === 'empleado' || processedData.tipo_contraparte === 'contado') {
             try {
-                console.log(`Intentando crear BP en SAP automáticamente para el empleado ${proveedorId}...`)
+                console.log(`Intentando crear BP en SAP automáticamente para ${processedData.tipo_contraparte} ${proveedorId}...`)
                 const sapResult = await createBusinessPartner({ id: proveedorId, ...processedData } as SapProveedorData)
                 
                 if (sapResult.success) {
@@ -169,13 +169,13 @@ export async function submitProveedorForm(data: ProveedorFormData) {
                             fecha_decision: new Date().toISOString()
                         })
                         .eq('id', proveedorId)
-                    console.log('Empleado enviado a SAP y aprobado automáticamente.')
+                    console.log(`${processedData.tipo_contraparte} enviado a SAP y aprobado automáticamente.`)
                 } else {
-                    console.error('El empleado falló su creación automática en SAP:', sapResult.error)
+                    console.error(`El ${processedData.tipo_contraparte} falló su creación automática en SAP:`, sapResult.error)
                     // No detenemos el proceso, quedará pendiente para revisión manual si falla
                 }
             } catch (sapError) {
-                console.error('Error en la integración automática con SAP para empleado:', sapError)
+                console.error(`Error en la integración automática con SAP para ${processedData.tipo_contraparte}:`, sapError)
             }
         }
 

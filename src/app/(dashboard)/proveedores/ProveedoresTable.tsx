@@ -190,22 +190,21 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
                                     <td className="px-4 py-3 whitespace-nowrap">
                                         <span className={`px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider ${
                                             p.tipo_contraparte === 'empleado' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
+                                            p.tipo_contraparte === 'contado' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
                                             p.tipo_contraparte === 'persona_natural'
                                                 ? 'bg-blue-50 text-blue-600 border border-blue-100'
                                                 : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
                                             }`}>
-                                            {p.tipo_contraparte === 'empleado' ? '👤 Empleado' : p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
+                                            {p.tipo_contraparte === 'empleado' ? '👤 Empleado' : p.tipo_contraparte === 'contado' ? '💵 Contado' : p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 font-semibold text-[#254153] max-w-xs truncate">
-                                        {p.tipo_contraparte === 'persona_natural'
-                                            ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
-                                            : p.razon_social || '-'}
+                                        {p.razon_social || `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'}
                                     </td>
                                     <td className="px-4 py-3 text-gray-600 font-medium">{p.numero_identificacion || '-'}</td>
                                     <td className="px-4 py-3 text-gray-500 text-sm italic">{p.email || p.correo_facturacion || '-'}</td>
                                     <td className="px-4 py-3 whitespace-nowrap">
-                                        {p.tipo_contraparte === 'empleado' ? (
+                                        {(p.tipo_contraparte === 'empleado' || p.tipo_contraparte === 'contado') ? (
                                             <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${
                                                 p.estado_contabilidad === 'aprobado' 
                                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
@@ -228,7 +227,7 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
                                     </td>
                                     <td className="px-4 py-3 text-right">
                                         <div className="flex justify-end gap-2">
-                                            {p.tipo_contraparte === 'empleado' && p.estado_contabilidad !== 'aprobado' && (
+                                            {(p.tipo_contraparte === 'empleado' || p.tipo_contraparte === 'contado') && p.estado_contabilidad !== 'aprobado' && (
                                                 <SubirSapButton proveedorId={p.id} />
                                             )}
                                             <Link
