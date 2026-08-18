@@ -18,19 +18,19 @@ export default async function ProveedoresPage() {
     ] = await Promise.all([
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .in('estado', ['pendiente', 'aprobado', 'rechazado'])
-            .neq('tipo_contraparte', 'empleado'),
+            .not('tipo_contraparte', 'in', '("empleado","contado")'),
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .eq('estado', 'pendiente')
-            .neq('tipo_contraparte', 'empleado'),
+            .not('tipo_contraparte', 'in', '("empleado","contado")'),
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .eq('estado', 'aprobado')
-            .neq('tipo_contraparte', 'empleado'),
+            .not('tipo_contraparte', 'in', '("empleado","contado")'),
         supabase.from('proveedores').select('*', { count: 'exact', head: true })
             .eq('estado', 'rechazado')
-            .neq('tipo_contraparte', 'empleado'),
+            .not('tipo_contraparte', 'in', '("empleado","contado")'),
         supabase.from('proveedores').select('*')
             .in('estado', ['pendiente', 'aprobado', 'rechazado'])
-            .neq('tipo_contraparte', 'empleado')
+            .not('tipo_contraparte', 'in', '("empleado","contado")')
             .order('created_at', { ascending: false })
             .limit(500),
     ])
