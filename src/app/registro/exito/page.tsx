@@ -157,12 +157,18 @@ function ExitoContent() {
                                 </a>
                             )}
 
-                            <Link
-                                href="/registro"
-                                className="w-full flex items-center justify-center px-6 py-3 bg-white text-gray-600 border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
-                            >
-                                Nuevo Registro
-                            </Link>
+                            {(() => {
+                                const currentTipo = searchParams.get('tipo') || proveedor?.tipo_contraparte
+                                const targetUrl = currentTipo ? `/registro?tipo=${currentTipo}` : '/registro'
+                                return (
+                                    <Link
+                                        href={targetUrl}
+                                        className="w-full flex items-center justify-center px-6 py-3 bg-white text-gray-600 border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                                    >
+                                        Nuevo Registro
+                                    </Link>
+                                )
+                            })()}
                         </div>
                     </div>
 

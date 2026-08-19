@@ -196,7 +196,7 @@ function RegistroForm() {
                     alert(`El registro se guardó, pero hubo problemas con algunos documentos:\n- ${errors.join('\n- ')}\n\nContacte a soporte si el problema persiste.`)
                 }
 
-                router.push(`/registro/exito?id=${proveedorId}`)
+                router.push(`/registro/exito?id=${proveedorId}${tipoContraparte ? `&tipo=${tipoContraparte}` : ''}`)
             } else {
                 alert('Error al registrar: ' + (result as any).error)
                 setLoading(false)

@@ -339,7 +339,7 @@ export default function ExtranjeroForm() {
                     alert(`${t.alert_docs}- ${errors.join('\n- ')}${t.alert_contact}`)
                 }
 
-                router.push(`/registro/exito?id=${proveedorId}`)
+                router.push(`/registro/exito?id=${proveedorId}&tipo=extranjero`)
             } else {
                 alert(`${t.error_submit} ${(result as any).error}`)
                 setLoading(false)
