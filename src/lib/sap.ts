@@ -265,7 +265,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     const isJuridica = data.tipo_contraparte === 'persona_juridica' || !!data.razon_social;
     const cardName = isJuridica
         ? (data.razon_social || 'SIN NOMBRE')
-        : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE';
+        : (data.tipo_contraparte === 'empleado'
+            ? `${data.primer_apellido || ''} ${data.segundo_apellido || ''} ${data.primer_nombre || ''} ${data.segundo_nombre || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE'
+            : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE');
 
     // Determine if foreign
     const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
