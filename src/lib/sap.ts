@@ -262,10 +262,11 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     const baseUrl = loginUrl.replace('/Login', '');
 
     // Determine name
-    const isJuridica = data.tipo_contraparte === 'persona_juridica' || !!data.razon_social;
+    const isEmpleado = data.tipo_contraparte === 'empleado';
+    const isJuridica = !isEmpleado && (data.tipo_contraparte === 'persona_juridica' || (!!data.razon_social && !data.primer_nombre));
     const cardName = (isJuridica
         ? (data.razon_social || 'SIN NOMBRE')
-        : (data.tipo_contraparte === 'empleado'
+        : (isEmpleado
             ? `${data.primer_apellido || ''} ${data.segundo_apellido || ''} ${data.primer_nombre || ''} ${data.segundo_nombre || ''}`
             : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`))
         .replace(/\s+/g, ' ')
@@ -315,7 +316,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     // Tipo entidad: 1=Natural, 2=Jurídica
     const tipoEntidad = isJuridica ? '2' : '1';
 
-    console.log(`SAP BP: Creating ${cardCode} (${cardName}) - Group: ${groupCode}, Extranjero: ${isExtranjero}`);
+    console.log(`SAP BP: Creating/Updating ${cardCode} (${cardName}) - Group: ${groupCode}, Extranjero: ${isExtranjero}`);
 
     // 1. LOGIN
     const loginRes = await sapRequestWithRetry(loginUrl, {
@@ -339,82 +340,94 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         'Content-Type': 'application/json' 
     };
 
+    // 2. Build Business Partner payload
+    const bpPayload: any = {
+        CardCode: cardCode,
+        CardName: cardName,
+        CardType: 'cSupplier',
+        GroupCode: groupCode,
+        FederalTaxID: data.numero_identificacion || '',
+        Phone1: (data.telefono1_numero || '').trim(),
+        Cellular: (data.celular || '').trim(),
+        EmailAddress: data.email || data.correo_facturacion || '',
+        Website: data.pagina_web || '',
+        Currency: isExtranjero ? 'USD' : '$',
+        PayTermsGrpCode: paymentGroupNum,
+        DebitorAccount: data.cuenta_asociada || '23359505',
+        
+        // Si hay persona de contacto, crearla en la lista de contactos
+        ContactEmployees: (data.persona_contacto || data.rep_legal_nombre_completo) ? [
+            {
+                Name: (data.persona_contacto || data.rep_legal_nombre_completo || '').toUpperCase().trim(),
+                Phone1: data.telefono1_numero || data.celular || '',
+                E_Mail: data.email || data.correo_facturacion || '',
+            }
+        ] : [],
+        
+        // Requerido por SAP (SP): Cuenta Bancaria
+        ...(data.aplica_retenciones && {
+            SubjectToWithholdingTax: data.sujeto_a_retencion ? 'boYES' : 'boNO',
+            BPWithholdingTaxCollection: (data.codigos_retencion || []).map(wt => ({ WTCode: wt }))
+        }),
+        BPBankAccounts: [
+            {
+                BankCode: isExtranjero ? '99' : (isContado ? '99' : resolveBankCode(data.entidad_bancaria || '')),
+                AccountNo: isContado ? '00' : (data.numero_cuenta || '00000000'),
+                ControlKey: isContado ? '02' : (data.tipo_cuenta === 'Corriente' ? '01' : '02'),
+                Country: isExtranjero ? 'CO' : 'CO',
+                BPCode: cardCode,
+                AccountName: cardName,
+            }
+        ],
+        
+        // UDFs
+        U_HBT_TipDoc: isExtranjero ? '43' : (isContado ? '31' : (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2)),
+        U_OK1_AC_ECO: (isContado || isExtranjero) ? '' : (data.codigo_ciiu || '').substring(0, 4),
+        U_HBT_ActEco: (isContado || isExtranjero) ? '' : (data.codigo_ciiu || '').substring(0, 10),
+        U_HBT_TipEnt: tipoEntidad,
+        U_HBT_Residente: isExtranjero ? 'NO' : 'SI',
+        U_HBT_MailRecep_FE: (data.correo_facturacion || data.email || '').substring(0, 100),
+        U_HBT_ResFis1: '49',  // No aplica - Otros default
+        U_HBT_ResFis2: '49',
+        U_HBT_InfoTrib: 'ZZ', // No Aplica default
+        U_HBT_Nacional: (data.nacionalidad === 'Internacional' || isExtranjero) ? '2' : '1',
+        U_HBT_RegFis: isExtranjero ? '49' : (data.regimen_fiscal || '').split(' - ')[0].trim(),
+        U_HBT_RegTrib: isExtranjero ? '05' : (regimenTribMap[data.regimen_tributario || ''] || ''),
+        U_HBT_MedPag: '47', // Hardcoded per user request
+        U_HBT_MunMed: isExtranjero ? '05001' : (data.municipio_med_mag || ''),
+    };
+
+    // Nombres / Apellidos
+    if (!isJuridica) {
+        bpPayload.U_HBT_Nombres = [data.primer_nombre || '', data.segundo_nombre || ''].filter(Boolean).join(' ').substring(0, 50).toUpperCase().trim();
+        bpPayload.U_HBT_Apellido1 = (data.primer_apellido || '').substring(0, 30).toUpperCase().trim();
+        bpPayload.U_HBT_Apellido2 = (data.segundo_apellido || '').substring(0, 30).toUpperCase().trim();
+    } else {
+        bpPayload.U_HBT_Nombres = '';
+        bpPayload.U_HBT_Apellido1 = '';
+        bpPayload.U_HBT_Apellido2 = '';
+    }
+
     try {
-        // 2. Check if BP already exists
+        // 3. Check if BP already exists
         const checkUrl = `${baseUrl}/BusinessPartners?$filter=CardCode eq '${cardCode}'&$select=CardCode,CardName`;
         const checkRes = await sapRequestWithRetry(checkUrl, { headers: authHeaders });
 
         if (checkRes.status === 200 && checkRes.data.value && checkRes.data.value.length > 0) {
-            console.log(`SAP BP: ${cardCode} already exists. Skipping creation.`);
-            return { success: false, cardCode, error: `El registro ya existe en SAP con el código ${cardCode}. Por favor verifique.` };
-        }
-        // 3. Build Business Partner payload
-        const bpPayload: any = {
-            CardCode: cardCode,
-            CardName: cardName,
-            CardType: 'cSupplier',
-            GroupCode: groupCode,
-            FederalTaxID: data.numero_identificacion || '',
-            Phone1: (data.telefono1_numero || '').trim(),
-            Cellular: (data.celular || '').trim(),
-            EmailAddress: data.email || data.correo_facturacion || '',
-            Website: data.pagina_web || '',
-            Currency: isExtranjero ? 'USD' : '$',
-            PayTermsGrpCode: paymentGroupNum,
-            DebitorAccount: data.cuenta_asociada || '23359505',
-            
-            // Si hay persona de contacto, crearla en la lista de contactos
-            ContactEmployees: (data.persona_contacto || data.rep_legal_nombre_completo) ? [
-                {
-                    Name: (data.persona_contacto || data.rep_legal_nombre_completo || '').toUpperCase().trim(),
-                    Phone1: data.telefono1_numero || data.celular || '',
-                    E_Mail: data.email || data.correo_facturacion || '',
-                }
-            ] : [],
-            
-            // Requerido por SAP (SP): Cuenta Bancaria
-            ...(data.aplica_retenciones && {
-                SubjectToWithholdingTax: data.sujeto_a_retencion ? 'boYES' : 'boNO',
-                BPWithholdingTaxCollection: (data.codigos_retencion || []).map(wt => ({ WTCode: wt }))
-            }),
-            BPBankAccounts: [
-                {
-                    BankCode: isExtranjero ? '99' : (isContado ? '99' : resolveBankCode(data.entidad_bancaria || '')),
-                    AccountNo: isContado ? '00' : (data.numero_cuenta || '00000000'),
-                    ControlKey: isContado ? '02' : (data.tipo_cuenta === 'Corriente' ? '01' : '02'),
-                    Country: isExtranjero ? 'CO' : 'CO',
-                    BPCode: cardCode,
-                    AccountName: cardName,
-                }
-            ],
-            
-            // UDFs
-            U_HBT_TipDoc: isExtranjero ? '43' : (isContado ? '31' : (tipoDocMap[data.tipo_documento || (isJuridica ? 'NIT' : '')] || '').substring(0, 2)),
-            U_OK1_AC_ECO: (isContado || isExtranjero) ? '' : (data.codigo_ciiu || '').substring(0, 4),
-            U_HBT_ActEco: (isContado || isExtranjero) ? '' : (data.codigo_ciiu || '').substring(0, 10),
-            U_HBT_TipEnt: tipoEntidad,
-            U_HBT_Residente: isExtranjero ? 'NO' : 'SI',
-            U_HBT_MailRecep_FE: (data.correo_facturacion || data.email || '').substring(0, 100),
-            U_HBT_ResFis1: '49',  // No aplica - Otros default
-            U_HBT_ResFis2: '49',
-            U_HBT_InfoTrib: 'ZZ', // No Aplica default
-            U_HBT_Nacional: (data.nacionalidad === 'Internacional' || isExtranjero) ? '2' : '1',
-            U_HBT_RegFis: isExtranjero ? '49' : (data.regimen_fiscal || '').split(' - ')[0].trim(),
-            U_HBT_RegTrib: isExtranjero ? '05' : (regimenTribMap[data.regimen_tributario || ''] || ''),
-            U_HBT_MedPag: '47', // Hardcoded per user request
-            U_HBT_MunMed: isExtranjero ? '05001' : (data.municipio_med_mag || ''),
-        };
-
-        // Nombres / Apellidos
-        if (!isJuridica) {
-            bpPayload.U_HBT_Nombres = [data.primer_nombre || '', data.segundo_nombre || ''].filter(Boolean).join(' ').substring(0, 50).toUpperCase().trim();
-            bpPayload.U_HBT_Apellido1 = (data.primer_apellido || '').substring(0, 30).toUpperCase().trim();
-            bpPayload.U_HBT_Apellido2 = (data.segundo_apellido || '').substring(0, 30).toUpperCase().trim();
-        } else {
-            // Para persona jurídica no se llenan estos campos
-            bpPayload.U_HBT_Nombres = '';
-            bpPayload.U_HBT_Apellido1 = '';
-            bpPayload.U_HBT_Apellido2 = '';
+            console.log(`SAP BP: ${cardCode} already exists. Updating CardName and data via PATCH...`);
+            const updateUrl = `${baseUrl}/BusinessPartners('${cardCode}')`;
+            const patchRes = await sapRequestWithRetry(updateUrl, {
+                method: 'PATCH',
+                headers: authHeaders,
+                body: JSON.stringify({
+                    CardName: cardName,
+                    U_HBT_Nombres: bpPayload.U_HBT_Nombres,
+                    U_HBT_Apellido1: bpPayload.U_HBT_Apellido1,
+                    U_HBT_Apellido2: bpPayload.U_HBT_Apellido2,
+                })
+            });
+            console.log(`SAP BP PATCH Response status: ${patchRes.status}`);
+            return { success: true, cardCode };
         }
 
         // Address
