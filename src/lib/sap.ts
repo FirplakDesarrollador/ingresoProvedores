@@ -263,11 +263,14 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
 
     // Determine name
     const isJuridica = data.tipo_contraparte === 'persona_juridica' || !!data.razon_social;
-    const cardName = isJuridica
+    const cardName = (isJuridica
         ? (data.razon_social || 'SIN NOMBRE')
         : (data.tipo_contraparte === 'empleado'
-            ? `${data.primer_apellido || ''} ${data.segundo_apellido || ''} ${data.primer_nombre || ''} ${data.segundo_nombre || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE'
-            : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim() || 'SIN NOMBRE');
+            ? `${data.primer_apellido || ''} ${data.segundo_apellido || ''} ${data.primer_nombre || ''} ${data.segundo_nombre || ''}`
+            : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`))
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toUpperCase() || 'SIN NOMBRE';
 
     // Determine if foreign
     const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
@@ -363,7 +366,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             // Si hay persona de contacto, crearla en la lista de contactos
             ContactEmployees: (data.persona_contacto || data.rep_legal_nombre_completo) ? [
                 {
-                    Name: data.persona_contacto || data.rep_legal_nombre_completo,
+                    Name: (data.persona_contacto || data.rep_legal_nombre_completo || '').toUpperCase().trim(),
                     Phone1: data.telefono1_numero || data.celular || '',
                     E_Mail: data.email || data.correo_facturacion || '',
                 }
@@ -404,9 +407,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
 
         // Nombres / Apellidos
         if (!isJuridica) {
-            bpPayload.U_HBT_Nombres = [data.primer_nombre || '', data.segundo_nombre || ''].filter(Boolean).join(' ').substring(0, 50);
-            bpPayload.U_HBT_Apellido1 = (data.primer_apellido || '').substring(0, 30);
-            bpPayload.U_HBT_Apellido2 = (data.segundo_apellido || '').substring(0, 30);
+            bpPayload.U_HBT_Nombres = [data.primer_nombre || '', data.segundo_nombre || ''].filter(Boolean).join(' ').substring(0, 50).toUpperCase().trim();
+            bpPayload.U_HBT_Apellido1 = (data.primer_apellido || '').substring(0, 30).toUpperCase().trim();
+            bpPayload.U_HBT_Apellido2 = (data.segundo_apellido || '').substring(0, 30).toUpperCase().trim();
         } else {
             // Para persona jurídica no se llenan estos campos
             bpPayload.U_HBT_Nombres = '';
