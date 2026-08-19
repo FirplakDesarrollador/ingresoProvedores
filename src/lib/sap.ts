@@ -264,6 +264,17 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     // Determine name
     const isEmpleado = data.tipo_contraparte === 'empleado';
     const isJuridica = !isEmpleado && (data.tipo_contraparte === 'persona_juridica' || (!!data.razon_social && !data.primer_nombre));
+    
+    console.log('=== SAP NAME DEBUG ===');
+    console.log('tipo_contraparte:', data.tipo_contraparte);
+    console.log('isEmpleado:', isEmpleado);
+    console.log('isJuridica:', isJuridica);
+    console.log('primer_nombre:', JSON.stringify(data.primer_nombre));
+    console.log('segundo_nombre:', JSON.stringify(data.segundo_nombre));
+    console.log('primer_apellido:', JSON.stringify(data.primer_apellido));
+    console.log('segundo_apellido:', JSON.stringify(data.segundo_apellido));
+    console.log('razon_social:', JSON.stringify(data.razon_social));
+    
     const cardName = (isJuridica
         ? (data.razon_social || 'SIN NOMBRE')
         : (isEmpleado
@@ -272,6 +283,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         .replace(/\s+/g, ' ')
         .trim()
         .toUpperCase() || 'SIN NOMBRE';
+    
+    console.log('COMPUTED cardName:', JSON.stringify(cardName));
+    console.log('=== END SAP NAME DEBUG ===');
 
     // Determine if foreign
     const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
