@@ -62,6 +62,14 @@ export default function ContabilidadForm({ proveedor }: ContabilidadFormProps) {
         }
     }
 
+    const [searchRetencion, setSearchRetencion] = useState('')
+
+    const filteredRetenciones = retencionesSap.filter(wt => {
+        const matchesSearch = wt.WTCode.toLowerCase().includes(searchRetencion.toLowerCase()) ||
+            wt.WTName.toLowerCase().includes(searchRetencion.toLowerCase())
+        return matchesSearch
+    })
+
     return (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-left">
             <h2 className="text-xl font-medium text-gray-600 mb-6">Módulo de Contabilidad</h2>
@@ -117,22 +125,58 @@ export default function ContabilidadForm({ proveedor }: ContabilidadFormProps) {
                         {formData.sujeto_a_retencion && (
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[#254153] mb-2">Código(s) Permitido(s)</label>
-                                    <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 p-2 space-y-1">
-                                        {retencionesSap.map((wt) => (
-                                            <label key={wt.WTCode} className="flex items-start gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
-                                                <input 
-                                                    type="checkbox" 
-                                                    checked={formData.codigos_retencion.includes(wt.WTCode)}
-                                                    onChange={() => toggleRetencion(wt.WTCode)}
-                                                    className="w-4 h-4 mt-0.5 text-[#254153] rounded"
-                                                />
-                                                <div>
-                                                    <div className="text-sm font-medium text-gray-700">{wt.WTCode} - {wt.WTName}</div>
-                                                    <div className="text-xs text-gray-500">Tasa: {wt.Rate}%</div>
-                                                </div>
-                                            </label>
-                                        ))}
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="block text-sm font-medium text-[#254153]">
+                                            Código(s) Permitido(s) ({formData.codigos_retencion.length} seleccionados)
+                                        </label>
+                                        <span className="text-xs text-gray-500">
+                                            {filteredRetenciones.length} de {retencionesSap.length} códigos
+                                        </span>
+                                    </div>
+
+                                    {/* Buscador de Retenciones */}
+                                    <div className="mb-2">
+                                        <input
+                                            type="text"
+                                            value={searchRetencion}
+                                            onChange={(e) => setSearchRetencion(e.target.value)}
+                                            placeholder="🔍 Buscar por código (ej: RFS, ICA, ARO) o nombre..."
+                                            className="w-full px-3 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#254153]"
+                                        />
+                                    </div>
+
+                                    <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 p-2 space-y-1">
+                                        {filteredRetenciones.length === 0 ? (
+                                            <p className="text-sm text-gray-400 text-center py-4">No se encontraron retenciones con ese criterio.</p>
+                                        ) : (
+                                            filteredRetenciones.map((wt) => {
+                                                const isSelected = formData.codigos_retencion.includes(wt.WTCode);
+                                                return (
+                                                    <label 
+                                                        key={wt.WTCode} 
+                                                        className={`flex items-start gap-2 p-2 rounded cursor-pointer transition-colors ${
+                                                            isSelected ? 'bg-blue-50/70 border border-blue-200' : 'hover:bg-gray-100 border border-transparent'
+                                                        }`}
+                                                    >
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={isSelected}
+                                                            onChange={() => toggleRetencion(wt.WTCode)}
+                                                            className="w-4 h-4 mt-0.5 text-[#254153] rounded"
+                                                        />
+                                                        <div className="flex-1">
+                                                            <div className="text-sm font-medium text-gray-800 flex items-center gap-2">
+                                                                <span>{wt.WTCode} - {wt.WTName}</span>
+                                                                {wt.Inactive && (
+                                                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-normal">Inactivo SAP</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500">Tasa: {wt.Rate}%</div>
+                                                        </div>
+                                                    </label>
+                                                );
+                                            })
+                                        )}
                                     </div>
                                 </div>
                             </div>

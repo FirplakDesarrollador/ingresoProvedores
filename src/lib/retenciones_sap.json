@@ -2,101 +2,793 @@
   {
     "WTCode": "ACRE",
     "WTName": "A.RENTA Y COMP.ART 365  0.4%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ACRS",
     "WTName": "A.RENTA Y COMP.ART 365  0.4%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARI1",
     "WTName": "A. INTERESES 7%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARO1",
     "WTName": "A. OTROS CONCEPTOS 2.5%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARO2",
     "WTName": "A.  COMISIONES 10%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARS1",
     "WTName": "A. SERVICIOS 4%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARS2",
     "WTName": "A. FLETES 1%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARV1",
     "WTName": "A. VENTA 2.5%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARV2",
     "WTName": "A. VENTA A.F. 1%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARV3",
     "WTName": "A.VENTA NC ANTES NOV2013 3.5%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARV4",
     "WTName": "A.ARRENDAMIENTOS 3.5%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ARV5",
     "WTName": "A. ARRENDAMIENTOS BS MUEBLES",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "IC10",
     "WTName": "R.ICA SERVICIOS 4%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA0",
     "WTName": "R.ICA FAB MAQ 5%",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA1",
     "WTName": "A. ICA INDUSTRIA 7%0",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA2",
     "WTName": "R.ICA SERVICIOS 6%0",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA3",
     "WTName": "R.ICA INDUSTRIA 7%0",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA4",
     "WTName": "R.ICA COMERCIO 7%0",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA5",
     "WTName": "R.ICA COMERCIO 8%o",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   },
   {
     "WTCode": "ICA6",
     "WTName": "R.ICA SERVICIOS 8%o",
-    "Rate": 100
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICA7",
+    "WTName": "R.ICA SERVICIOS 10%o",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICA8",
+    "WTName": "R.ICA SIN ACTIVIDAD 10%o",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICA9",
+    "WTName": "R.ICA COMERCIO 6%o",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICB1",
+    "WTName": "R.ICA BOGOTA 11.04%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICB2",
+    "WTName": "R.ICA BOGOTA 9.66%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICB3",
+    "WTName": "R.ICA BOGOTA 7.66%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICC1",
+    "WTName": "R.ICA CALI 10.00%0",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ICC2",
+    "WTName": "R.ICA CALI 2.2%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "IRS1",
+    "WTName": "IVA RETENIDO SERVICIOS 15%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "IRV1",
+    "WTName": "IVA RETENIDO VENTAS 15%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RC03",
+    "WTName": "R.CREE 0.3%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RC06",
+    "WTName": "R.CREE 0.6%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RC15",
+    "WTName": "R.CREE 1.5%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RCPN",
+    "WTName": "R.F COMPRAS 2.5% PERSONA NATURAL",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFA1",
+    "WTName": "R.F ARREND. INMUEB",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFA2",
+    "WTName": "R.F  ARREND. MUEBLES 4%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFAF",
+    "WTName": "R.F ACTIVOS FIJOS",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFAM",
+    "WTName": "R.F COMPRAS NO DECLARANTES",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFBR",
+    "WTName": "R.F. BIENES RAICES 2,5%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFC1",
+    "WTName": "R.F COMISIONES 10%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFC2",
+    "WTName": "R.F COMISIONES 11%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFCD",
+    "WTName": "R.F O COSTOS Y DEDUC.PERSONA JURIDICA",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFCE",
+    "WTName": "R.F CATEGORIA EMPLEADOS",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFCO",
+    "WTName": "R.F COMPRAS DECLARANTES PERSONA JURIDICA",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFDD",
+    "WTName": "R.F DIFERIDOS DECLARANTES 2.5%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFDF",
+    "WTName": "R.F ACTIVOS DIFERIDOS",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFDV",
+    "WTName": "R.F. DIVIDENDOS",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Payment",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFED",
+    "WTName": "RF. EMPLEADOS 384",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFEN",
+    "WTName": "R.F. EMPLEADOS 383",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFEX",
+    "WTName": "RF PAGOS EXTERIOR CONVENIO 20%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFH1",
+    "WTName": "R.F HONORARIOS 10%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFH2",
+    "WTName": "R.F  HONORARIOS P JURIDICAS 11%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFH3",
+    "WTName": "R.F HONORARIOS  3.5%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFH4",
+    "WTName": "R.F  HONORARIOS P NATURALES 11%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFNA",
+    "WTName": "R.F ACTIVOS NO DECLARANTES",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFNC",
+    "WTName": "R.F COMPRAS NO DECLARANTES",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFND",
+    "WTName": "R.F ACTIVOS DIFERIDOS NO DECLARANTES",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFNO",
+    "WTName": "R.F O.COSTOS Y DEDUCCIONES NO DECLARANTES",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFO1",
+    "WTName": "R.F HOTELES Y REST. 3.5.%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFO2",
+    "WTName": "R.F COMBUSTIBLES Y LUB. 0.1%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFO3",
+    "WTName": "R.F OTROS INGRESOS 3.5.%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFR1",
+    "WTName": "R.F REND. FINANCIEROS 7%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS1",
+    "WTName": "R.F  SERVICIOS 6%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS2",
+    "WTName": "R.F TTE CARGA 1% PERSONA JURIDICA",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS3",
+    "WTName": "R.F CONSTRUCCION 1%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS4",
+    "WTName": "R.F. TEMPORALES  1%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS5",
+    "WTName": "R.F VIGILANCIA Y ASEO 2%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS6",
+    "WTName": "R.F SERVICIOS TARIFA 4%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS7",
+    "WTName": "R.F. SERVICIOS SALUD IPS",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS8",
+    "WTName": "R.F TTE DE CARGA 1%PERSONA NATURAL",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFS9",
+    "WTName": "R.F SERVICIOS 4% PERSONA NATURAL",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFTP",
+    "WTName": "R.F SERVICIO TRANSPORTE DE PASAJEROS 3.5% PN",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFXC",
+    "WTName": "R.F EXTERIOR 20% COMISIONES",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RFXH",
+    "WTName": "R.F EXTERIOR 20% HONORARIOS",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC0",
+    "WTName": "R.I  RC  SERVICIOS 1.6%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC1",
+    "WTName": "R.I  RC  COMPRAS   16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC2",
+    "WTName": "R.I  RC  ACTIVOS FIJOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC3",
+    "WTName": "R.I  RC  DIFERIDOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC4",
+    "WTName": "R.I  RC OTROS COSTOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC5",
+    "WTName": "R.I  RC  SERVICIOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC6",
+    "WTName": "R.I  RC ARREND. INMUEBLES 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC7",
+    "WTName": "R.I  RC ARREND. MUEBLES 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC8",
+    "WTName": "R.I  RC HONORARIOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIC9",
+    "WTName": "R.I  RC COMISIONES 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS1",
+    "WTName": "R.I  RS COMPRAS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS2",
+    "WTName": "R.I  RS  ACTIVOS FIJOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS3",
+    "WTName": "R.I  RS  DIFERIDOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS4",
+    "WTName": "R.I  RS  OTROS COSTOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS5",
+    "WTName": "R.I  RS.SERVICIOS 16%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS6",
+    "WTName": "R.I  RS ARREND. INMUEBLES 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS7",
+    "WTName": "R.I  RS  ARRENDAMIENTOS 16%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS8",
+    "WTName": "R.I. RS HONORARIOS 16%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RIS9",
+    "WTName": "R.I  RS COMISIONES 16%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RLSF",
+    "WTName": "R.F SERVICIO LICENCCIAMIENTO SOFTWARE 3.5%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "ROCN",
+    "WTName": "R.F O.COSTOS DEDUCC P.NATURAL",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RST",
+    "WTName": "R.SIMPLE TRIBUTACION SERVICIOS NACIONALES 19%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RVOC",
+    "WTName": "R.F OTROS INGRESOS 2.5%",
+    "Rate": 100,
+    "Inactive": true,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RVRF",
+    "WTName": "R.F INTERESES 7%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Invoice",
+    "WithholdingType": "wt_IncomeTaxWithholding"
+  },
+  {
+    "WTCode": "RVTC",
+    "WTName": "R.F VENTAS TC 1.5%",
+    "Rate": 100,
+    "Inactive": false,
+    "Category": "wtcc_Payment",
+    "WithholdingType": "wt_IncomeTaxWithholding"
   }
 ]
