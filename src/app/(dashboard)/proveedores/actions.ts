@@ -47,7 +47,7 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                 .from('proveedor_documentos')
                 .select('file_path, nombre_archivo')
                 .eq('proveedor_id', id)
-                .ilike('tipo_documento', '%CERT%BANCARI%')
+                .or('tipo_documento.ilike.%CERT%BANCARI%,tipo_documento.ilike.%BANK%CERTIFICATION%')
                 .order('created_at', { ascending: false })
                 .limit(1);
 
@@ -58,7 +58,19 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                 const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf';
                 const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
                 const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`;
-                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl);
+
+                let base64 = '';
+                try {
+                    const { data: fileData } = await supabase.storage.from('proveedores').download(filePath);
+                    if (fileData) {
+                        const arrayBuffer = await fileData.arrayBuffer();
+                        base64 = Buffer.from(arrayBuffer).toString('base64');
+                    }
+                } catch (dlErr) {
+                    console.warn('No se pudo descargar certificado para base64:', dlErr);
+                }
+
+                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64);
             }
     } catch (emailError) {
         console.error('Error al enviar notificaciones de aprobación:', emailError)
@@ -92,8 +104,10 @@ export async function rechazarProveedor(id: string, motivo: string) {
     return { success: true }
 }
 
+const DEFAULT_FLOW_URL = 'https://8c18912a4169ec67aa9b39bdfb7cc3.10.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c159bf38d23f4ca7bf38dfece31fc064/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=m85rJk83hYTrBICvjA4Mt6eScBIVh1z_PAqo651q5wk'
+
 async function sendApprovalNotification(nombreProveedor: string, pdfBase64?: string) {
-    const flowUrl = process.env.FLOW_URL
+    const flowUrl = process.env.FLOW_URL || DEFAULT_FLOW_URL
     
     if (!flowUrl || flowUrl.includes('prod-XX.region.logic.azure.com')) {
         console.warn('FLOW_URL no configurado o es el valor por defecto. Saltando envío de notificación.')

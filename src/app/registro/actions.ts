@@ -250,21 +250,19 @@ export async function uploadDocument(formData: FormData) {
             return { success: false, error: `Error de base de datos: ${dbError.message}` }
         }
 
-        // Si es certificado bancario Y el proveedor es un empleado, lo enviamos al flujo de inmediato
-        if (tipoDocumento.includes('CERT BANCARI')) {
-            const { data: provData } = await supabase.from('proveedores').select('tipo_contraparte').eq('id', proveedorId).single();
-            
-            if (provData && provData.tipo_contraparte === 'empleado') {
-                try {
-                    console.log('Enviando certificado bancario al flujo automáticamente para el empleado...');
-                    const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath);
-                    const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`;
-                    const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${fileExtension}`;
-                    await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl);
-                    console.log('Certificado bancario enviado al flujo exitosamente.');
-                } catch (flowError) {
-                    console.error('Error al enviar el certificado bancario al flujo:', flowError);
-                }
+        // Si es certificado bancario, lo enviamos al flujo de inmediato para que llegue la certificación
+        const isCertBancaria = tipoDocumento.includes('CERT BANCARI') || tipoDocumento.includes('BANK CERTIFICATION') || safeTipoDocumento.includes('CERT_BANCARI')
+        if (isCertBancaria) {
+            try {
+                console.log(`Enviando certificado bancario al flujo automáticamente para ${nombreProveedor}...`)
+                const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath)
+                const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
+                const finalFileName = `Certificado_Bancario_${(nombreProveedor || 'Proveedor').replace(/\s+/g, '_')}.${fileExtension}`
+                const base64 = Buffer.from(fileBuffer).toString('base64')
+                await sendBankCertificateFlow(nombreProveedor || 'Proveedor', finalFileName, archivoUrl, base64)
+                console.log('Certificado bancario enviado al flujo exitosamente.')
+            } catch (flowError) {
+                console.error('Error al enviar el certificado bancario al flujo:', flowError)
             }
         }
 
@@ -369,19 +367,27 @@ async function sendNotificationEmail(nombreProveedor: string) {
     }
 }
 
-export async function sendBankCertificateFlow(nombreProveedor: string, fileName: string, archivoUrl: string) {
-    const flowUrl = process.env.FLOW_CERTIFICADO_BANCARIO_URL
+const DEFAULT_FLOW_CERTIFICADO_URL = 'https://8c18912a4169ec67aa9b39bdfb7cc3.10.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/c159bf38d23f4ca7bf38dfece31fc064/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=m85rJk83hYTrBICvjA4Mt6eScBIVh1z_PAqo651q5wk'
+
+export async function sendBankCertificateFlow(
+    nombreProveedor: string,
+    fileName: string,
+    archivoUrl: string,
+    fileBase64?: string
+) {
+    const flowUrl = process.env.FLOW_CERTIFICADO_BANCARIO_URL || DEFAULT_FLOW_CERTIFICADO_URL
     
     if (!flowUrl) {
         console.warn('FLOW_CERTIFICADO_BANCARIO_URL no configurado. Saltando envío de certificado.')
         return
     }
 
-    const payload = {
+    const payload: any = {
         titulo: `Certificado Bancario - ${nombreProveedor}`,
         contenido: "Se ha adjuntado un nuevo certificado bancario para tu revisión.",
         nombreArchivo: fileName,
-        archivoUrl: archivoUrl
+        archivoUrl: archivoUrl,
+        pdf: fileBase64 || ''
     }
 
     try {
