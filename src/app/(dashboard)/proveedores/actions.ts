@@ -218,3 +218,59 @@ export async function aprobarContabilidad(id: string, formData: any) {
     revalidatePath(`/proveedores/${id}`)
     return { success: true }
 }
+
+export async function reenviarCertificacionBancaria(id: string) {
+    const supabase = await createClient()
+
+    // 1. Obtener información del proveedor
+    const { data: prov, error: provError } = await supabase
+        .from('proveedores')
+        .select('razon_social, primer_nombre, primer_apellido')
+        .eq('id', id)
+        .single()
+
+    if (provError || !prov) {
+        return { success: false, error: 'Proveedor no encontrado' }
+    }
+
+    const nombreProveedor = prov.razon_social || `${prov.primer_nombre || ''} ${prov.primer_apellido || ''}`.trim() || 'Proveedor'
+
+    // 2. Buscar documento de certificación bancaria
+    const { data: certDocs, error: docError } = await supabase
+        .from('proveedor_documentos')
+        .select('file_path, nombre_archivo')
+        .eq('proveedor_id', id)
+        .or('tipo_documento.ilike.%CERT%BANCARI%,tipo_documento.ilike.%BANK%CERTIFICATION%')
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+    if (docError || !certDocs || certDocs.length === 0 || !certDocs[0].file_path) {
+        return { success: false, error: 'Este proveedor no tiene una certificación bancaria adjunta.' }
+    }
+
+    const filePath = certDocs[0].file_path
+    const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath)
+    const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
+    const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf'
+    const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf'
+    const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`
+
+    let base64 = ''
+    try {
+        const { data: fileData } = await supabase.storage.from('proveedores').download(filePath)
+        if (fileData) {
+            const arrayBuffer = await fileData.arrayBuffer()
+            base64 = Buffer.from(arrayBuffer).toString('base64')
+        }
+    } catch (dlErr) {
+        console.warn('No se pudo descargar certificado para base64:', dlErr)
+    }
+
+    try {
+        await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64)
+        return { success: true, message: `Certificación bancaria de ${nombreProveedor} enviada con éxito.` }
+    } catch (err: any) {
+        console.error('Error al reenviar certificación bancaria:', err)
+        return { success: false, error: err.message || 'Error al disparar el flujo de certificación bancaria.' }
+    }
+}

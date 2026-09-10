@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { aprobarProveedor, rechazarProveedor } from '../actions'
+import ReenviarCertificadoButton from '../ReenviarCertificadoButton'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 
@@ -86,8 +87,9 @@ export default function AccionesProveedor({ proveedorId, estadoActual }: Props) 
 
     return (
         <div className="space-y-4">
-            {/* Enlace opcional a PDF en nueva pestaña */}
-            <div className="flex justify-end mb-4">
+            {/* Botón para reenviar certificado y enlace a PDF */}
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+                <ReenviarCertificadoButton proveedorId={proveedorId} variant="detail" />
                 <Link
                     href={`/visor-pdf/${proveedorId}`}
                     target="_blank"

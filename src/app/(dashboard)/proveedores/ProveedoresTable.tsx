@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { aprobarContabilidad } from './actions'
+import ReenviarCertificadoButton from './ReenviarCertificadoButton'
 
 function SubirSapButton({ proveedorId }: { proveedorId: string }) {
     const [loading, setLoading] = useState(false)
@@ -325,6 +326,7 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
                                         </td>
                                         <td className="px-4 py-3 text-right whitespace-nowrap sticky right-0 bg-white group-hover:bg-gray-50 transition-colors z-10 shadow-[-6px_0_10px_-4px_rgba(0,0,0,0.06)]">
                                             <div className="flex justify-end gap-2 items-center">
+                                                <ReenviarCertificadoButton proveedorId={p.id} />
                                                 {(p.tipo_contraparte === 'empleado' || p.tipo_contraparte === 'contado') && p.estado_contabilidad !== 'aprobado' && (
                                                     <SubirSapButton proveedorId={p.id} />
                                                 )}
