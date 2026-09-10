@@ -378,7 +378,7 @@ export async function sendBankCertificateFlow(nombreProveedor: string, fileName:
     }
 
     const payload = {
-        titulo: nombreProveedor,
+        titulo: `Certificado Bancario - ${nombreProveedor}`,
         contenido: "Se ha adjuntado un nuevo certificado bancario para tu revisión.",
         nombreArchivo: fileName,
         archivoUrl: archivoUrl

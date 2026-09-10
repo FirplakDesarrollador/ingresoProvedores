@@ -107,7 +107,7 @@ async function sendApprovalNotification(nombreProveedor: string, pdfBase64?: str
     }
 
     const payload: any = {
-        titulo: `Certificado Bancario - ${nombreProveedor}`,
+        titulo: `Proveedor Aprobado - ${nombreProveedor}`,
         contenido: "El proveedor ha sido aprobado y la notificación ha sido procesada.",
         nombreArchivo: "",
         pdf: ""
