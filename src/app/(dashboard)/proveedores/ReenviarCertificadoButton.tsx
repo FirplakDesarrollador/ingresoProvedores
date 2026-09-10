@@ -65,23 +65,23 @@ export default function ReenviarCertificadoButton({ proveedorId, variant = 'tabl
             type="button"
             onClick={handleReenviar}
             disabled={loading}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-bold rounded-lg transition-all shadow-sm hover:shadow uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${className}`}
-            title="Reenviar Certificación Bancaria al flujo"
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300 border border-blue-200 text-xs font-semibold rounded-lg transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${className}`}
+            title="Reenviar Certificación Bancaria"
         >
             {loading ? (
                 <>
-                    <svg className="animate-spin h-3.5 w-3.5 text-blue-700" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-3.5 w-3.5 text-blue-700 shrink-0" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
-                    <span>Reenviando...</span>
+                    <span>Enviando...</span>
                 </>
             ) : (
                 <>
-                    <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <span>Reenviar Certificación Bancaria</span>
+                    <span>Reenviar Cert.</span>
                 </>
             )}
         </button>
