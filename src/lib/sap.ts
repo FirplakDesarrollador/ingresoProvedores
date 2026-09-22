@@ -446,8 +446,6 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
 
         // Address
         if (data.direccion || data.ciudad || data.municipio_med_mag) {
-            const addressString = (data.direccion || '').toUpperCase().substring(0, 50);
-            
             // Map the department to SAP State Code
             let stateCode = '';
             if (!isExtranjero && data.departamento) {
@@ -473,11 +471,14 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
             
             const cityRaw = (data.ciudad || data.municipio_med_mag || '').toUpperCase().trim();
             const cityUpper = ciudadesMap[cityRaw] || cityRaw;
+            const addressStreet = (data.direccion || '').toUpperCase().substring(0, 100);
+            const baseAddressName = (cityUpper || 'PRINCIPAL').substring(0, 46);
+
             bpPayload.BPAddresses = [
                 {
-                    AddressName: addressString || cityUpper,
-                    AddressName3: addressString || cityUpper,
-                    Street: addressString,
+                    AddressName: baseAddressName,
+                    AddressName3: baseAddressName,
+                    Street: addressStreet,
                     City: cityUpper,
                     State: stateCode.substring(0, 3), // Departamento (SAP Code) max 3 chars
                     Country: isExtranjero ? (data.pais || '') : 'CO',
@@ -486,9 +487,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
                     U_HBT_DirMM: 'Y' // Es dirección MM (Sí)
                 },
                 {
-                    AddressName: (addressString || cityUpper) + ' - E', // Para diferenciar ENVIO
-                    AddressName3: addressString || cityUpper,
-                    Street: addressString,
+                    AddressName: `${baseAddressName} - E`, // Para diferenciar ENVIO (máx 50 caracteres)
+                    AddressName3: baseAddressName,
+                    Street: addressStreet,
                     City: cityUpper,
                     State: stateCode.substring(0, 3),
                     Country: isExtranjero ? (data.pais || '') : 'CO',
