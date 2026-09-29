@@ -189,7 +189,8 @@ export async function submitProveedorForm(data: ProveedorFormData) {
 export async function uploadDocument(formData: FormData) {
     const proveedorId = formData.get('proveedorId') as string
     const tipoDocumento = formData.get('tipoDocumento') as string
-    const nombreProveedor = formData.get('nombreProveedor') as string
+    let nombreProveedor = formData.get('nombreProveedor') as string
+    let numeroIdentificacion = formData.get('numeroIdentificacion') as string
     const file = formData.get('file') as File
 
     console.log(`Iniciando subida de ${tipoDocumento} para proveedor ${proveedorId}...`)
@@ -254,12 +255,28 @@ export async function uploadDocument(formData: FormData) {
         const isCertBancaria = tipoDocumento.includes('CERT BANCARI') || tipoDocumento.includes('BANK CERTIFICATION') || safeTipoDocumento.includes('CERT_BANCARI')
         if (isCertBancaria) {
             try {
-                console.log(`Enviando certificado bancario al flujo automáticamente para ${nombreProveedor}...`)
+                if ((!nombreProveedor || !numeroIdentificacion) && proveedorId) {
+                    const { data: provData } = await supabase
+                        .from('proveedores')
+                        .select('razon_social, primer_nombre, primer_apellido, numero_identificacion')
+                        .eq('id', proveedorId)
+                        .maybeSingle()
+                    if (provData) {
+                        if (!nombreProveedor) {
+                            nombreProveedor = provData.razon_social || `${provData.primer_nombre || ''} ${provData.primer_apellido || ''}`.trim()
+                        }
+                        if (!numeroIdentificacion && provData.numero_identificacion) {
+                            numeroIdentificacion = provData.numero_identificacion
+                        }
+                    }
+                }
+
+                console.log(`Enviando certificado bancario al flujo automáticamente para ${nombreProveedor} (${numeroIdentificacion || 'Sin ID'})...`)
                 const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath)
                 const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
                 const finalFileName = `Certificado_Bancario_${(nombreProveedor || 'Proveedor').replace(/\s+/g, '_')}.${fileExtension}`
                 const base64 = Buffer.from(fileBuffer).toString('base64')
-                await sendBankCertificateFlow(nombreProveedor || 'Proveedor', finalFileName, archivoUrl, base64)
+                await sendBankCertificateFlow(nombreProveedor || 'Proveedor', finalFileName, archivoUrl, base64, numeroIdentificacion)
                 console.log('Certificado bancario enviado al flujo exitosamente.')
             } catch (flowError) {
                 console.error('Error al enviar el certificado bancario al flujo:', flowError)
@@ -373,7 +390,8 @@ export async function sendBankCertificateFlow(
     nombreProveedor: string,
     fileName: string,
     archivoUrl: string,
-    fileBase64?: string
+    fileBase64?: string,
+    numeroIdentificacion?: string
 ) {
     const flowUrl = process.env.FLOW_CERTIFICADO_BANCARIO_URL || DEFAULT_FLOW_CERTIFICADO_URL
     
@@ -382,12 +400,17 @@ export async function sendBankCertificateFlow(
         return
     }
 
+    const docStr = numeroIdentificacion ? String(numeroIdentificacion).trim() : ''
+    const docIdentificador = docStr ? ` - ${docStr}` : ''
+
     const payload: any = {
-        titulo: `Certificado Bancario - ${nombreProveedor}`,
+        titulo: `Certificado Bancario - ${nombreProveedor}${docIdentificador}`,
         contenido: "Se ha adjuntado un nuevo certificado bancario para tu revisión.",
         nombreArchivo: fileName,
         archivoUrl: archivoUrl,
-        pdf: fileBase64 || ''
+        pdf: fileBase64 || '',
+        numeroIdentificacion: docStr,
+        nit: docStr
     }
 
     try {

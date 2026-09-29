@@ -70,7 +70,7 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                     console.warn('No se pudo descargar certificado para base64:', dlErr);
                 }
 
-                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64);
+                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion);
             }
     } catch (emailError) {
         console.error('Error al enviar notificaciones de aprobación:', emailError)
@@ -225,7 +225,7 @@ export async function reenviarCertificacionBancaria(id: string) {
     // 1. Obtener información del proveedor
     const { data: prov, error: provError } = await supabase
         .from('proveedores')
-        .select('razon_social, primer_nombre, primer_apellido')
+        .select('razon_social, primer_nombre, primer_apellido, numero_identificacion')
         .eq('id', id)
         .single()
 
@@ -267,7 +267,7 @@ export async function reenviarCertificacionBancaria(id: string) {
     }
 
     try {
-        await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64)
+        await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion)
         return { success: true, message: `Certificación bancaria de ${nombreProveedor} enviada con éxito.` }
     } catch (err: any) {
         console.error('Error al reenviar certificación bancaria:', err)
