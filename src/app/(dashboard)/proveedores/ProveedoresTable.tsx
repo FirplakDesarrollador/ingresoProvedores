@@ -39,7 +39,9 @@ interface Proveedor {
     id: string
     tipo_contraparte: string
     primer_nombre?: string
+    segundo_nombre?: string
     primer_apellido?: string
+    segundo_apellido?: string
     razon_social?: string
     numero_identificacion?: string
     email?: string
@@ -81,9 +83,9 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
         return initialData
             .filter(p => {
                 // Search term (Name, Email, ID)
-                const name = (p.tipo_contraparte === 'persona_natural'
-                    ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`
-                    : p.razon_social || '').toLowerCase()
+                const isPersona = p.tipo_contraparte === 'persona_natural' || p.tipo_contraparte === 'empleado' || (!p.razon_social && !!p.primer_nombre)
+                const personName = `${p.primer_nombre || ''} ${p.segundo_nombre || ''} ${p.primer_apellido || ''} ${p.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim()
+                const name = (isPersona ? (personName || p.razon_social || '') : (p.razon_social || personName || '')).toLowerCase()
                 const email = (p.email || p.correo_facturacion || '').toLowerCase()
                 const id = (p.numero_identificacion || '').toLowerCase()
                 const searchMatch = name.includes(searchTerm.toLowerCase()) ||
@@ -275,9 +277,11 @@ export default function ProveedoresTable({ initialData }: ProveedoresTableProps)
                         </thead>
                         <tbody className="divide-y divide-gray-100 text-sm">
                             {paginatedProveedores.map((p) => {
-                                const fullName = p.tipo_contraparte === 'persona_natural'
-                                    ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
-                                    : p.razon_social || '-'
+                                const isPersona = p.tipo_contraparte === 'persona_natural' || p.tipo_contraparte === 'empleado' || (!p.razon_social && !!p.primer_nombre)
+                                const personName = `${p.primer_nombre || ''} ${p.segundo_nombre || ''} ${p.primer_apellido || ''} ${p.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim()
+                                const fullName = isPersona 
+                                    ? (personName || p.razon_social || '-') 
+                                    : (p.razon_social || personName || '-')
                                 const email = p.email || p.correo_facturacion || '-'
 
                                 return (

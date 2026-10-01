@@ -86,11 +86,14 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
                         }`}>
                         {proveedor.estado?.toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded text-sm ${proveedor.tipo_contraparte === 'persona_natural'
+                    <span className={`px-3 py-1 rounded text-sm ${
+                        proveedor.tipo_contraparte === 'empleado' ? 'bg-orange-100 text-orange-700' :
+                        proveedor.tipo_contraparte === 'contado' ? 'bg-purple-100 text-purple-700' :
+                        proveedor.tipo_contraparte === 'persona_natural'
                             ? 'bg-blue-100 text-blue-700'
-                            : 'bg-purple-100 text-purple-700'
-                        }`}>
-                        {proveedor.tipo_contraparte === 'persona_natural' ? '👤 Persona Natural' : '🏢 Persona Jurídica'}
+                            : 'bg-indigo-100 text-indigo-700'
+                    }`}>
+                        {proveedor.tipo_contraparte === 'empleado' ? '👤 Empleado' : proveedor.tipo_contraparte === 'contado' ? '💵 Proveedor Contado' : proveedor.tipo_contraparte === 'persona_natural' ? '👤 Persona Natural' : '🏢 Persona Jurídica'}
                     </span>
                     {proveedor.area_solicitante && (
                         <span className="px-3 py-1 rounded text-sm bg-blue-100 text-blue-700 font-medium">
@@ -140,9 +143,9 @@ export default async function ProveedorDetallePage({ params, searchParams }: Pro
                     {/* General */}
                     <section className="bg-white rounded-xl border p-6">
                         <h2 className="text-lg font-semibold text-[#254153] mb-4">Información General</h2>
-                        {proveedor.tipo_contraparte === 'persona_natural' ? (
+                        {(proveedor.tipo_contraparte === 'persona_natural' || proveedor.tipo_contraparte === 'empleado' || (!proveedor.razon_social && !!proveedor.primer_nombre)) ? (
                             <div className="grid grid-cols-2 gap-x-8">
-                                <Campo label="Nombre" value={`${proveedor.primer_nombre || ''} ${proveedor.segundo_nombre || ''} ${proveedor.primer_apellido || ''} ${proveedor.segundo_apellido || ''}`.trim()} />
+                                <Campo label="Nombre" value={`${proveedor.primer_nombre || ''} ${proveedor.segundo_nombre || ''} ${proveedor.primer_apellido || ''} ${proveedor.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim()} />
                                 <Campo label="Tipo Doc" value={proveedor.tipo_documento} />
                                 <Campo label="Identificación" value={proveedor.numero_identificacion} />
                                 <Campo label="Email" value={proveedor.email} />

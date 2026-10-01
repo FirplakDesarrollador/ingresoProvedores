@@ -33,9 +33,9 @@ export default function ProveedoresTable({ proveedores }: Props) {
         // Filtro por búsqueda
         if (busqueda.trim()) {
             const termino = busqueda.toLowerCase()
-            const nombre = p.tipo_contraparte === 'persona_natural'
-                ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.toLowerCase()
-                : (p.razon_social || '').toLowerCase()
+            const isPersona = p.tipo_contraparte === 'persona_natural' || p.tipo_contraparte === 'empleado' || (!p.razon_social && !!p.primer_nombre)
+            const personName = `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim()
+            const nombre = (isPersona ? (personName || p.razon_social || '') : (p.razon_social || personName || '')).toLowerCase()
             const nit = (p.numero_identificacion || '').toLowerCase()
 
             if (!nombre.includes(termino) && !nit.includes(termino)) {
@@ -113,17 +113,20 @@ export default function ProveedoresTable({ proveedores }: Props) {
                         {proveedoresFiltrados.map((p) => (
                             <tr key={p.id} className="border-b hover:bg-gray-50">
                                 <td className="px-4 py-3">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${p.tipo_contraparte === 'persona_natural'
+                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                        p.tipo_contraparte === 'empleado' ? 'bg-orange-100 text-orange-700' :
+                                        p.tipo_contraparte === 'contado' ? 'bg-purple-100 text-purple-700' :
+                                        p.tipo_contraparte === 'persona_natural'
                                             ? 'bg-blue-100 text-blue-700'
-                                            : 'bg-purple-100 text-purple-700'
-                                        }`}>
-                                        {p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
+                                            : 'bg-indigo-100 text-indigo-700'
+                                    }`}>
+                                        {p.tipo_contraparte === 'empleado' ? '👤 Empleado' : p.tipo_contraparte === 'contado' ? '💵 Contado' : p.tipo_contraparte === 'persona_natural' ? '👤 Natural' : '🏢 Jurídica'}
                                     </span>
                                 </td>
                                 <td className="px-4 py-3 font-medium text-[#254153]">
-                                    {p.tipo_contraparte === 'persona_natural'
-                                        ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
-                                        : p.razon_social || '-'}
+                                    {(p.tipo_contraparte === 'persona_natural' || p.tipo_contraparte === 'empleado' || (!p.razon_social && !!p.primer_nombre))
+                                        ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || p.razon_social || '-'
+                                        : p.razon_social || `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'}
                                 </td>
                                 <td className="px-4 py-3 text-gray-600 font-mono text-sm">{p.numero_identificacion || '-'}</td>
                                 <td className="px-4 py-3 text-gray-600">{p.email || p.correo_facturacion || '-'}</td>

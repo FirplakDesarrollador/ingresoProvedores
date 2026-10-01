@@ -38,20 +38,23 @@ export default function RecentProviders({ proveedores }: Props) {
 
             <div className="space-y-6">
                 {recent.map((p) => {
-                    const nombre = p.tipo_contraparte === 'persona_natural'
-                        ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
-                        : p.razon_social || '-'
+                    const isPersona = p.tipo_contraparte === 'persona_natural' || p.tipo_contraparte === 'empleado' || (!p.razon_social && !!p.primer_nombre)
+                    const nombre = isPersona
+                        ? `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || p.razon_social || '-'
+                        : p.razon_social || `${p.primer_nombre || ''} ${p.primer_apellido || ''}`.trim() || '-'
                     
-                    const initials = p.tipo_contraparte === 'persona_natural' 
+                    const initials = isPersona 
                         ? `${(p.primer_nombre?.[0] || '')}${(p.primer_apellido?.[0] || '')}`
                         : (p.razon_social?.[0] || '')
+
+                    const badgeColor = p.tipo_contraparte === 'empleado' ? 'bg-orange-50 text-orange-600' :
+                        p.tipo_contraparte === 'contado' ? 'bg-purple-50 text-purple-600' :
+                        p.tipo_contraparte === 'persona_natural' ? 'bg-blue-50 text-blue-600' : 'bg-indigo-50 text-indigo-600'
 
                     return (
                         <div key={p.id} className="flex items-center justify-between group">
                             <div className="flex items-center gap-4">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
-                                    p.tipo_contraparte === 'persona_natural' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'
-                                } group-hover:scale-110 transition-transform duration-200`}>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${badgeColor} group-hover:scale-110 transition-transform duration-200`}>
                                     {initials}
                                 </div>
                                 <div>
