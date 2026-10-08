@@ -277,9 +277,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     
     const cardName = (isJuridica
         ? (data.razon_social || 'SIN NOMBRE')
-        : (isEmpleado
-            ? `${data.primer_apellido || ''} ${data.segundo_apellido || ''} ${data.primer_nombre || ''} ${data.segundo_nombre || ''}`
-            : `${data.primer_nombre || ''} ${data.segundo_nombre || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`))
+        : `${data.primer_apellido || ''} ${data.segundo_apellido || ''} ${data.primer_nombre || ''} ${data.segundo_nombre || ''}`)
         .replace(/\s+/g, ' ')
         .trim()
         .toUpperCase() || 'SIN NOMBRE';
