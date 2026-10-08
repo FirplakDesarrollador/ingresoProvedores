@@ -289,8 +289,9 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
     const isExtranjero = data.tipo_solicitud?.includes('Extranjero') || 
                          (data.pais && data.pais !== 'CO' && data.pais !== 'Colombia');
 
-    // Determine CardCode — prefix + NIT + suffix -01 (max 15 chars for SAP)
-    const cleanNit = (data.numero_identificacion || '').replace(/[^a-zA-Z0-9]/g, '');
+    // Determine CardCode — prefix + NIT (sin dígito de verificación) + suffix -01 (max 15 chars for SAP)
+    const baseNit = (data.numero_identificacion || '').split('-')[0].trim();
+    const cleanNit = baseNit.replace(/[^a-zA-Z0-9]/g, '');
     let prefix = 'AC'; // default to AC
     
     if (data.tipo_contraparte === 'empleado') {
@@ -358,7 +359,7 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         CardName: cardName,
         CardType: 'cSupplier',
         GroupCode: groupCode,
-        FederalTaxID: data.numero_identificacion || '',
+        FederalTaxID: baseNit || data.numero_identificacion || '',
         Phone1: (data.telefono1_numero || '').trim(),
         Cellular: (data.celular || '').trim(),
         EmailAddress: data.email || data.correo_facturacion || '',

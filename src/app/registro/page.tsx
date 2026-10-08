@@ -388,7 +388,7 @@ function RegistroForm() {
                                         'Otro'
                                     ]} 
                                 />
-                                <Input label="Número Identificación" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} type="number" />
+                                <Input label="Número Identificación" name="numero_identificacion" value={formData.numero_identificacion} onChange={updateField} />
                                 <Input label="Primer Nombre" name="primer_nombre" value={formData.primer_nombre} onChange={updateField} />
                                 <Input label="Segundo Nombre" name="segundo_nombre" value={formData.segundo_nombre} onChange={updateField} optional />
                                 <Input label="Primer Apellido" name="primer_apellido" value={formData.primer_apellido} onChange={updateField} />
