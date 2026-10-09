@@ -337,8 +337,8 @@ export async function createBusinessPartner(data: SapProveedorData): Promise<{ s
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             CompanyDB: (process.env.SAP_COMPANY_DB || "Firplak_SA").trim(),
-            Password: (process.env.SAP_PASSWORD || "2023Fir#.*").trim(),
-            UserName: (process.env.SAP_USERNAME || "manager").trim(),
+            Password: (process.env.SAP_PASSWORD || "1234").trim(),
+            UserName: (process.env.SAP_USERNAME || "auxcont").trim(),
         }),
     });
 
