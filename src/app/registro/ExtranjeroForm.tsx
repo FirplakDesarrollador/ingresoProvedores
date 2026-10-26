@@ -324,6 +324,7 @@ export default function ExtranjeroForm() {
                         uploadFormData.append('tipoDocumento', label)
                         uploadFormData.append('nombreProveedor', nombreProveedor)
                         uploadFormData.append('numeroIdentificacion', formData.numero_identificacion || '')
+                        uploadFormData.append('tipoContraparte', 'extranjero')
                         
                         try {
                             const uploadRes = await uploadDocument(uploadFormData)
