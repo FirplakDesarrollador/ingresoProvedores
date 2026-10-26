@@ -57,7 +57,9 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                 const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`;
                 const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf';
                 const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf';
-                const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`;
+                const isEmpleado = prov.tipo_contraparte === 'empleado';
+                const tipoEtiqueta = isEmpleado ? 'EMPLEADO' : 'PROVEEDOR';
+                const finalFileName = `Certificado_Bancario_${tipoEtiqueta}_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`;
 
                 let base64 = '';
                 try {
@@ -70,7 +72,7 @@ export async function aprobarProveedor(id: string, fechaVigencia: string, pdfBas
                     console.warn('No se pudo descargar certificado para base64:', dlErr);
                 }
 
-                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion);
+                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion, prov.tipo_contraparte);
             }
     } catch (emailError) {
         console.error('Error al enviar notificaciones de aprobación:', emailError)
@@ -225,7 +227,7 @@ export async function reenviarCertificacionBancaria(id: string) {
     // 1. Obtener información del proveedor
     const { data: prov, error: provError } = await supabase
         .from('proveedores')
-        .select('razon_social, primer_nombre, primer_apellido, numero_identificacion')
+        .select('razon_social, primer_nombre, primer_apellido, numero_identificacion, tipo_contraparte')
         .eq('id', id)
         .single()
 
@@ -234,6 +236,8 @@ export async function reenviarCertificacionBancaria(id: string) {
     }
 
     const nombreProveedor = prov.razon_social || `${prov.primer_nombre || ''} ${prov.primer_apellido || ''}`.trim() || 'Proveedor'
+    const isEmpleado = prov.tipo_contraparte === 'empleado'
+    const tipoEtiqueta = isEmpleado ? 'EMPLEADO' : 'PROVEEDOR'
 
     // 2. Buscar documento de certificación bancaria
     const { data: certDocs, error: docError } = await supabase
@@ -253,7 +257,7 @@ export async function reenviarCertificacionBancaria(id: string) {
     const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
     const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf'
     const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf'
-    const finalFileName = `Certificado_Bancario_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`
+    const finalFileName = `Certificado_Bancario_${tipoEtiqueta}_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`
 
     let base64 = ''
     try {
@@ -267,7 +271,7 @@ export async function reenviarCertificacionBancaria(id: string) {
     }
 
     try {
-        await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion)
+        await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion, prov.tipo_contraparte)
         return { success: true, message: `Certificación bancaria de ${nombreProveedor} enviada con éxito.` }
     } catch (err: any) {
         console.error('Error al reenviar certificación bancaria:', err)

@@ -181,6 +181,7 @@ function RegistroForm() {
                         uploadFormData.append('tipoDocumento', label)
                         uploadFormData.append('nombreProveedor', nombreProveedor)
                         uploadFormData.append('numeroIdentificacion', formData.numero_identificacion || '')
+                        uploadFormData.append('tipoContraparte', tipoContraparte || '')
                         
                         try {
                             const uploadRes = await uploadDocument(uploadFormData)
