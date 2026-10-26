@@ -247,9 +247,44 @@ export async function uploadDocument(formData: FormData) {
                 mime_type: file.type || 'application/pdf'
             })
 
-        if (dbError) {
-            console.error(`Error en DB para ${tipoDocumento}:`, dbError)
-            return { success: false, error: `Error de base de datos: ${dbError.message}` }
+        // Si es certificado bancario y es un empleado, lo enviamos al flujo de inmediato (como se enviaba antes)
+        const isCertBancaria = tipoDocumento.includes('CERT BANCARI') || tipoDocumento.includes('BANK CERTIFICATION') || safeTipoDocumento.includes('CERT_BANCARI')
+        if (isCertBancaria) {
+            try {
+                if ((!nombreProveedor || !numeroIdentificacion || !tipoContraparte) && proveedorId) {
+                    const { data: provData } = await supabase
+                        .from('proveedores')
+                        .select('razon_social, primer_nombre, primer_apellido, numero_identificacion, tipo_contraparte')
+                        .eq('id', proveedorId)
+                        .maybeSingle()
+                    if (provData) {
+                        if (!nombreProveedor) {
+                            nombreProveedor = provData.razon_social || `${provData.primer_nombre || ''} ${provData.primer_apellido || ''}`.trim()
+                        }
+                        if (!numeroIdentificacion && provData.numero_identificacion) {
+                            numeroIdentificacion = provData.numero_identificacion
+                        }
+                        if (!tipoContraparte && provData.tipo_contraparte) {
+                            tipoContraparte = provData.tipo_contraparte
+                        }
+                    }
+                }
+
+                // Los proveedores se envían solo cuando el Oficial de Cumplimiento los aprueba.
+                // Los empleados sí se envían de inmediato al registrarse (como antes).
+                const isEmpleado = tipoContraparte === 'empleado'
+                if (isEmpleado) {
+                    console.log(`Enviando certificado bancario (EMPLEADO) al flujo automáticamente para ${nombreProveedor} (${numeroIdentificacion || 'Sin ID'})...`)
+                    const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath)
+                    const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
+                    const finalFileName = `Certificado_Bancario_EMPLEADO_${(nombreProveedor || 'Empleado').replace(/\s+/g, '_')}.${fileExtension}`
+                    const base64 = Buffer.from(fileBuffer).toString('base64')
+                    await sendBankCertificateFlow(nombreProveedor || 'Empleado', finalFileName, archivoUrl, base64, numeroIdentificacion, 'empleado')
+                    console.log('Certificado bancario de empleado enviado al flujo exitosamente.')
+                }
+            } catch (flowError) {
+                console.error('Error al enviar el certificado bancario al flujo:', flowError)
+            }
         }
 
         console.log(`Documento ${tipoDocumento} subido y registrado con éxito`)
