@@ -216,6 +216,46 @@ export async function aprobarContabilidad(id: string, formData: any) {
         return { success: false, error: `Se creó en SAP pero falló al actualizar BD: ${updateError.message}` }
     }
 
+    // Si es empleado o contado, enviamos la certificación bancaria al momento de su aprobación
+    if (prov.tipo_contraparte === 'empleado' || prov.tipo_contraparte === 'contado') {
+        try {
+            const nombreProveedor = prov.razon_social || `${prov.primer_nombre || ''} ${prov.primer_apellido || ''}`.trim() || 'Empleado'
+            const { data: certDocs } = await supabase
+                .from('proveedor_documentos')
+                .select('file_path, nombre_archivo')
+                .eq('proveedor_id', id)
+                .or('tipo_documento.ilike.%CERT%BANCARI%,tipo_documento.ilike.%BANK%CERTIFICATION%')
+                .order('created_at', { ascending: false })
+                .limit(1)
+
+            if (certDocs && certDocs.length > 0 && certDocs[0].file_path) {
+                const filePath = certDocs[0].file_path
+                const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath)
+                const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
+                const originalName = certDocs[0].nombre_archivo || 'Certificado.pdf'
+                const ext = originalName.includes('.') ? originalName.split('.').pop() : 'pdf'
+                const isEmpleado = prov.tipo_contraparte === 'empleado'
+                const tipoEtiqueta = isEmpleado ? 'EMPLEADO' : 'PROVEEDOR'
+                const finalFileName = `Certificado_Bancario_${tipoEtiqueta}_${nombreProveedor.replace(/\s+/g, '_')}.${ext}`
+
+                let base64 = ''
+                try {
+                    const { data: fileData } = await supabase.storage.from('proveedores').download(filePath)
+                    if (fileData) {
+                        const arrayBuffer = await fileData.arrayBuffer()
+                        base64 = Buffer.from(arrayBuffer).toString('base64')
+                    }
+                } catch (dlErr) {
+                    console.warn('No se pudo descargar certificado para base64:', dlErr)
+                }
+
+                await sendBankCertificateFlow(nombreProveedor, finalFileName, archivoUrl, base64, prov.numero_identificacion, prov.tipo_contraparte)
+            }
+        } catch (certErr) {
+            console.error('Error al enviar certificado bancario tras aprobación:', certErr)
+        }
+    }
+
     revalidatePath('/proveedores')
     revalidatePath(`/proveedores/${id}`)
     return { success: true }

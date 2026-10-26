@@ -252,44 +252,6 @@ export async function uploadDocument(formData: FormData) {
             return { success: false, error: `Error de base de datos: ${dbError.message}` }
         }
 
-        // Si es certificado bancario, lo enviamos al flujo de inmediato para que llegue la certificación
-        const isCertBancaria = tipoDocumento.includes('CERT BANCARI') || tipoDocumento.includes('BANK CERTIFICATION') || safeTipoDocumento.includes('CERT_BANCARI')
-        if (isCertBancaria) {
-            try {
-                if ((!nombreProveedor || !numeroIdentificacion || !tipoContraparte) && proveedorId) {
-                    const { data: provData } = await supabase
-                        .from('proveedores')
-                        .select('razon_social, primer_nombre, primer_apellido, numero_identificacion, tipo_contraparte')
-                        .eq('id', proveedorId)
-                        .maybeSingle()
-                    if (provData) {
-                        if (!nombreProveedor) {
-                            nombreProveedor = provData.razon_social || `${provData.primer_nombre || ''} ${provData.primer_apellido || ''}`.trim()
-                        }
-                        if (!numeroIdentificacion && provData.numero_identificacion) {
-                            numeroIdentificacion = provData.numero_identificacion
-                        }
-                        if (!tipoContraparte && provData.tipo_contraparte) {
-                            tipoContraparte = provData.tipo_contraparte
-                        }
-                    }
-                }
-
-                const isEmpleado = tipoContraparte === 'empleado'
-                const tipoEtiqueta = isEmpleado ? 'EMPLEADO' : 'PROVEEDOR'
-
-                console.log(`Enviando certificado bancario (${tipoEtiqueta}) al flujo automáticamente para ${nombreProveedor} (${numeroIdentificacion || 'Sin ID'})...`)
-                const { data: publicUrlData } = supabase.storage.from('proveedores').getPublicUrl(filePath)
-                const archivoUrl = publicUrlData?.publicUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/proveedores/${filePath}`
-                const finalFileName = `Certificado_Bancario_${tipoEtiqueta}_${(nombreProveedor || 'Proveedor').replace(/\s+/g, '_')}.${fileExtension}`
-                const base64 = Buffer.from(fileBuffer).toString('base64')
-                await sendBankCertificateFlow(nombreProveedor || 'Proveedor', finalFileName, archivoUrl, base64, numeroIdentificacion, tipoContraparte)
-                console.log('Certificado bancario enviado al flujo exitosamente.')
-            } catch (flowError) {
-                console.error('Error al enviar el certificado bancario al flujo:', flowError)
-            }
-        }
-
         console.log(`Documento ${tipoDocumento} subido y registrado con éxito`)
         return { success: true, path: filePath }
     } catch (e: any) {
